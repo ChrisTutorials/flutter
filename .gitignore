@@ -1,9 +1,6 @@
 # Exclude existing git repositories from subdirectories
 flutter/
 
-# Locked files (being moved to marketing)
-unit_converter/screenshots/
-
 # Flutter/Dart
 .dart_tool/
 .flutter-plugins
