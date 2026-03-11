@@ -25,11 +25,8 @@ The `common/` directory contains reusable code that can be imported by any app i
 
 ## Marketing Materials
 
-The `marketing/` directory contains all marketing materials including:
-- App store graphics and logos
-- Screenshots for store listings
-- Marketing copy and promotional text
-- Store listing content
+The `marketing/` directory contains all marketing materials organized by app:
+- `unit_converter/` - Graphics, screenshots, and marketing copy for the Unit Converter app
 
 ## Contributing
 
