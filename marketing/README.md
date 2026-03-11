@@ -2,7 +2,16 @@
 
 This folder contains marketing materials for Flutter applications in this monorepo.
 
-## Contents
+## Structure
+
+Marketing materials are organized by app:
+
+- `unit_converter/` - Marketing materials for the Unit Converter app
+  - `graphics/` - App logos and feature graphics
+  - `screenshots/` - Store and UI screenshots
+  - `docs/` - Marketing documentation and copy
+
+## Unit Converter Marketing
 
 ### Graphics
 - `feature-graphic-unit-converter-v2.jpg` - Featured graphic for app stores (v2)
@@ -17,12 +26,12 @@ This folder contains marketing materials for Flutter applications in this monore
 - `screenshots/ui_screenshots/` - UI screenshots for documentation and marketing
 
 ### Documentation
-- `APP_STORE_PROMO.md` - App store promotional text
-- `FEATURE_GRAPHIC_PROMPT.md` - Prompt used to generate feature graphics
-- `MARKETING_COPY_AUDIT.md` - Audit of marketing copy
-- `STORE_SCREENSHOT_REQUIREMENTS.md` - Requirements for store screenshots
-- `STORE_LISTING_CONTENT.md` - Content for store listings
-- `COMPETITIVE_ANALYSIS.md` - Competitive analysis of unit converter apps
+- `docs/APP_STORE_PROMO.md` - App store promotional text
+- `docs/FEATURE_GRAPHIC_PROMPT.md` - Prompt used to generate feature graphics
+- `docs/MARKETING_COPY_AUDIT.md` - Audit of marketing copy
+- `docs/STORE_SCREENSHOT_REQUIREMENTS.md` - Requirements for store screenshots
+- `docs/STORE_LISTING_CONTENT.md` - Content for store listings
+- `docs/COMPETITIVE_ANALYSIS.md` - Competitive analysis of unit converter apps
 
 ## Usage
 
