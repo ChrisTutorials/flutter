@@ -7,6 +7,7 @@ A monorepo containing Flutter applications and shared libraries.
 - `common/` - Shared libraries and utilities used across multiple apps
 - `unit_converter/` - Unit Converter app
 - `test-app/` - Test application
+- `marketing/` - Marketing materials (graphics, screenshots, store listings)
 - `flutter/` - Flutter SDK (not tracked in git)
 
 ## Getting Started
@@ -21,6 +22,14 @@ flutter run
 ## Shared Libraries
 
 The `common/` directory contains reusable code that can be imported by any app in this monorepo.
+
+## Marketing Materials
+
+The `marketing/` directory contains all marketing materials including:
+- App store graphics and logos
+- Screenshots for store listings
+- Marketing copy and promotional text
+- Store listing content
 
 ## Contributing
 
