@@ -22,6 +22,7 @@ This folder contains marketing materials for Flutter applications in this monore
 - `MARKETING_COPY_AUDIT.md` - Audit of marketing copy
 - `STORE_SCREENSHOT_REQUIREMENTS.md` - Requirements for store screenshots
 - `STORE_LISTING_CONTENT.md` - Content for store listings
+- `COMPETITIVE_ANALYSIS.md` - Competitive analysis of unit converter apps
 
 ## Usage
 
