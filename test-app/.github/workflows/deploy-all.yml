@@ -1,0 +1,67 @@
+name: Deploy All Platforms
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    uses: ./.github/workflows/deploy-android.yml
+    secrets: inherit
+
+  build-ios:
+    uses: ./.github/workflows/deploy-ios.yml
+    secrets: inherit
+
+  build-windows:
+    uses: ./.github/workflows/deploy-windows.yml
+    secrets: inherit
+
+  create-release:
+    needs: [build-android, build-ios, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Android APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: artifacts/android
+
+      - name: Download Android App Bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: app-bundle
+          path: artifacts/android
+
+      - name: Download iOS IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: app-ipa
+          path: artifacts/ios
+
+      - name: Download Windows Installer
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: artifacts/windows
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/android/*.apk
+            artifacts/android/*.aab
+            artifacts/ios/*.ipa
+            artifacts/windows/*.exe
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

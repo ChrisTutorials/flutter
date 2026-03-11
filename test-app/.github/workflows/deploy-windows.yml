@@ -1,0 +1,92 @@
+name: Deploy Windows
+
+on:
+  push:
+    tags:
+      - 'windows-v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows (Release)
+        run: flutter build windows --release --build-number=${{ github.run_number }}
+
+      - name: Create installer using Inno Setup
+        run: |
+          # Download Inno Setup
+          Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "inno-setup.exe"
+          Start-Process -FilePath "inno-setup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\InnoSetup" -Wait
+
+          # Create installer script
+          @"
+          [Setup]
+          AppName=Test App
+          AppVersion=1.0.0.${{ github.run_number }}
+          DefaultDirName={commonpf}\TestApp
+          DefaultGroupName=Test App
+          OutputBaseFilename=TestApp-Setup
+          Compression=lzma
+          SolidCompression=yes
+          WizardStyle=modern
+
+          [Files]
+          Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+          [Icons]
+          Name: "{group}\Test App"; Filename: "{app}\test_app.exe"
+          Name: "{commondesktop}\Test App"; Filename: "{app}\test_app.exe"
+          "@ | Out-File -FilePath "installer.iss" -Encoding ASCII
+
+          # Build installer
+          & "C:\InnoSetup\ISCC.exe" installer.iss
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: TestApp-Setup.exe
+          retention-days: 30
+
+      - name: Upload MSIX package
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msix
+          path: build\windows\x64\runner\Release\*.msix
+          retention-days: 30
+        if: hashFiles('build/windows/x64/runner/Release/*.msix') != ''
+
+      - name: Deploy to Microsoft Store
+        if: github.event_name != 'pull_request'
+        env:
+          MICROSOFT_STORE_TENANT_ID: ${{ secrets.MICROSOFT_STORE_TENANT_ID }}
+          MICROSOFT_STORE_CLIENT_ID: ${{ secrets.MICROSOFT_STORE_CLIENT_ID }}
+          MICROSOFT_STORE_CLIENT_SECRET: ${{ secrets.MICROSOFT_STORE_CLIENT_SECRET }}
+        run: |
+          # Install Windows App Certification Kit
+          # This requires manual setup - you need to use the Microsoft Store submission API
+          # or use a third-party service like AppCenter
+          
+          # For now, we'll create a draft submission
+          Write-Host "Windows Store deployment requires manual API setup"
+          Write-Host "Please configure Microsoft Store Submission API credentials"
+          
+          # Alternative: Use AppCenter for distribution
+          # npm install -g appcenter-cli
+          # appcenter login --token ${{ secrets.APPCENTER_TOKEN }}
+          # appcenter distribute release --app <owner>/<app> --file TestApp-Setup.exe --group Internal

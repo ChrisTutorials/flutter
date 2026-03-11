@@ -1,0 +1,14 @@
+# Keystore configuration for production builds
+# Copy this file to key.properties and fill in your actual values
+# DO NOT commit this file to version control
+
+storePassword=<your-store-password>
+keyPassword=<your-key-password>
+keyAlias=upload
+storeFile=<path-to-keystore-file>
+
+# Example:
+# storePassword=MyStrongPassword123!
+# keyPassword=MyStrongPassword123!
+# keyAlias=upload
+# storeFile=/Users/yourname/upload-keystore.jks

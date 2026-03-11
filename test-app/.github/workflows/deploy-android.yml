@@ -1,0 +1,92 @@
+name: Deploy Android
+
+on:
+  push:
+    tags:
+      - 'android-v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Decode keystore
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Build APK (Release)
+        run: |
+          flutter build apk --release \
+            --build-number=${{ github.run_number }} \
+            --keystore=android/app/keystore.jks \
+            --store-password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            --key-password=${{ secrets.ANDROID_KEY_PASSWORD }} \
+            --key-alias=${{ secrets.ANDROID_KEY_ALIAS }}
+
+      - name: Build App Bundle (Release)
+        run: |
+          flutter build appbundle --release \
+            --build-number=${{ github.run_number }} \
+            --keystore=android/app/keystore.jks \
+            --store-password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            --key-password=${{ secrets.ANDROID_KEY_PASSWORD }} \
+            --key-alias=${{ secrets.ANDROID_KEY_ALIAS }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-bundle
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: |
+          cd android
+          gem install fastlane -NV
+
+      - name: Deploy to Google Play Store
+        if: github.event_name != 'pull_request'
+        env:
+          PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+        run: |
+          cd android
+          echo "$PLAY_STORE_CONFIG_JSON" | base64 --decode > play-store-credentials.json
+          fastlane supply \
+            --aab ../build/app/outputs/bundle/release/app-release.aab \
+            --track internal \
+            --json_key play-store-credentials.json \
+            --package_name com.example.test_app
