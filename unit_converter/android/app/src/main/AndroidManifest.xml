@@ -2,10 +2,16 @@
     <!-- Internet permission for AdMob -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Billing permission for in-app purchases -->
+    <uses-permission android:name="com.android.vending.BILLING"/>
+
+    <!-- Advertising ID declaration for Android 13+ -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
     <!-- AdMob app ID (configured in build.gradle.kts) -->
-    <!-- <meta-data
+    <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
-        android:value="${adMobAppId}"/> -->
+        android:value="${adMobAppId}"/>
 
     <application
         android:label="Unit Converter"
