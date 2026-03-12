@@ -385,15 +385,49 @@ platform :android do
   desc "Upload screenshots to Play Store"
   lane :upload_screenshots do
     UI.header("📸 Uploading Screenshots")
-    
+
     upload_screenshots_to_play_store(
       package_name: ENV['PACKAGE_NAME'] || 'com.moonbark-studio.unit-converter',
       skip_upload_metadata: true,
       skip_upload_images: true,
       android_screenshots_path: '../marketing/unit_converter/screenshots/store_screenshots'
     )
-    
+
     UI.success("✅ Screenshots uploaded successfully")
+  end
+
+  desc "Generate store screenshots using golden_screenshot"
+  lane :generate_screenshots do
+    UI.header("📸 Generating Store Screenshots")
+
+    # Navigate to Flutter project root
+    Dir.chdir('..') do
+      # Run screenshot generation script
+      if File.exist?('scripts/generate-store-screenshots.ps1')
+        sh('powershell -ExecutionPolicy Bypass -File scripts/generate-store-screenshots.ps1 -UpdateGolden -CopyToMarketing')
+      else
+        # Fallback to direct flutter test command
+        sh('flutter test test/golden_screenshots/store_screenshots_test.dart --update-goldens')
+
+        # Copy screenshots to marketing directory
+        sh('cp test/golden_screenshots/golden/*.png marketing/unit_converter/screenshots/store_screenshots/')
+      end
+    end
+
+    UI.success("✅ Screenshots generated successfully")
+  end
+
+  desc "Generate and upload screenshots to Play Store"
+  lane :update_screenshots do
+    UI.header("📸 Updating Store Screenshots")
+
+    # Generate screenshots
+    generate_screenshots
+
+    # Upload to Play Store
+    upload_screenshots
+
+    UI.success("✅ Screenshots generated and uploaded successfully")
   end
 
   desc "Upload metadata to Play Store"
