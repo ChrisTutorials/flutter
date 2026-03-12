@@ -67,3 +67,64 @@ Successfully applied the DRY (Don't Repeat Yourself) principle to the unit_conve
 - No breaking changes to the public API
 - All existing functionality works as before
 - The app structure remains the same from the user's perspective
+
+## Documentation DRY Improvements
+
+### New Shared Documentation
+
+Created [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md) to consolidate common currency information that was duplicated across multiple files:
+
+- Three-tier fallback system explanation
+- API integration details (Frankfurter API)
+- Search bar integration exclusion rationale
+- Architecture separation between currency and regular conversions
+- Debouncing strategy
+- Data persistence and caching
+- Error handling
+- Security and performance considerations
+
+### Documentation Cleanup
+
+1. **CURRENCY_CONVERTER_TESTS.md**
+   - Removed duplicated three-tier fallback system description
+   - Replaced with reference to CURRENCY_ARCHITECTURE.md
+   - Removed duplicated search bar integration section
+   - Replaced with reference to CURRENCY_ARCHITECTURE.md
+
+2. **CURRENCY_LAST_UPDATE_AND_API_SOURCE.md**
+   - Removed duplicated search bar integration section
+   - Replaced with reference to CURRENCY_ARCHITECTURE.md
+
+3. **CURRENCY_OFFLINE_WARNING_SYSTEM.md**
+   - Removed duplicated three-tier fallback system description
+   - Replaced with reference to CURRENCY_ARCHITECTURE.md
+
+### Inaccuracies Fixed
+
+1. **docs/README.md**
+   - Added Currency to supported conversion categories
+   - Updated project structure to include currency_service.dart and new utility files
+   - Added currency-related features to features list
+   - Updated documentation index to include currency docs
+
+2. **unit_converter/README.md**
+   - Updated from "7 conversion categories" to "8 conversion categories"
+   - Added Currency to features list with live rates info
+   - Added Currency section to supported conversions
+   - Updated Play Store description to include currency
+   - Added instant search feature
+   - Updated documentation links
+
+3. **API.md**
+   - Added CurrencyService documentation
+   - Added CurrencyQuote model documentation
+   - Added CurrenciesResult model documentation
+   - Added reference to CURRENCY_ARCHITECTURE.md for detailed info
+
+### Benefits of Documentation DRY
+
+- **Maintainability**: Common currency information only needs to be updated in one place
+- **Consistency**: All currency docs reference the same authoritative source
+- **Accuracy**: Reduced risk of inconsistencies when updating currency-related information
+- **Clarity**: Clear separation between architectural decisions and implementation-specific details
+- **Navigation**: Easy cross-referencing between related documentation

@@ -1,5 +1,7 @@
 # Android Play Store Deployment Checklist
 
+Canonical release workflow: see `docs/PLAY_STORE_RELEASE_RUNBOOK.md` for the current automation path for metadata, screenshots, validation, and Fastlane upload.
+
 ## ✅ Completed Steps
 - [x] App version configured (1.0.4+3)
 - [x] Production keystore setup

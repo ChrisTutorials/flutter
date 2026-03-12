@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../services/admob_service.dart';
-import '../services/premium_service.dart';
 import '../services/theme_service.dart';
 import '../services/unit_settings_service.dart';
 import '../services/widget_service.dart';
+import '../widgets/purchase_button.dart';
 
 /// Screen for app settings including theme and widget configuration.
 class SettingsScreen extends StatefulWidget {
@@ -22,26 +21,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isPremium = false;
   Set<String> _hiddenUnits = {};
   bool _isLoadingUnits = true;
 
   @override
   void initState() {
     super.initState();
-    _loadPremiumState();
     _loadHiddenUnits();
-  }
-
-  Future<void> _loadPremiumState() async {
-    final isPremium = await PremiumService.isPremium();
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _isPremium = isPremium;
-    });
   }
 
   Future<void> _loadHiddenUnits() async {
@@ -53,18 +39,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _hiddenUnits = hiddenUnits;
       _isLoadingUnits = false;
-    });
-  }
-
-  Future<void> _togglePremium(bool value) async {
-    await PremiumService.setPremium(value);
-    await AdMobService.setPremiumStatus(value);
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _isPremium = value;
     });
   }
 
@@ -206,21 +180,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Premium tier',
+              'Upgrades',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 10),
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Ad-free mode'),
-              subtitle: const Text(
-                'This local switch is the app-side gate for a future billing flow. When enabled, banner, interstitial, and app-open ads stay off.',
-              ),
-              value: _isPremium,
-              onChanged: _togglePremium,
-            ),
+            const PurchaseButton(),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -9,10 +10,14 @@ import '../services/favorite_conversions_service.dart';
 import '../services/recent_conversions_service.dart';
 import '../services/theme_service.dart';
 import '../services/widget_service.dart';
+import '../utils/home_search.dart';
 import '../utils/navigation_utils.dart';
+import '../utils/number_formatter.dart';
 import '../utils/platform_utils.dart';
 import '../utils/responsive_layout.dart';
+import '../utils/screenshot_scenario.dart';
 import '../widgets/category_card.dart';
+import '../widgets/bottom_banner_slot.dart';
 import '../widgets/favorite_conversion_card.dart';
 import '../widgets/preset_card.dart';
 import '../widgets/recent_conversion_card.dart';
@@ -25,8 +30,13 @@ import 'about_screen.dart';
 
 class CategorySelectionScreen extends StatefulWidget {
   final ThemeController themeController;
+  final ScreenshotScrollTarget initialScrollTarget;
 
-  const CategorySelectionScreen({super.key, required this.themeController});
+  const CategorySelectionScreen({
+    super.key,
+    required this.themeController,
+    this.initialScrollTarget = ScreenshotScrollTarget.none,
+  });
 
   @override
   State<CategorySelectionScreen> createState() =>
@@ -40,11 +50,14 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   final RecentConversionsService _recentConversionsService =
       RecentConversionsService();
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _historySectionGlobalKey = GlobalKey();
   List<FavoriteConversion> _favorites = [];
   List<RecentConversion> _recentConversions = [];
   List<ConversionCategory> _categories = ConversionData.categories;
   bool _widgetAvailable = false;
   String _searchQuery = '';
+  bool _didAttemptInitialScroll = false;
 
   @override
   void initState() {
@@ -83,7 +96,38 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       _widgetAvailable = results[3] as bool;
     });
 
+    _scheduleInitialScrollIfNeeded();
+
     _syncBannerState();
+  }
+
+  void _scheduleInitialScrollIfNeeded() {
+    if (_didAttemptInitialScroll ||
+        widget.initialScrollTarget != ScreenshotScrollTarget.history ||
+        _recentConversions.isEmpty) {
+      return;
+    }
+
+    _didAttemptInitialScroll = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final targetContext = _historySectionGlobalKey.currentContext;
+      if (!mounted || targetContext == null) {
+        return;
+      }
+
+      final viewportHeight = MediaQuery.sizeOf(context).height;
+      final alignment = viewportHeight >= 2400
+          ? 0.68
+          : viewportHeight >= 1800
+          ? 0.58
+          : 0.46;
+
+      Scrollable.ensureVisible(
+        targetContext,
+        alignment: alignment,
+        duration: const Duration(milliseconds: 1),
+      );
+    });
   }
 
   void _syncBannerState() {
@@ -160,63 +204,105 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     _bannerAd?.dispose();
     super.dispose();
   }
 
   bool get _isSearching => _searchQuery.trim().isNotEmpty;
 
+  HomeSearchInterpretation get _searchInterpretation =>
+      HomeSearch.analyze(_searchQuery, _categories);
+
   List<ConversionCategory> get _filteredCategories {
-    if (!_isSearching) {
+    final search = _searchInterpretation;
+    if (!search.isSearching) {
       return _categories;
     }
 
+    if (search.instantConversion != null) {
+      return _categories
+          .where(
+            (category) =>
+                category.name == search.instantConversion!.category.name,
+          )
+          .toList();
+    }
+
     return _categories.where((category) {
-      return _matchesSearch(category.name) ||
-          category.units.any(
-            (unit) => _matchesSearch('${unit.name} ${unit.symbol}'),
-          );
+      return HomeSearch.matchesTokens(
+        HomeSearch.buildCategorySearchText(category),
+        search.filterTokens,
+      );
     }).toList();
   }
 
   List<FavoriteConversion> get _filteredFavorites {
-    if (!_isSearching) {
+    final search = _searchInterpretation;
+    if (!search.isSearching) {
       return _favorites;
     }
 
     return _favorites.where((favorite) {
-      return _matchesSearch(
+      return HomeSearch.matchesTokens(
         '${favorite.title} ${favorite.categoryName} ${favorite.fromSymbol} ${favorite.toSymbol}',
+        search.filterTokens,
       );
     }).toList();
   }
 
   List<QuickPreset> get _filteredPresets {
-    if (!_isSearching) {
+    final search = _searchInterpretation;
+    if (!search.isSearching) {
       return kQuickPresets;
     }
 
     return kQuickPresets.where((preset) {
-      return _matchesSearch(
+      return HomeSearch.matchesTokens(
         '${preset.label} ${preset.subtitle} ${preset.categoryName ?? 'Currency'} ${preset.fromSymbol} ${preset.toSymbol}',
+        search.filterTokens,
       );
     }).toList();
   }
 
   List<RecentConversion> get _filteredRecentConversions {
-    if (!_isSearching) {
+    final search = _searchInterpretation;
+    if (!search.isSearching) {
       return _recentConversions;
     }
 
     return _recentConversions.where((conversion) {
-      return _matchesSearch(
-        '${conversion.category} ${conversion.fromUnit} ${conversion.toUnit}',
+      return HomeSearch.matchesTokens(
+        '${conversion.category} ${conversion.fromUnit} ${conversion.toUnit} ${conversion.inputValue} ${conversion.outputValue}',
+        search.filterTokens,
       );
     }).toList();
   }
 
-  bool _matchesSearch(String value) {
-    return value.toLowerCase().contains(_searchQuery.trim().toLowerCase());
+  Future<void> _openInstantConversion(InstantConversionMatch match) async {
+    await _openCategory(
+      match.category.name,
+      fromSymbol: match.fromUnit.symbol,
+      toSymbol: match.toUnit.symbol,
+      sampleValue: match.inputValue,
+      presetLabel:
+          '${NumberFormatter.formatPrecise(match.inputValue)} ${match.fromUnit.symbol} to ${match.toUnit.symbol}',
+    );
+  }
+
+  Future<void> _handleSearchSubmitted() async {
+    final instantConversion = _searchInterpretation.instantConversion;
+    if (instantConversion != null) {
+      await _openInstantConversion(instantConversion);
+      return;
+    }
+
+    if (_filteredCategories.length == 1 &&
+        _filteredFavorites.isEmpty &&
+        _filteredPresets.isEmpty &&
+        _filteredRecentConversions.isEmpty) {
+      await _openCategory(_filteredCategories.single.name);
+    }
   }
 
   /// Get responsive spacing for sections
@@ -227,10 +313,11 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final searchInterpretation = _searchInterpretation;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Unit Converter'),
+        title: const Text('All-in-One Unit Converter'),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline_rounded),
@@ -245,7 +332,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.tune_rounded),
+            icon: const Icon(Icons.extension_outlined),
             tooltip: 'Custom units',
             onPressed: () async {
               await Navigator.push(
@@ -258,7 +345,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.palette_outlined),
+            icon: const Icon(Icons.settings_outlined),
             tooltip: 'Themes and settings',
             onPressed: () {
               Navigator.push(
@@ -289,6 +376,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   final wide = contentWidth >= 980;
 
                   return ListView(
+                    controller: _scrollController,
                     padding: EdgeInsets.fromLTRB(
                       compact ? 12 : 20,
                       8,
@@ -302,29 +390,38 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildSearchCard(theme),
+                              _buildSearchCard(theme, searchInterpretation),
                               SizedBox(height: _getSectionSpacing(context)),
-                              if (wide && _filteredFavorites.isNotEmpty)
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              if (wide && _filteredFavorites.isNotEmpty && _filteredPresets.isNotEmpty)
+                                Column(
                                   children: [
-                                    Expanded(
-                                      child: _buildFavoritesSection(theme),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: _buildFavoritesSection(theme),
+                                        ),
+                                        SizedBox(width: _getSectionSpacing(context)),
+                                        Expanded(
+                                          child: _buildPresetsSection(theme),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: _getSectionSpacing(context)),
-                                    Expanded(
-                                      child: _buildPresetsSection(theme),
-                                    ),
+                                    SizedBox(height: _getSectionSpacing(context) * 1.2),
                                   ],
                                 )
                               else ...[
                                 if (_filteredFavorites.isNotEmpty)
                                   _buildFavoritesSection(theme),
-                                if (_filteredFavorites.isNotEmpty)
+                                if (_filteredFavorites.isNotEmpty &&
+                                    _filteredPresets.isNotEmpty)
                                   SizedBox(height: _getSectionSpacing(context)),
-                                _buildPresetsSection(theme),
+                                if (_filteredPresets.isNotEmpty)
+                                  _buildPresetsSection(theme),
+                                if (_filteredFavorites.isNotEmpty ||
+                                    _filteredPresets.isNotEmpty)
+                                  SizedBox(height: _getSectionSpacing(context) * 1.2),
                               ],
-                              SizedBox(height: _getSectionSpacing(context) * 1.2),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -388,37 +485,49 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                               ],
                               if (_filteredRecentConversions.isNotEmpty) ...[
                                 SizedBox(height: _getSectionSpacing(context) * 1.5),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Recent conversions',
-                                      style: theme.textTheme.titleLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
+                                KeyedSubtree(
+                                  key: const Key('home_history_section'),
+                                  child: Container(
+                                    key: _historySectionGlobalKey,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'History',
+                                            style: theme.textTheme.titleLarge
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
                                           ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        await _recentConversionsService
-                                            .clearRecentConversions();
-                                        _refreshHomeData();
-                                      },
-                                      child: const Text('Clear all'),
-                                    ),
-                                  ],
+                                          TextButton(
+                                            onPressed: () async {
+                                              await _recentConversionsService
+                                                  .clearRecentConversions();
+                                              _refreshHomeData();
+                                            },
+                                            child: const Text('Clear all'),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: _filteredRecentConversions.length,
+                                        itemBuilder: (context, index) {
+                                          return _buildRecentConversionCard(
+                                            _filteredRecentConversions[index],
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(height: 10),
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: _filteredRecentConversions.length,
-                                  itemBuilder: (context, index) {
-                                    return _buildRecentConversionCard(
-                                      _filteredRecentConversions[index],
-                                    );
-                                  },
                                 ),
                               ],
                             ],
@@ -431,14 +540,11 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               ),
             ),
           ),
-          if (_bannerAd != null)
-            Container(
-              alignment: Alignment.center,
-              width: _bannerAd!.size.width.toDouble(),
-              height: _bannerAd!.size.height.toDouble(),
-              margin: const EdgeInsets.only(bottom: 8),
-              child: AdWidget(ad: _bannerAd!),
-            ),
+          BottomBannerSlot(
+            bannerSize: _bannerAd?.size,
+            bannerChild: _bannerAd != null ? AdWidget(ad: _bannerAd!) : null,
+            showDebugPlaceholder: kDebugMode && PlatformUtils.isMobile,
+          ),
         ],
       ),
     );
@@ -516,7 +622,10 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     );
   }
 
-  Widget _buildSearchCard(ThemeData theme) {
+  Widget _buildSearchCard(
+    ThemeData theme,
+    HomeSearchInterpretation searchInterpretation,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -526,8 +635,9 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             TextField(
               key: const Key('home_search_field'),
               controller: _searchController,
+              textInputAction: TextInputAction.search,
               decoration: InputDecoration(
-                hintText: 'Search converters, presets, or custom units',
+                hintText: 'Search converters or type 60 g to lb',
                 prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _isSearching
                     ? IconButton(
@@ -550,19 +660,77 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   _searchQuery = value;
                 });
               },
+              onSubmitted: (_) => _handleSearchSubmitted(),
             ),
             const SizedBox(height: 10),
             Text(
-              _isSearching
-                  ? 'Results update across presets, favorites, recent conversions, and categories that contain matching units.'
-                  : 'Search by category, unit name, symbol, or a custom unit you created.',
+              searchInterpretation.instantConversion != null
+                  ? 'Instant conversion is ready. You can keep browsing matching tools or open the converter directly.'
+                  : _isSearching
+                  ? 'Search across converters, presets, favorites, and history, or type a conversion like 32 F to C.'
+                  : 'Search by category, unit name, symbol, or type a full conversion like 60 g to lb.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 height: 1.35,
               ),
             ),
+            if (searchInterpretation.instantConversion != null) ...[
+              const SizedBox(height: 14),
+              _buildInstantConversionCard(
+                theme,
+                searchInterpretation.instantConversion!,
+              ),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildInstantConversionCard(
+    ThemeData theme,
+    InstantConversionMatch match,
+  ) {
+    final formattedInput = NumberFormatter.formatPrecise(match.inputValue);
+    final formattedOutput = NumberFormatter.formatPrecise(match.outputValue);
+
+    return Container(
+      key: const Key('instant_conversion_card'),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Instant conversion',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '$formattedInput ${match.fromUnit.symbol} = $formattedOutput ${match.toUnit.symbol}',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            match.category.name,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          FilledButton(
+            key: const Key('open_instant_conversion_button'),
+            onPressed: () => _openInstantConversion(match),
+            child: const Text('Open converter'),
+          ),
+        ],
       ),
     );
   }
@@ -582,7 +750,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Try a category name, a unit like meter or psi, or one of your custom unit symbols.',
+              'Try a category name, a unit like meter or psi, or a direct conversion like 5 km to mi.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -649,6 +817,10 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   }
 
   Widget _buildPresetsSection(ThemeData theme) {
+    if (_filteredPresets.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

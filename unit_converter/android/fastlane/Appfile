@@ -2,7 +2,7 @@
 # This file contains app-specific configuration
 
 # The package name of your app
-package_name("com.moonbark-studio.unit-converter")
+package_name(ENV['PACKAGE_NAME'] || 'com.unitconverter.unit_converter')
 
 # For more information about the Appfile, see:
 #     https://docs.fastlane.tools/advanced/#appfile
@@ -15,7 +15,7 @@ package_name("com.moonbark-studio.unit-converter")
 # 4. Set the json_key_file path below or use environment variable
 
 # Option 1: Use a JSON key file (recommended for development)
-# json_key_file("path/to/your/google-play-service-account.json")
+json_key_file(ENV['GOOGLE_PLAY_JSON_KEY_FILE'] || 'fastlane/google-play-service-account.json')
 
 # Option 2: Use environment variable (recommended for CI/CD)
 # Set GOOGLE_PLAY_SERVICE_ACCOUNT_JSON environment variable with the JSON content

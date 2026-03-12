@@ -64,7 +64,7 @@ This document provides an overview of the test coverage for the Unit Converter a
 - Unit model creation and properties
 - ConversionCategory model creation
 - RecentConversion model including JSON serialization/deserialization
-- All conversion categories (7 categories with correct unit counts)
+- All conversion categories (8 categories including currency with correct unit counts)
 - Length conversions (meters, kilometers, centimeters, inches, feet, miles)
 - Weight conversions (kilograms, grams, pounds, ounces)
 - Temperature conversions (Celsius, Fahrenheit, Kelvin with special formulas)
@@ -117,7 +117,7 @@ This document provides an overview of the test coverage for the Unit Converter a
 
 **Coverage Details**:
 - Main screen UI rendering
-- All 7 categories displayed correctly
+- All 8 categories displayed correctly (including currency)
 - Category icons displayed correctly
 - App title and section headers
 
@@ -242,7 +242,7 @@ genhtml coverage/lcov.info -o coverage/html
 ## Test Coverage Areas
 
 ### Covered
-- ✅ All conversion logic (7 categories, 47 units)
+- ✅ All conversion logic (8 categories including currency, 47 units)
 - ✅ Temperature conversion formulas
 - ✅ Recent conversions service (CRUD operations)
 - ✅ Data persistence (SharedPreferences)

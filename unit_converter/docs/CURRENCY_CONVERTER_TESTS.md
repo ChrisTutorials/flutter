@@ -60,24 +60,7 @@ Tests that verify complete workflows:
 
 ## Offline Behavior
 
-### How It Works
-
-The currency converter implements a three-tier fallback system:
-
-#### Tier 1: Live API (Online)
-- Fetches live exchange rates from `https://api.frankfurter.dev/v1`
-- Returns real-time data
-- Caches results for offline use
-
-#### Tier 2: Cached Data (Offline)
-- If API fails, uses previously cached currencies
-- Allows users to see currency list without internet
-- Conversion still requires internet (no cached rates)
-
-#### Tier 3: Default Currencies (Offline, No Cache)
-- If no cache available, returns default currencies
-- Provides basic functionality even on first run offline
-- Defaults: USD, EUR, GBP, JPY, CAD, AUD
+The currency converter implements a robust three-tier fallback system. For detailed architecture information, see [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md).
 
 ### Warning System
 
@@ -231,6 +214,10 @@ flutter test --coverage
 - **Error Handling**: 100%
 - **Edge Cases**: 100%
 - **Integration Workflows**: 100%
+
+## Search Bar Integration
+
+Currency conversion does **not** work with the home screen search bar's instant conversion feature. For detailed explanation of why this is an intentional design decision, see [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md#search-bar-integration).
 
 ## Security Considerations
 

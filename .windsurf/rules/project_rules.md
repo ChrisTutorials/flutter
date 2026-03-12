@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Project Rules
 
 ## Non-Open Source Project
@@ -14,3 +17,9 @@ This project is **NOT** open source. Do not:
 - Avoid god classes
 - Prefer composition over inheritance
 - Ensure integration test coverage for cross-system integrations
+
+## Screenshot Workflow
+- **Do not use Android emulator for screenshots**
+- Use web browser or Playwright for all screenshot workflows
+- Web browser screenshots are faster and more efficient
+- See `.windsurf/skills/take-screenshots.md` for detailed instructions

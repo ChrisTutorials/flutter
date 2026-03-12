@@ -191,9 +191,46 @@ foreach ($dep in $requiredDeps) {
     }
 }
 
-# 9. Run Flutter tests
+# 9. Check purchase flow is production-safe
 Write-Host ""
-Write-Host "9. Running Flutter tests..." -ForegroundColor Cyan
+Write-Host "9. Checking purchase flow configuration..." -ForegroundColor Cyan
+$settingsScreenPath = "lib/screens/settings_screen.dart"
+$purchaseServicePath = "lib/services/purchase_service.dart"
+
+if (-not (Test-Path $settingsScreenPath)) {
+    Print-Error "Settings screen not found"
+    exit 1
+}
+
+if (-not (Test-Path $purchaseServicePath)) {
+    Print-Error "Purchase service not found"
+    exit 1
+}
+
+$settingsContent = Get-Content $settingsScreenPath -Raw
+$purchaseServiceContent = Get-Content $purchaseServicePath -Raw
+
+if (
+    $settingsContent -match [regex]::Escape('Ad-free mode (Development)') -or
+    $settingsContent -match [regex]::Escape('Use the purchase button above for real purchases.') -or
+    $settingsContent -match 'kDebugMode' -or
+    $settingsContent -match 'PremiumService\.setPremium' -or
+    $settingsContent -match 'AdMobService\.setPremiumStatus'
+) {
+    Print-Error "Production settings still expose a development-only premium entitlement path"
+    exit 1
+}
+
+if ($purchaseServiceContent -match '\btestPurchase\b|\btestRefund\b') {
+    Print-Error "PurchaseService still contains development-only entitlement helpers"
+    exit 1
+}
+
+Print-Success "Purchase flow is limited to the production IAP path"
+
+# 10. Run Flutter tests
+Write-Host ""
+Write-Host "10. Running Flutter tests..." -ForegroundColor Cyan
 try {
     flutter test
     Print-Success "Flutter tests passed"
@@ -202,9 +239,9 @@ try {
     exit 1
 }
 
-# 10. Check if release build is possible
+# 11. Check if release build is possible
 Write-Host ""
-Write-Host "10. Checking if release build is possible..." -ForegroundColor Cyan
+Write-Host "11. Checking if release build is possible..." -ForegroundColor Cyan
 flutter clean | Out-Null
 flutter pub get | Out-Null
 try {
@@ -216,9 +253,9 @@ try {
     exit 1
 }
 
-# 11. Check for common issues
+# 12. Check for common issues
 Write-Host ""
-Write-Host "11. Checking for common issues..." -ForegroundColor Cyan
+Write-Host "12. Checking for common issues..." -ForegroundColor Cyan
 
 # Check if AdMob app ID is set to test ID
 $buildGradleContent = Get-Content "android/app/build.gradle.kts" -Raw
@@ -231,6 +268,30 @@ if (-not (Test-Path "android/key.properties")) {
     Print-Warning "key.properties not found - app will be signed with debug keys (not secure for production)"
 } else {
     Print-Success "Production signing configuration found"
+}
+
+# Check if Google Cloud credentials are configured
+Write-Host ""
+Write-Host "13. Checking Google Cloud credentials..." -ForegroundColor Cyan
+if ($env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path $env:GOOGLE_APPLICATION_CREDENTIALS)) {
+    Print-Success "Google Cloud credentials configured: $env:GOOGLE_APPLICATION_CREDENTIALS"
+} else {
+    Print-Warning "GOOGLE_APPLICATION_CREDENTIALS not configured - Google Cloud services will not be available"
+    Write-Host "       See docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions" -ForegroundColor Gray
+}
+
+# Check if AdMob App ID is configured for release
+Write-Host ""
+Write-Host "14. Checking AdMob App ID for release..." -ForegroundColor Cyan
+if ($env:UNIT_CONVERTER_ADMOB_APP_ID) {
+    if ($env:UNIT_CONVERTER_ADMOB_APP_ID -match 'ca-app-pub-3940256099942544') {
+        Print-Error "UNIT_CONVERTER_ADMOB_APP_ID is set to test ID - must use production AdMob App ID"
+    } else {
+        Print-Success "AdMob App ID configured for release: $env:UNIT_CONVERTER_ADMOB_APP_ID"
+    }
+} else {
+    Print-Warning "UNIT_CONVERTER_ADMOB_APP_ID not configured - release builds will use test AdMob configuration"
+}    Write-Host "       See docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions" -ForegroundColor Gray
 }
 
 # Summary

@@ -121,6 +121,30 @@ void main() {
     expect(find.text('Pressure'), findsNothing);
   });
 
+  testWidgets('quick presets section is hidden when all presets are filtered out',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CategorySelectionScreen(themeController: ThemeController()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Quick presets should be visible initially
+    expect(find.text('Quick presets'), findsOneWidget);
+
+    // Search for something that doesn't match any presets
+    await tester.enterText(
+      find.byKey(const Key('home_search_field')),
+      'xyznonexistent',
+    );
+    await tester.pumpAndSettle();
+
+    // Quick presets section should be hidden when filtered
+    expect(find.text('Quick presets'), findsNothing);
+  });
+
   testWidgets('home shows favorites section when saved favorites exist', (
     tester,
   ) async {

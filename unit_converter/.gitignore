@@ -49,3 +49,6 @@ app.*.map.json
 *.keystore
 /key.properties
 android/key.properties
+android/fastlane/google-play-service-account.json
+android/fastlane/metadata/android/images/
+android/fastlane/metadata/android/*/images/

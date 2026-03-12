@@ -1,28 +1,101 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unit_converter/main.dart';
 import 'package:unit_converter/models/conversion.dart';
 import 'package:unit_converter/services/recent_conversions_service.dart';
+import 'package:unit_converter/services/theme_service.dart';
+import 'package:unit_converter/screens/category_selection_screen.dart';
+import 'package:unit_converter/screens/custom_units_screen.dart';
+import 'package:unit_converter/screens/settings_screen.dart';
+import 'package:unit_converter/utils/screenshot_scenario.dart';
 
 /// Smoke tests for early build failure detection
 /// These tests verify the app can build and run basic functionality
 /// They should run fast and fail early if there are fundamental issues
 void main() {
   group('Smoke Tests - Early Build Failure Detection', () {
-    setUpAll(() {
-      // Initialize SharedPreferences for all tests
+    setUp(() {
       SharedPreferences.setMockInitialValues({});
     });
 
+    Future<ThemeController> loadThemeController() async {
+      final themeController = ThemeController();
+      await themeController.load();
+      return themeController;
+    }
+
     group('App Initialization', () {
-      // Note: App initialization tests skipped due to layout overflow in CategoryCard
-      // This is a UI issue that should be fixed separately
-      // Smoke tests focus on build failures, not layout issues
+      testWidgets('UnitConverterApp should build the home screen shell', (
+        tester,
+      ) async {
+        final themeController = await loadThemeController();
+        final screenshotScenario = await ScreenshotScenario.prepare(
+          themeController,
+        );
+
+        await tester.pumpWidget(
+          UnitConverterApp(
+            themeController: themeController,
+            widgetAvailable: false,
+            screenshotScenario: screenshotScenario,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('All-in-One Unit Converter'), findsOneWidget);
+        expect(find.text('Quick presets'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
     });
 
     group('Screen Rendering Tests', () {
-      // Note: Screen rendering tests skipped due to layout overflow in CategoryCard
-      // This is a UI issue that should be fixed separately
-      // Smoke tests focus on build failures, not layout issues
+      testWidgets('home screen should render without layout exceptions', (
+        tester,
+      ) async {
+        final themeController = await loadThemeController();
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: CategorySelectionScreen(themeController: themeController),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Converters'), findsOneWidget);
+        expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('settings screen should render key sections', (tester) async {
+        final themeController = await loadThemeController();
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: SettingsScreen(
+              themeController: themeController,
+              widgetAvailable: true,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Appearance and extras'), findsOneWidget);
+        expect(find.text('Upgrades'), findsOneWidget);
+        expect(find.text('Unit visibility'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('custom units screen should render empty state', (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: CustomUnitsScreen()),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Custom Units'), findsOneWidget);
+        expect(find.text('No custom units yet'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
     });
 
     group('Data Model Validation', () {
@@ -179,9 +252,31 @@ void main() {
     });
 
     group('Widget Smoke Tests', () {
-      // Note: Widget tests are skipped due to layout overflow in CategoryCard
-      // This is a UI issue that should be fixed separately
-      // Smoke tests focus on build failures, not layout issues
+      testWidgets('home screen should render seeded history data', (tester) async {
+        final service = RecentConversionsService();
+        await service.saveConversion(
+          RecentConversion(
+            category: 'Length',
+            fromUnit: 'm',
+            toUnit: 'ft',
+            inputValue: 12,
+            outputValue: 39.37007874,
+            timestamp: DateTime(2026, 3, 12, 9, 0),
+          ),
+        );
+
+        final themeController = await loadThemeController();
+        await tester.pumpWidget(
+          MaterialApp(
+            home: CategorySelectionScreen(themeController: themeController),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('History'), findsOneWidget);
+        expect(find.text('Clear all'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
     });
 
     group('Asset and Resource Validation', () {

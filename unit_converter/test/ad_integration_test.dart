@@ -1,5 +1,6 @@
 ﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:unit_converter/services/admob_service.dart';
+import 'package:common_flutter_ads/ad_service.dart';
 
 /// Integration tests for ad rendering based on configuration
 /// 
@@ -215,25 +216,25 @@ void main() {
     group('Configuration Values', () {
       test('configuration values should match strategy document', () {
         // These values should match docs/AD_STRATEGY.md
-        expect(AdMobService.minConversionsBeforeFirstAd, 10,
+        expect(AdService.minConversionsBeforeFirstAd, 10,
             reason: 'First-time user protection: 10 conversions');
-        expect(AdMobService.conversionsBetweenAds, 20,
+        expect(AdService.conversionsBetweenAds, 20,
             reason: 'Frequency cap: 20 conversions between ads');
-        expect(AdMobService.minSecondsBetweenAds, 180,
+        expect(AdService.minSecondsBetweenAds, 180,
             reason: 'Time cap: 3 minutes (180 seconds)');
-        expect(AdMobService.maxInterstitialsPerSession, 3,
+        expect(AdService.maxInterstitialsPerSession, 3,
             reason: 'Session limit: 3 interstitials per session');
       });
 
       test('configuration should be review-friendly', () {
         // Verify the configuration is conservative enough to protect reviews
-        expect(AdMobService.minConversionsBeforeFirstAd, greaterThanOrEqualTo(10),
+        expect(AdService.minConversionsBeforeFirstAd, greaterThanOrEqualTo(10),
             reason: 'First-time protection should be at least 10 conversions');
-        expect(AdMobService.conversionsBetweenAds, greaterThanOrEqualTo(15),
+        expect(AdService.conversionsBetweenAds, greaterThanOrEqualTo(15),
             reason: 'Frequency cap should be at least 15 conversions');
-        expect(AdMobService.minSecondsBetweenAds, greaterThanOrEqualTo(120),
+        expect(AdService.minSecondsBetweenAds, greaterThanOrEqualTo(120),
             reason: 'Time cap should be at least 2 minutes');
-        expect(AdMobService.maxInterstitialsPerSession, lessThanOrEqualTo(5),
+        expect(AdService.maxInterstitialsPerSession, lessThanOrEqualTo(5),
             reason: 'Session limit should be no more than 5');
       });
     });

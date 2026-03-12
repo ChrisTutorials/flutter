@@ -46,6 +46,52 @@ ConversionCategory lengthCategory = ConversionCategory(
 
 ---
 
+### CurrencyQuote
+Represents a currency conversion result with rate information.
+
+#### Properties
+- `from` (String): Source currency code (e.g., 'USD')
+- `to` (String): Target currency code (e.g., 'EUR')
+- `amount` (double): Original amount
+- `convertedAmount` (double): Converted amount
+- `rate` (double): Exchange rate used (1 from = rate to)
+- `effectiveDate` (DateTime): Date the rate was published
+
+#### Example
+```dart
+CurrencyQuote quote = CurrencyQuote(
+  from: 'USD',
+  to: 'EUR',
+  amount: 100.0,
+  convertedAmount: 92.5,
+  rate: 0.925,
+  effectiveDate: DateTime.parse('2024-03-12'),
+);
+```
+
+---
+
+### CurrenciesResult
+Represents the result of fetching currencies with metadata.
+
+#### Properties
+- `currencies` (Map<String, String>): Currency code to name mapping
+- `isFromCache` (bool): Whether data came from cache
+- `isFromDefaults` (bool): Whether data came from defaults
+- `errorMessage` (String?): Error message if offline
+
+#### Example
+```dart
+CurrenciesResult result = CurrenciesResult(
+  currencies: {'USD': 'US Dollar', 'EUR': 'Euro'},
+  isFromCache: false,
+  isFromDefaults: false,
+  errorMessage: null,
+);
+```
+
+---
+
 ### RecentConversion
 Represents a saved conversion with timestamp.
 
@@ -76,6 +122,61 @@ RecentConversion conversion = RecentConversion(
 ---
 
 ## Services
+
+### CurrencyService
+Manages currency conversion using the Frankfurter API.
+
+#### Methods
+
+##### getCurrenciesWithMetadata()
+Returns available currencies with metadata about data source.
+
+```dart
+CurrenciesResult result = await currencyService.getCurrenciesWithMetadata();
+```
+
+**Returns**: `CurrenciesResult` containing:
+- `currencies` (Map<String, String>): Currency code to name mapping
+- `isFromCache` (bool): Whether data came from cache
+- `isFromDefaults` (bool): Whether data came from defaults
+- `errorMessage` (String?): Error message if offline
+
+##### getCurrencies()
+Returns list of available currencies.
+
+```dart
+Map<String, String> currencies = await currencyService.getCurrencies();
+```
+
+**Returns**: `Map<String, String>` mapping currency codes to names
+
+##### convert({required String from, required String to, required double amount})
+Converts an amount from one currency to another.
+
+```dart
+CurrencyQuote quote = await currencyService.convert(
+  from: 'USD',
+  to: 'EUR',
+  amount: 100.0,
+);
+```
+
+**Parameters**:
+- `from` (String): Source currency code (e.g., 'USD')
+- `to` (String): Target currency code (e.g., 'EUR')
+- `amount` (double): Amount to convert
+
+**Returns**: `CurrencyQuote` containing:
+- `from` (String): Source currency code
+- `to` (String): Target currency code
+- `amount` (double): Original amount
+- `convertedAmount` (double): Converted amount
+- `rate` (double): Exchange rate used
+- `effectiveDate` (DateTime): Date the rate was published
+
+**Note**: For detailed architecture information, see [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md).
+
+---
 
 ### RecentConversionsService
 Manages recent conversions using SharedPreferences.

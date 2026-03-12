@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unit_converter/services/theme_service.dart';
@@ -153,6 +154,56 @@ void main() {
       final theme = buildAppTheme(palette: AppPalette.sage, brightness: Brightness.light);
       
       expect(theme.inputDecorationTheme.border, isA<OutlineInputBorder>());
+    });
+
+    test('should use dark system bar icons in light theme', () {
+      final theme = buildAppTheme(
+        palette: AppPalette.sage,
+        brightness: Brightness.light,
+      );
+
+      expect(theme.appBarTheme.systemOverlayStyle, isNotNull);
+      expect(
+        theme.appBarTheme.systemOverlayStyle?.statusBarIconBrightness,
+        Brightness.dark,
+      );
+      expect(
+        theme.appBarTheme.systemOverlayStyle?.systemNavigationBarIconBrightness,
+        Brightness.dark,
+      );
+      expect(
+        theme.appBarTheme.systemOverlayStyle?.statusBarColor,
+        Colors.transparent,
+      );
+    });
+
+    test('should use light system bar icons in dark theme', () {
+      final theme = buildAppTheme(
+        palette: AppPalette.ocean,
+        brightness: Brightness.dark,
+      );
+
+      expect(theme.appBarTheme.systemOverlayStyle, isNotNull);
+      expect(
+        theme.appBarTheme.systemOverlayStyle?.statusBarIconBrightness,
+        Brightness.light,
+      );
+      expect(
+        theme.appBarTheme.systemOverlayStyle?.systemNavigationBarIconBrightness,
+        Brightness.light,
+      );
+    });
+
+    test('should keep popup and dialog surfaces readable', () {
+      final theme = buildAppTheme(
+        palette: AppPalette.terracotta,
+        brightness: Brightness.dark,
+      );
+
+      expect(theme.popupMenuTheme.color, isNotNull);
+      expect(theme.popupMenuTheme.textStyle?.color, theme.colorScheme.onSurface);
+      expect(theme.dialogTheme.backgroundColor, isNotNull);
+      expect(theme.bottomSheetTheme.backgroundColor, isNotNull);
     });
   });
 

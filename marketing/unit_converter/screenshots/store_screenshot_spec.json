@@ -1,0 +1,125 @@
+{
+  "name": "unit_converter_store_listing",
+  "rawDir": "./raw_store_screenshots",
+  "outputDir": "./store_screenshots",
+  "sizeLimitBytes": 8388608,
+  "defaults": {
+    "backgroundTolerance": 18,
+    "contentPadding": 24,
+    "maxBottomWhitespaceFraction": 0.04,
+    "maxTopWhitespaceFraction": 0.12
+  },
+  "images": [
+    {
+      "id": "phone_home",
+      "input": "phone_01_home_history_light_portrait_1080x1920.png",
+      "output": "phone_01_home_history_light_portrait_1080x1920.png",
+      "targetWidth": 1080,
+      "targetHeight": 1920,
+      "backgroundTolerance": 6,
+      "minCropScale": 0.88,
+      "focusY": 0.56
+    },
+    {
+      "id": "phone_conversion",
+      "input": "phone_02_conversion_light_portrait_1080x1920.png",
+      "output": "phone_02_conversion_light_portrait_1080x1920.png",
+      "targetWidth": 1080,
+      "targetHeight": 1920,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "phone_currency",
+      "input": "phone_03_currency_dark_portrait_1080x1920.png",
+      "output": "phone_03_currency_dark_portrait_1080x1920.png",
+      "targetWidth": 1080,
+      "targetHeight": 1920,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "phone_custom_units",
+      "input": "phone_04_custom_units_dark_portrait_1080x1920.png",
+      "output": "phone_04_custom_units_dark_portrait_1080x1920.png",
+      "targetWidth": 1080,
+      "targetHeight": 1920,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "tablet7_home",
+      "input": "tablet7_01_home_history_light_portrait_1200x1920.png",
+      "output": "tablet7_01_home_history_light_portrait_1200x1920.png",
+      "targetWidth": 1200,
+      "targetHeight": 1920,
+      "backgroundTolerance": 6,
+      "minCropScale": 0.86,
+      "focusY": 0.58
+    },
+    {
+      "id": "tablet7_conversion",
+      "input": "tablet7_02_conversion_light_portrait_1200x1920.png",
+      "output": "tablet7_02_conversion_light_portrait_1200x1920.png",
+      "targetWidth": 1200,
+      "targetHeight": 1920,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "tablet7_currency",
+      "input": "tablet7_03_currency_dark_portrait_1200x1920.png",
+      "output": "tablet7_03_currency_dark_portrait_1200x1920.png",
+      "targetWidth": 1200,
+      "targetHeight": 1920,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "tablet7_custom_units",
+      "input": "tablet7_04_custom_units_dark_portrait_1200x1920.png",
+      "output": "tablet7_04_custom_units_dark_portrait_1200x1920.png",
+      "targetWidth": 1200,
+      "targetHeight": 1920,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "tablet10_home",
+      "input": "tablet10_01_home_history_light_portrait_1600x2560.png",
+      "output": "tablet10_01_home_history_light_portrait_1600x2560.png",
+      "targetWidth": 1600,
+      "targetHeight": 2560,
+      "backgroundTolerance": 6,
+      "minCropScale": 0.82,
+      "focusY": 0.60
+    },
+    {
+      "id": "tablet10_conversion",
+      "input": "tablet10_02_conversion_light_portrait_1600x2560.png",
+      "output": "tablet10_02_conversion_light_portrait_1600x2560.png",
+      "targetWidth": 1600,
+      "targetHeight": 2560,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "tablet10_currency",
+      "input": "tablet10_03_currency_dark_portrait_1600x2560.png",
+      "output": "tablet10_03_currency_dark_portrait_1600x2560.png",
+      "targetWidth": 1600,
+      "targetHeight": 2560,
+      "minCropScale": 0.72,
+      "focusY": 0.34
+    },
+    {
+      "id": "tablet10_custom_units",
+      "input": "tablet10_04_custom_units_dark_portrait_1600x2560.png",
+      "output": "tablet10_04_custom_units_dark_portrait_1600x2560.png",
+      "targetWidth": 1600,
+      "targetHeight": 2560,
+      "minCropScale": 0.58,
+      "focusY": 0.42
+    }
+  ]
+}

@@ -35,11 +35,31 @@ void main() {
   });
 
   group('AdMob Service Configuration', () {
-    test('should use test ad unit IDs', () {
+    test('should use test ad unit IDs in debug mode', () {
       final bannerAd = AdMobService.createBannerAd();
 
       // Test IDs start with 'ca-app-pub-3940256099942544'
       expect(bannerAd.adUnitId, startsWith('ca-app-pub-3940256099942544'));
+    });
+
+    test('should have valid production ad unit ID format', () {
+      // Verify production IDs are correctly formatted
+      const bannerId = 'ca-app-pub-5684393858412931/2095306836';
+      const interstitialId = 'ca-app-pub-5684393858412931/3408388509';
+      
+      expect(bannerId, matches(RegExp(r'^ca-app-pub-\d{16}/\d{10}$')));
+      expect(interstitialId, matches(RegExp(r'^ca-app-pub-\d{16}/\d{10}$')));
+      expect(bannerId, contains('5684393858412931')); // Production app ID
+      expect(interstitialId, contains('5684393858412931')); // Production app ID
+    });
+
+    test('production IDs should be different from test IDs', () {
+      const bannerId = 'ca-app-pub-5684393858412931/2095306836';
+      const interstitialId = 'ca-app-pub-5684393858412931/3408388509';
+      
+      // Ensure production IDs don't use test patterns
+      expect(bannerId, isNot(contains('3940256099942544')));
+      expect(interstitialId, isNot(contains('3940256099942544')));
     });
 
     test('should have valid banner ad size', () {

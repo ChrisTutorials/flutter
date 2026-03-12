@@ -80,13 +80,25 @@ You must complete these sections in Google Play Console:
 
 ## 📸 How to Take Screenshots
 
-### Using Android Emulator
-1. Make sure the app is running on emulator
-2. Use these keyboard shortcuts:
-   - Windows: Ctrl + S (in Android Studio) or use emulator toolbar
-   - Or use: adb shell screencap -p > screenshot.png
-3. Take screenshots of key screens
-4. Edit to 1080x1920 or 1080x2400 pixels
+### Using Web Browser (Recommended - Fastest)
+1. Build and run the app in a browser:
+   ```bash
+   flutter run -d chrome
+   ```
+2. Use your browser's developer tools to take screenshots:
+   - Chrome: Press F12, then press Ctrl+Shift+P, type "screenshot", choose "Capture full size screenshot"
+   - Or use browser extensions like "GoFullPage" for full-page screenshots
+3. Take screenshots of key screens at 1080x1920 resolution
+4. No emulator setup required - much faster workflow
+
+### Using Playwright (Automated - Fastest for Multiple Screens)
+1. Install Playwright:
+   ```bash
+   npm install -D @playwright/test
+   ```
+2. Create a screenshot script that navigates through the app and captures screens
+3. Run the script to capture all screenshots in one go
+4. Much faster than manual emulator screenshots
 
 ### Screenshots to Capture:
 1. Home screen with categories and presets
@@ -95,6 +107,8 @@ You must complete these sections in Google Play Console:
 4. Theme settings screen
 5. Custom units screen
 6. Search functionality
+
+**Note**: Do not use Android emulator for screenshots - it's slower and more complex. Use web browser or Playwright for a faster, more efficient workflow.
 
 ## 🔧 Build Commands Reference
 

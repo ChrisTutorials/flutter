@@ -1,0 +1,9 @@
+FINDSTR: Cannot open C:\dev\flutter\unit_converter\build\app\outputs\bundle\release\manifest/AndroidManifest.xml
+jar : The term 'jar' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:186
++ ... ce 'app-release.aab', 'manifest/AndroidManifest.xml') } ; jar tf buil ...
++                                                               ~~~
+    + CategoryInfo          : ObjectNotFound: (jar:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 

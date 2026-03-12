@@ -16,7 +16,10 @@ void main() {
     });
 
     test('Version must be in correct format (x.y.z+buildNumber)', () {
-      final versionRegex = RegExp(r'^version:\s*\d+\.\d+\.\d+\+\d+');
+      final versionRegex = RegExp(
+        r'^version:\s*\d+\.\d+\.\d+\+\d+',
+        multiLine: true,
+      );
       expect(
         versionRegex.hasMatch(pubspecContent),
         isTrue,
@@ -181,7 +184,11 @@ void main() {
       final dependencies = ['google_mobile_ads', 'shared_preferences', 'intl'];
       
       for (final dep in dependencies) {
-        final depRegex = RegExp(r'$dep:\s*\^?\d+\.\d+\.\d+', caseSensitive: false);
+        final depRegex = RegExp(
+          '^\\s*${RegExp.escape(dep)}:\\s*\\^?\\d+\\.\\d+\\.\\d+',
+          caseSensitive: false,
+          multiLine: true,
+        );
         expect(
           depRegex.hasMatch(pubspecContent),
           isTrue,

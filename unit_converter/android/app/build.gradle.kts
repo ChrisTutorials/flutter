@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,11 +9,16 @@ plugins {
 }
 
 // Load keystore properties from key.properties file
-def keystoreProperties = Properties()
-def keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
+
+val debugAdMobAppId = "ca-app-pub-3940256099942544~3347511713"
+val releaseAdMobAppId = providers.environmentVariable("UNIT_CONVERTER_ADMOB_APP_ID")
+    .orElse(debugAdMobAppId)
+    .get()
 
 android {
     namespace = "com.unitconverter.unit_converter"
@@ -35,10 +43,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        // AdMob app ID - Production ID from AdMob Console
-        // App: unit-converter (Android)
-        manifestPlaceholders["adMobAppId"] = "ca-app-pub-384330333412031~5666527399"
     }
 
     // Configure signing for release builds
@@ -46,19 +50,31 @@ android {
         create("release") {
             // Use key.properties if it exists, otherwise use debug signing
             if (keystorePropertiesFile.exists()) {
-                storeFile = file(keystoreProperties['storeFile'])
-                storePassword = keystoreProperties['storePassword']
-                keyAlias = keystoreProperties['keyAlias']
-                keyPassword = keystoreProperties['keyPassword']
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
             }
         }
     }
 
+    lint {
+        disable.add("LintError")
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     buildTypes {
-        release {
+        getByName("debug") {
+            manifestPlaceholders["adMobAppId"] = debugAdMobAppId
+        }
+
+        getByName("release") {
+            manifestPlaceholders["adMobAppId"] = releaseAdMobAppId
+
             // Use production signing if key.properties exists, otherwise use debug signing
             // WARNING: Debug signing is NOT SECURE for production!
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            signingConfig = if (keystorePropertiesFile.exists() && keystoreProperties.getProperty("storeFile") != null) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")

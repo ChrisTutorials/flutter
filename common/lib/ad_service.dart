@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 /// Reusable ad service for Flutter applications
-/// 
+///
 /// Features:
 /// - Banner, Interstitial, and App Open ads
 /// - User experience protection with frequency capping
 /// - First-time user protection
 /// - Session limits
 /// - Time-based restrictions
-/// - Premium user support
-/// 
+/// - Premium user support (via Google Play Billing)
+///
 /// Usage:
-/// 1. Call AdService.initialize() when app starts
+/// 1. Call PurchaseService.initialize() and AdService.initialize() when app starts
 /// 2. Call AdService.resetSessionCounters() on app launch
 /// 3. Call AdService.trackConversion() after user completes actions
 /// 4. Call AdService.showAppOpenAdIfAvailable() in main screen initState
@@ -22,7 +23,7 @@ class AdService {
   static BannerAd? _bannerAd;
   static InterstitialAd? _interstitialAd;
   static AppOpenAd? _appOpenAd;
-  
+
   // Tracking variables
   static int _conversionCount = 0;
   static int _conversionsSinceLastAd = 0;
@@ -32,46 +33,71 @@ class AdService {
   static DateTime? _lastAppOpenAdTime;
   static bool _adsEnabled = true;
   static bool _isInitialized = false;
-  
+
   // Configuration constants - Override these in your app for customization
   static int minConversionsBeforeFirstAd = 10; // First-time user protection
   static int conversionsBetweenAds = 20; // Frequency cap
   static int minSecondsBetweenAds = 180; // 3 minutes minimum between ads
   static int maxInterstitialsPerSession = 3; // Session limit
-  
+
+  // Test flag - set to true to skip MobileAds initialization
+  static bool skipMobileAdsInitialization = false;
+
   // Ad unit IDs - Override these with your app-specific IDs
   static String bannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111'; // Test ID
   static String interstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; // Test ID
   static String appOpenAdUnitId = 'ca-app-pub-3940256099942544/3419835294'; // Test ID
-  
+
   // Storage keys
   static const String _conversionCountKey = 'ad_conversion_count';
   static const String _lastAppOpenAdDateKey = 'ad_last_app_open_date';
-  
+
   /// Premium status callback - Override this to check if user is premium
+  /// Note: By default, this checks PremiumService which integrates with Google Play Billing
   static Future<bool> Function()? isPremiumUser;
 
   /// Initialize Mobile Ads SDK and load persistent data
   static Future<void> initialize() async {
     if (_isInitialized) return;
-    
-    // Check premium status
-    if (isPremiumUser != null) {
-      _adsEnabled = !(await isPremiumUser!());
+
+    // Check premium status - check SharedPreferences directly by default
+    if (isPremiumUser == null) {
+      // Default to checking SharedPreferences directly
+      isPremiumUser = () async {
+        final prefs = await SharedPreferences.getInstance();
+        return prefs.getBool('has_purchased_ad_removal') ?? false;
+      };
     }
-    
+
+    _adsEnabled = !(await isPremiumUser!());
+
     if (!_adsEnabled) {
       _isInitialized = true;
       return;
     }
 
-    await MobileAds.instance.initialize();
+    if (!skipMobileAdsInitialization) {
+      try {
+        await MobileAds.instance.initialize();
+      } catch (e) {
+        // MobileAds may not be available in tests or certain environments
+        debugPrint('AdService: MobileAds initialization failed: $e');
+        // Continue anyway - ads may not work but app won't crash
+      }
+    }
+
     await _loadPersistentData();
-    
+
     // Preload ads
-    loadInterstitialAd();
-    loadAppOpenAd();
-    
+    if (!skipMobileAdsInitialization) {
+      try {
+        loadInterstitialAd();
+        loadAppOpenAd();
+      } catch (e) {
+        debugPrint('AdService: Failed to preload ads: $e');
+      }
+    }
+
     _isInitialized = true;
   }
   
@@ -298,20 +324,35 @@ class AdService {
     debugPrint('AdService: Session counters reset');
   }
 
+  /// Reset all state (for testing only)
+  static void resetForTesting() {
+    _conversionCount = 0;
+    _conversionsSinceLastAd = 0;
+    _sessionInterstitials = 0;
+    _interstitialLoadAttempts = 0;
+    _lastAdTime = null;
+    _lastAppOpenAdTime = null;
+    _adsEnabled = true;
+    _isInitialized = false;
+    _bannerAd = null;
+    _interstitialAd = null;
+    _appOpenAd = null;
+    isPremiumUser = null;
+    skipMobileAdsInitialization = true; // Skip MobileAds in tests
+    debugPrint('AdService: Reset for testing');
+  }
+
   /// Update premium status and reinitialize if needed
   static Future<void> updatePremiumStatus(bool isPremium) async {
-    _adsEnabled = !isPremium;
-    if (!_adsEnabled) {
-      dispose();
-      _bannerAd = null;
-      _interstitialAd = null;
-      _appOpenAd = null;
-      return;
-    }
-
-    if (_isInitialized) {
-      await initialize();
-    }
+    // Update the premium check function
+    isPremiumUser = () async => isPremium;
+    
+    // Dispose of any existing ads
+    dispose();
+    
+    // Force a re-initialization to update the adsEnabled flag based on the new premium status
+    _isInitialized = false;
+    await initialize();
   }
   
   /// Configure ad settings for your app

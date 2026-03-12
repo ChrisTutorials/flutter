@@ -10,6 +10,8 @@ Marketing materials are organized by app:
   - `graphics/` - App logos and feature graphics
   - `screenshots/` - Store and UI screenshots
   - `docs/` - Marketing documentation and copy
+- `tools/` - Reusable marketing automation tools shared across apps
+- `docs/` - Reusable marketing workflow documentation shared across apps
 
 ## Unit Converter Marketing
 
@@ -32,6 +34,17 @@ Marketing materials are organized by app:
 - `docs/STORE_SCREENSHOT_REQUIREMENTS.md` - Requirements for store screenshots
 - `docs/STORE_LISTING_CONTENT.md` - Content for store listings
 - `docs/COMPETITIVE_ANALYSIS.md` - Competitive analysis of unit converter apps
+
+## Shared Screenshot Workflow
+
+- `docs/STORE_SCREENSHOT_AUTOMATION.md` - Reusable screenshot workflow for apps in this workspace
+- `tools/store_screenshots/` - Shared crop, resize, and validation tooling for store screenshots
+
+Apps that use the shared screenshot workflow should keep:
+
+- raw captures in an app-owned `raw_store_screenshots/` folder
+- processed assets in an app-owned `store_screenshots/` folder
+- a per-app `store_screenshot_spec.json` beside those folders
 
 ## Usage
 

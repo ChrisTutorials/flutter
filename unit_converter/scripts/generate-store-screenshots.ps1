@@ -1,13 +1,11 @@
-# Automated Store Screenshot Generation Script
-# This script generates store screenshots using golden_screenshot and copies them to the marketing directory
+# Deterministic Store Screenshot Preparation Script
+# This script processes the committed raw screenshots, validates the shared
+# screenshot tooling, and synchronizes the Play Store metadata image folders.
 
 param(
     [Parameter(Mandatory=$false)]
-    [switch]$UpdateGolden = $false,
-    
-    [Parameter(Mandatory=$false)]
-    [switch]$CopyToMarketing = $true,
-    
+    [switch]$ValidateOnly = $false,
+
     [Parameter(Mandatory=$false)]
     [switch]$UploadToPlayStore = $false
 )
@@ -22,22 +20,81 @@ $Cyan = [ConsoleColor]::Cyan
 
 function Write-Success {
     param([string]$Message)
-    Write-Host "✅ $Message" -ForegroundColor $Green
+    Write-Host "[PASS] $Message" -ForegroundColor $Green
 }
 
 function Write-Error {
     param([string]$Message)
-    Write-Host "❌ $Message" -ForegroundColor $Red
+    Write-Host "[FAIL] $Message" -ForegroundColor $Red
 }
 
 function Write-Warning {
     param([string]$Message)
-    Write-Host "⚠️  $Message" -ForegroundColor $Yellow
+    Write-Host "[WARN] $Message" -ForegroundColor $Yellow
 }
 
 function Write-Info {
     param([string]$Message)
-    Write-Host "ℹ️  $Message" -ForegroundColor $Cyan
+    Write-Host "[INFO] $Message" -ForegroundColor $Cyan
+}
+
+function Invoke-Step {
+    param(
+        [string]$Command,
+        [string]$WorkingDirectory
+    )
+
+    Push-Location $WorkingDirectory
+    try {
+        Write-Info "Running: $Command"
+        Invoke-Expression $Command
+        if ($LASTEXITCODE -ne 0) {
+            throw "Command failed with exit code $LASTEXITCODE"
+        }
+    } finally {
+        Pop-Location
+    }
+}
+
+function Sync-PlayStoreMetadataImages {
+    param(
+        [string]$StoreScreenshotDir,
+        [string]$GraphicsDir,
+        [string]$MetadataRoot
+    )
+
+    $localeImagesDir = Join-Path $MetadataRoot "en-US\images"
+    $sharedImagesDir = Join-Path $MetadataRoot "images"
+    $phoneDir = Join-Path $localeImagesDir "phoneScreenshots"
+    $sevenInchDir = Join-Path $localeImagesDir "sevenInchScreenshots"
+    $tenInchDir = Join-Path $localeImagesDir "tenInchScreenshots"
+
+    foreach ($directory in @($phoneDir, $sevenInchDir, $tenInchDir, $sharedImagesDir)) {
+        New-Item -ItemType Directory -Path $directory -Force | Out-Null
+        Get-ChildItem -Path $directory -File -ErrorAction SilentlyContinue | Remove-Item -Force
+    }
+
+    $screenshots = Get-ChildItem -Path $StoreScreenshotDir -Filter "*.png" | Sort-Object Name
+    if ($screenshots.Count -eq 0) {
+        throw "No processed screenshots found in $StoreScreenshotDir"
+    }
+
+    foreach ($screenshot in $screenshots) {
+        $destinationDir = if ($screenshot.Name.StartsWith("phone_")) {
+            $phoneDir
+        } elseif ($screenshot.Name.StartsWith("tablet7_")) {
+            $sevenInchDir
+        } elseif ($screenshot.Name.StartsWith("tablet10_")) {
+            $tenInchDir
+        } else {
+            throw "Unrecognized screenshot naming pattern: $($screenshot.Name)"
+        }
+
+        Copy-Item -Path $screenshot.FullName -Destination (Join-Path $destinationDir $screenshot.Name) -Force
+    }
+
+    Copy-Item -Path (Join-Path $GraphicsDir "unit-converter-logo.png") -Destination (Join-Path $sharedImagesDir "icon.png") -Force
+    Copy-Item -Path (Join-Path $GraphicsDir "feature-graphic-unit-converter.png") -Destination (Join-Path $sharedImagesDir "featureGraphic.png") -Force
 }
 
 # Check if we're in the correct directory
@@ -46,70 +103,49 @@ if (-not (Test-Path "pubspec.yaml")) {
     exit 1
 }
 
-Write-Info "Starting automated store screenshot generation..."
+Write-Info "Starting deterministic store screenshot preparation..."
 Write-Host ""
 
-# Step 1: Check if golden_screenshot is installed
-Write-Info "Checking for golden_screenshot..."
-$pubspec = Get-Content "pubspec.yaml" -Raw
-if (-not ($pubspec -match "golden_screenshot")) {
-    Write-Error "golden_screenshot not found in pubspec.yaml"
-    Write-Info "Add it to dev_dependencies: golden_screenshot: ^2.0.0"
-    exit 1
-}
-Write-Success "golden_screenshot is installed"
-Write-Host ""
+$workspaceRoot = Resolve-Path ".."
+$toolRoot = Join-Path $workspaceRoot "marketing\tools\store_screenshots"
+$marketingRoot = Join-Path $workspaceRoot "marketing\unit_converter"
+$specPath = Join-Path $marketingRoot "screenshots\store_screenshot_spec.json"
+$processedScreenshotDir = Join-Path $marketingRoot "screenshots\store_screenshots"
+$rawScreenshotDir = Join-Path $marketingRoot "screenshots\raw_store_screenshots"
+$graphicsDir = Join-Path $marketingRoot "graphics"
+$metadataRoot = Join-Path $PWD "android\fastlane\metadata\android"
 
-# Step 2: Run screenshot tests
-Write-Info "Generating screenshots..."
-$testFile = "test/golden_screenshots/store_screenshots_test.dart"
-if (-not (Test-Path $testFile)) {
-    Write-Error "Screenshot test file not found: $testFile"
-    exit 1
-}
-
-$testCommand = "flutter test $testFile"
-if ($UpdateGolden) {
-    $testCommand += " --update-goldens"
-}
-
-Write-Info "Running: $testCommand"
-$result = Invoke-Expression $testCommand
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Screenshot generation failed"
-    exit 1
-}
-
-Write-Success "Screenshots generated successfully"
-Write-Host ""
-
-# Step 3: Copy screenshots to marketing directory
-if ($CopyToMarketing) {
-    Write-Info "Copying screenshots to marketing directory..."
-    
-    $goldenDir = "test/golden_screenshots/golden"
-    $marketingDir = "marketing/unit_converter/screenshots/store_screenshots"
-    
-    # Create marketing directory if it doesn't exist
-    if (-not (Test-Path $marketingDir)) {
-        New-Item -ItemType Directory -Path $marketingDir -Force | Out-Null
-        Write-Info "Created marketing directory: $marketingDir"
+foreach ($requiredPath in @($toolRoot, $specPath, $processedScreenshotDir, $rawScreenshotDir, $graphicsDir)) {
+    if (-not (Test-Path $requiredPath)) {
+        Write-Error "Required path not found: $requiredPath"
+        exit 1
     }
-    
-    # Copy screenshots
-    $screenshots = Get-ChildItem -Path $goldenDir -Filter "*.png"
-    $copiedCount = 0
-    
-    foreach ($screenshot in $screenshots) {
-        $destination = Join-Path $marketingDir $screenshot.Name
-        Copy-Item -Path $screenshot.FullName -Destination $destination -Force
-        $copiedCount++
-    }
-    
-    Write-Success "Copied $copiedCount screenshots to $marketingDir"
+}
+
+if ((Get-ChildItem -Path $rawScreenshotDir -Filter "*.png" | Measure-Object).Count -eq 0) {
+    Write-Error "No raw screenshots found in $rawScreenshotDir"
+    exit 1
+}
+
+$relativeSpecPath = "../../unit_converter/screenshots/store_screenshot_spec.json"
+
+if (-not $ValidateOnly) {
+    Write-Info "Processing raw screenshots with the shared tooling..."
+    Invoke-Step -Command "dart run bin/store_screenshots.dart process $relativeSpecPath" -WorkingDirectory $toolRoot
+    Write-Success "Processed store screenshots"
     Write-Host ""
 }
+
+Write-Info "Validating screenshot workflow outputs..."
+Invoke-Step -Command "dart run bin/store_screenshots.dart validate $relativeSpecPath" -WorkingDirectory $toolRoot
+Invoke-Step -Command "dart test" -WorkingDirectory $toolRoot
+Write-Success "Screenshot tooling validation passed"
+Write-Host ""
+
+Write-Info "Synchronizing Play Store metadata images..."
+Sync-PlayStoreMetadataImages -StoreScreenshotDir $processedScreenshotDir -GraphicsDir $graphicsDir -MetadataRoot $metadataRoot
+Write-Success "Synchronized Play Store metadata assets"
+Write-Host ""
 
 # Step 4: Upload to Play Store (optional)
 if ($UploadToPlayStore) {
@@ -140,23 +176,21 @@ if ($UploadToPlayStore) {
 
 # Summary
 Write-Host "=========================================" -ForegroundColor $Cyan
-Write-Success "Screenshot generation completed!"
+Write-Success "Screenshot preparation completed!"
 Write-Host "=========================================" -ForegroundColor $Cyan
 Write-Host ""
 
-if ($CopyToMarketing) {
-    Write-Info "Screenshots location: marketing/unit_converter/screenshots/store_screenshots"
-}
+Write-Info "Processed screenshots: ..\marketing\unit_converter\screenshots\store_screenshots"
+Write-Info "Fastlane metadata images: android\fastlane\metadata\android"
 
 Write-Info "Next steps:"
-Write-Host "1. Review the generated screenshots" -ForegroundColor White
-Write-Host "2. Make any necessary adjustments" -ForegroundColor White
-Write-Host "3. Commit the screenshots to version control" -ForegroundColor White
+Write-Host "1. Review the processed screenshots and metadata assets" -ForegroundColor White
+Write-Host "2. Run cd android; fastlane upload_metadata to push text metadata" -ForegroundColor White
 
 if ($UploadToPlayStore) {
-    Write-Host "4. Screenshots are already uploaded to Play Store" -ForegroundColor White
+    Write-Host "3. Screenshots are already uploaded to Play Store" -ForegroundColor White
 } else {
-    Write-Host "4. Upload to Play Store: cd android && fastlane upload_screenshots" -ForegroundColor White
+    Write-Host "3. Upload to Play Store: cd android; fastlane upload_screenshots" -ForegroundColor White
 }
 
 Write-Host ""

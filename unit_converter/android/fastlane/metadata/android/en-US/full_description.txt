@@ -1,0 +1,17 @@
+Unit Converter is a fast, polished measurement tool for everyday calculations, travel, study, and field work.
+
+Convert across core measurement categories, check live currency rates, save favorite conversions, and build your own custom units for workflows that standard apps do not cover.
+
+Key features:
+- Fast unit conversion across length, weight, temperature, volume, area, cooking, speed, data, pressure, and time
+- Live currency conversion with a dedicated currency screen
+- Custom units for your own formulas and reference measurements
+- Favorites and recent history for repeat conversions
+- Real-world comparison hints for selected conversions
+- Home screen widget support
+- Light and dark themes with multiple palettes
+- Offline-friendly experience for standard conversions
+
+Built for students, engineers, makers, travelers, cooks, and anyone who needs accurate conversions without friction.
+
+The app includes ads, with a one-time upgrade available to remove them.

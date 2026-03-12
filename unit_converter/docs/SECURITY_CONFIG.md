@@ -111,11 +111,11 @@ When building for production, pass the AdMob ad unit IDs as environment variable
 
 ```bash
 flutter build apk --release \
-  --dart-define=BANNER_AD_UNIT_ID=ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY \
-  --dart-define=INTERSTITIAL_AD_UNIT_ID=ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ
+  --dart-define=BANNER_AD_UNIT_ID=ca-app-pub-your-banner-ad-unit-id-here \
+  --dart-define=INTERSTITIAL_AD_UNIT_ID=ca-app-pub-your-interstitial-ad-unit-id-here
 ```
 
-Replace the placeholder IDs with your actual ad unit IDs from the AdMob Console.
+IMPORTANT: Replace the above placeholder IDs with your actual ad unit IDs from the AdMob Console.
 
 #### Option 2: Update in Code (For Development)
 

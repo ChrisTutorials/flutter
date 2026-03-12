@@ -1,16 +1,18 @@
 ﻿# Unit Converter
 
-A beautiful, ad-supported unit converter app built with Flutter. Convert between 7 different unit categories with offline support and recent conversion history.
+A beautiful, ad-supported unit converter app built with Flutter. Convert between 8 different unit categories including live currency conversion with offline support and recent conversion history.
 
 ## Features
 
-- 🔄 **7 Conversion Categories**: Length, Weight, Temperature, Volume, Area, Speed, Time
-- 💾 **Recent Conversions**: Automatically saves your last 10 conversions
+- 🔄 **8 Conversion Categories**: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+- � **Live Currency Rates**: Real-time exchange rates via Frankfurter API
+- � **Recent Conversions**: Automatically saves your last 10 conversions
 - 📋 **Copy Results**: One-tap copy to clipboard
 - 🎨 **Beautiful UI**: Material Design 3 with deep purple theme
 - 📱 **Ad-Supported**: Banner ads and interstitial ads for monetization
-- 🌐 **Offline Mode**: Works without internet connection
+- 🌐 **Offline Mode**: Works without internet connection (currency uses cached data)
 - ⚡ **Real-time Conversion**: Instant results as you type
+- 🔍 **Instant Search**: Type conversions like "60 g to lb" directly in search bar
 
 ## Supported Conversions
 
@@ -38,6 +40,12 @@ A beautiful, ad-supported unit converter app built with Flutter. Convert between
 
 ### Time
 - Millisecond, Second, Minute, Hour, Day, Week, Month, Year
+
+### Currency
+- 30+ currencies including USD, EUR, GBP, JPY, CAD, AUD, and more
+- Live exchange rates via Frankfurter API
+- Offline mode with cached data
+- Rate details and last update information
 
 ## Getting Started
 
@@ -73,6 +81,7 @@ For detailed documentation, see the [docs/](docs/) directory:
 - [DOCUMENTATION_CLAIMS_VALIDATION.md](docs/DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
 - [TEST_COVERAGE.md](docs/TEST_COVERAGE.md) - Test coverage report
 - [AD_STRATEGY.md](docs/AD_STRATEGY.md) - Comprehensive ad monetization strategy
+- [CURRENCY_ARCHITECTURE.md](docs/CURRENCY_ARCHITECTURE.md) - Currency converter architecture and design
 
 ## Building for Android
 
@@ -103,9 +112,15 @@ static const String _interstitialAdUnitId = 'ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZ
 
 ### Test Ad Units
 The app currently uses test ad units:
-- Banner: \ca-app-pub-3940256099942544/6300978111\
-- Interstitial: \ca-app-pub-3940256099942544/1033173712\
+- Banner: ca-app-pub-3940256099942544/6300978111
+- Interstitial: ca-app-pub-3940256099942544/1033173712
 
+To use your own ad unit IDs for production, replace the following in `lib/services/admob_service.dart`:
+```dart
+static const String _bannerAdUnitId = 'ca-app-pub-your-banner-ad-unit-id-here';
+static const String _interstitialAdUnitId = 'ca-app-pub-your-interstitial-ad-unit-id-here';
+```
+IMPORTANT: Replace the above placeholder IDs with your actual ad unit IDs from the AdMob Console.
 ## Publishing to Google Play Store
 
 ### 1. Prepare Your App
@@ -153,18 +168,20 @@ flutter build apk --release
 ## App Description for Play Store
 
 ### Short Description (80 chars)
-Convert between 7 unit categories instantly with this beautiful ad-supported app
+Convert between 8 categories including live currency rates instantly
 
 ### Full Description
 Unit Converter is the ultimate tool for quick and accurate unit conversions. Whether you're a student, professional, or just need to convert measurements, this app has you covered.
 
 **FEATURES:**
-✅ 7 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time
+✅ 8 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+✅ Live currency exchange rates via Frankfurter API
 ✅ Real-time conversion as you type
 ✅ Recent conversions history (last 10)
 ✅ Copy results to clipboard with one tap
 ✅ Beautiful Material Design 3 interface
-✅ Works offline - no internet required
+✅ Works offline - currency uses cached data
+✅ Instant search with conversion preview
 ✅ Swap units with a single tap
 ✅ View all available units in each category
 
@@ -176,6 +193,7 @@ Unit Converter is the ultimate tool for quick and accurate unit conversions. Whe
 📐 Area: mm², cm², m², ha, km², in², ft², ac
 🚀 Speed: m/s, km/h, mph, ft/s, kn
 ⏰ Time: ms, s, min, h, d, wk, mo, yr
+💰 Currency: USD, EUR, GBP, JPY, CAD, AUD, and 30+ more
 
 Perfect for:
 - Students doing homework

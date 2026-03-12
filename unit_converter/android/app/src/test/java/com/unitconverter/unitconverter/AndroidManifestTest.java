@@ -41,6 +41,19 @@ public class AndroidManifestTest {
             manifestContent.contains("<!-- <meta-data") && 
             manifestContent.contains("com.google.android.gms.ads.APPLICATION_ID")
         );
+
+        int applicationTagIndex = manifestContent.indexOf("<application");
+        int applicationEndIndex = manifestContent.indexOf("</application>");
+        assertTrue(
+            "AndroidManifest.xml must contain an application block",
+            applicationTagIndex >= 0 && applicationEndIndex > applicationTagIndex
+        );
+
+        String applicationBlock = manifestContent.substring(applicationTagIndex, applicationEndIndex);
+        assertTrue(
+            "AdMob Application ID meta-data must be declared inside the <application> block or the app will crash on startup.",
+            applicationBlock.contains("com.google.android.gms.ads.APPLICATION_ID")
+        );
     }
 
     /**

@@ -109,7 +109,7 @@ class _CustomUnitsScreenState extends State<CustomUnitsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.add_circle_outline,
+            Icons.extension_outlined,
             size: 64,
             color: theme.colorScheme.primary,
           ),

@@ -1,0 +1,1 @@
+Initial release! Convert between 7 unit categories: Length, Weight, Temperature, Volume, Area, Speed, Time. Features real-time conversion, recent history, clipboard copy, beautiful Material Design 3 UI, and works offline. Perfect for students, engineers, travelers, and anyone needing quick conversions!

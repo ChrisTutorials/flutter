@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:common_flutter_ads/ad_service.dart';
 import 'package:common_flutter_ads/ad_config.dart';
@@ -15,11 +16,23 @@ class AdMobService {
     
     // Set premium user check
     AdService.configure(
-      premiumCheck: () async => !(await PremiumService.isPremium()),
+      premiumCheck: PremiumService.isPremium,
     );
     
-    // Use test IDs for now - replace with production when ready
-    AdUnitIds.test.apply();
+    // Configure ad unit IDs based on build mode
+    if (kDebugMode) {
+      // Use test IDs in debug mode
+      AdUnitIds.test.apply();
+      debugPrint('AdMobService: Using test ad unit IDs');
+    } else {
+      // Use production IDs in release mode
+      AdUnitIds.configureProduction(
+        bannerId: 'ca-app-pub-5684393858412931/2095306836',
+        interstitialId: 'ca-app-pub-5684393858412931/3408388509',
+        appOpenId: 'ca-app-pub-5684393858412931/2095306836', // Using banner ID as placeholder
+      );
+      debugPrint('AdMobService: Using production ad unit IDs');
+    }
     
     // Initialize the common ad service
     await AdService.initialize();

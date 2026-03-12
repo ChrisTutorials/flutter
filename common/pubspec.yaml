@@ -1,7 +1,7 @@
 name: common_flutter_ads
 description: A collection of reusable, high-value utilities for Flutter applications including ad service, platform detection, and navigation helpers
 version: 1.0.0
-homepage: https://github.com/example/common_flutter_ads
+homepage: https://github.com/example/common_flutter_utilities
 
 environment:
   sdk: ^3.11.1
@@ -10,10 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+   
   # Core dependencies for ad service
   google_mobile_ads: ^7.0.0
   shared_preferences: ^2.3.2
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,26 @@
+Version 0.1 - Initial Release
+
+?? Welcome to Unit Converter - your ultimate tool for quick and accurate unit conversions!
+
+KEY FEATURES:
+• 7 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time
+• Real-time conversion as you type
+• Recent conversions history (last 10)
+• Copy results to clipboard with one tap
+• Beautiful Material Design 3 interface
+• Works offline - no internet required
+• Swap units with a single tap
+• View all available units in each category
+
+SUPPORTED CONVERSIONS:
+?? Length: mm, cm, m, km, in, ft, yd, mi
+?? Weight: mg, g, kg, t, oz, lb, st
+??? Temperature: °C, °F, K
+?? Volume: mL, L, m³, gal, qt, pt, cup, fl oz
+?? Area: mm², cm², m², ha, km², in², ft², ac
+?? Speed: m/s, km/h, mph, ft/s, kn
+? Time: ms, s, min, h, d, wk, mo, yr
+
+Perfect for students, engineers, travelers, cooks, and anyone who needs quick conversions!
+
+Download now and make conversions effortless!

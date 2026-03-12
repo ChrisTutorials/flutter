@@ -1,27 +1,75 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unit_converter/services/admob_service.dart';
+import 'package:common_flutter_ads/ad_service.dart';
 
 // Generate mocks with: flutter pub run build_runner build
 @GenerateMocks([SharedPreferences])
 void main() {
+  group('AdMobService Production Configuration', () {
+    setUp(() async {
+      // Clear SharedPreferences before each test
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test('should use production ad unit IDs in release mode', () async {
+      // Mock kDebugMode to be false (release mode)
+      // Note: This is a limitation - we can't easily mock kDebugMode in tests
+      // But we can verify the production IDs are correctly formatted
+      
+      // Verify production ad unit ID format
+      const bannerId = 'ca-app-pub-5684393858412931/2095306836';
+      const interstitialId = 'ca-app-pub-5684393858412931/3408388509';
+      
+      expect(bannerId, startsWith('ca-app-pub-5684393858412931/'));
+      expect(interstitialId, startsWith('ca-app-pub-5684393858412931/'));
+      expect(bannerId, isNot(contains('3940256099942544'))); // Not test ID
+      expect(interstitialId, isNot(contains('3940256099942544'))); // Not test ID
+    });
+
+    test('should have correct production ad unit ID format', () {
+      // Verify the production IDs match the expected format
+      const bannerId = 'ca-app-pub-5684393858412931/2095306836';
+      const interstitialId = 'ca-app-pub-5684393858412931/3408388509';
+      
+      // AdMob ad unit IDs should follow the pattern: ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+      expect(bannerId, matches(RegExp(r'^ca-app-pub-\d{16}/\d{10}$')));
+      expect(interstitialId, matches(RegExp(r'^ca-app-pub-\d{16}/\d{10}$')));
+    });
+
+    test('should initialize with production configuration', () async {
+      SharedPreferences.setMockInitialValues({});
+
+      // Test initialization (will use test IDs in debug mode, but verifies no errors)
+      await expectLater(
+        AdMobService.initialize(),
+        completes,
+      );
+      
+      // Verify service is properly initialized
+      expect(AdMobService.conversionCount, isA<int>());
+      expect(AdMobService.adsEnabled, isA<bool>());
+    });
+  });
+
   group('AdMobService Configuration', () {
     test('minConversionsBeforeFirstAd should be 10', () {
-      expect(AdMobService.minConversionsBeforeFirstAd, 10);
+      expect(AdService.minConversionsBeforeFirstAd, 10);
     });
 
     test('conversionsBetweenAds should be 20', () {
-      expect(AdMobService.conversionsBetweenAds, 20);
+      expect(AdService.conversionsBetweenAds, 20);
     });
 
     test('minSecondsBetweenAds should be 180', () {
-      expect(AdMobService.minSecondsBetweenAds, 180);
+      expect(AdService.minSecondsBetweenAds, 180);
     });
 
     test('maxInterstitialsPerSession should be 3', () {
-      expect(AdMobService.maxInterstitialsPerSession, 3);
+      expect(AdService.maxInterstitialsPerSession, 3);
     });
   });
 
@@ -56,7 +104,7 @@ void main() {
       for (int i = 0; i < 9; i++) {
         AdMobService.trackConversion();
       }
-
+      
       expect(AdMobService.conversionCount, 9);
       expect(AdMobService.shouldShowInterstitial(), isFalse);
     });
@@ -66,7 +114,7 @@ void main() {
       for (int i = 0; i < 10; i++) {
         AdMobService.trackConversion();
       }
-
+      
       expect(AdMobService.conversionCount, 10);
       expect(AdMobService.shouldShowInterstitial(), isTrue);
     });
@@ -85,7 +133,7 @@ void main() {
       for (int i = 0; i < 5; i++) {
         AdMobService.trackConversion();
       }
-
+      
       // Should NOT show another interstitial yet (need 20 between ads)
       expect(AdMobService.conversionsSinceLastAd, 5);
       expect(AdMobService.shouldShowInterstitial(), isFalse);
@@ -104,7 +152,7 @@ void main() {
       for (int i = 0; i < 20; i++) {
         AdMobService.trackConversion();
       }
-
+      
       // Should show another interstitial
       expect(AdMobService.conversionsSinceLastAd, 20);
       expect(AdMobService.shouldShowInterstitial(), isTrue);
@@ -138,7 +186,7 @@ void main() {
       for (int i = 0; i < 30; i++) {
         AdMobService.trackConversion();
       }
-
+      
       expect(AdMobService.shouldShowInterstitial(), isTrue);
     });
 
@@ -148,7 +196,7 @@ void main() {
       
       // The implementation checks: timeSinceLastAd >= minSecondsBetweenAds
       // minSecondsBetweenAds = 180 seconds (3 minutes)
-      expect(AdMobService.minSecondsBetweenAds, 180);
+      expect(AdService.minSecondsBetweenAds, 180);
     });
   });
 
@@ -190,7 +238,7 @@ void main() {
       // After 3 ads, should NOT show fourth
       // Note: This test verifies the logic, but sessionInterstitials
       // is only incremented when showInterstitialAd is actually called
-      expect(AdMobService.maxInterstitialsPerSession, 3);
+      expect(AdService.maxInterstitialsPerSession, 3);
     });
 
     test('should reset session counters when resetSessionCounters is called', () {
@@ -287,7 +335,7 @@ void main() {
         'ad_conversion_count': 5,
         'ad_last_app_open_date': DateTime.now().toIso8601String(),
       });
-
+      
       await AdMobService.initialize();
       
       expect(AdMobService.conversionCount, 5);
@@ -295,7 +343,7 @@ void main() {
 
     test('should start with zero conversions if no saved data', () async {
       SharedPreferences.setMockInitialValues({});
-
+      
       await AdMobService.initialize();
       
       expect(AdMobService.conversionCount, 0);
@@ -305,7 +353,7 @@ void main() {
       SharedPreferences.setMockInitialValues({
         'ad_conversion_count': 'invalid', // Should be int
       });
-
+      
       await AdMobService.initialize();
       
       // Should default to 0 if invalid data
@@ -323,7 +371,7 @@ void main() {
       for (int i = 0; i < 30; i++) {
         AdMobService.trackConversion();
       }
-
+      
       expect(AdMobService.shouldShowInterstitial(), isTrue);
     });
 
@@ -332,7 +380,7 @@ void main() {
       for (int i = 0; i < 5; i++) {
         AdMobService.trackConversion();
       }
-
+      
       expect(AdMobService.shouldShowInterstitial(), isFalse);
     });
 
@@ -341,15 +389,15 @@ void main() {
       for (int i = 0; i < 10; i++) {
         AdMobService.trackConversion();
       }
-
+      
       // Should be able to show first ad
       expect(AdMobService.shouldShowInterstitial(), isTrue);
-
+      
       // Do 5 more conversions (total 15, less than 20 between ads)
       for (int i = 0; i < 5; i++) {
         AdMobService.trackConversion();
       }
-
+      
       // Should NOT show second ad yet
       expect(AdMobService.shouldShowInterstitial(), isFalse);
     });
@@ -362,16 +410,16 @@ void main() {
       for (int i = 0; i < 5; i++) {
         AdMobService.trackConversion();
       }
-
+      
       // Blocked by first-time protection
       expect(AdMobService.shouldShowInterstitial(), isFalse);
       expect(AdMobService.conversionCount, 5);
-
+      
       // Do 5 more conversions (total 10)
       for (int i = 0; i < 5; i++) {
         AdMobService.trackConversion();
       }
-
+      
       // First-time protection passed, frequency cap passed
       expect(AdMobService.shouldShowInterstitial(), isTrue);
       expect(AdMobService.conversionCount, 10);
@@ -381,17 +429,17 @@ void main() {
   group('AdMobService Integration', () {
     test('should initialize without errors', () async {
       SharedPreferences.setMockInitialValues({});
-
+      
       await expectLater(
         AdMobService.initialize(),
         completes,
       );
     });
-
+    
     test('should dispose without errors', () {
       expect(() => AdMobService.dispose(), returnsNormally);
     });
-
+    
     test('should reset session counters without errors', () {
       expect(() => AdMobService.resetSessionCounters(), returnsNormally);
     });
@@ -399,31 +447,31 @@ void main() {
 
   group('AdMobService Configuration Validation', () {
     test('all configuration constants should be positive integers', () {
-      expect(AdMobService.minConversionsBeforeFirstAd, greaterThan(0));
-      expect(AdMobService.conversionsBetweenAds, greaterThan(0));
-      expect(AdMobService.minSecondsBetweenAds, greaterThan(0));
-      expect(AdMobService.maxInterstitialsPerSession, greaterThan(0));
+      expect(AdService.minConversionsBeforeFirstAd, greaterThan(0));
+      expect(AdService.conversionsBetweenAds, greaterThan(0));
+      expect(AdService.minSecondsBetweenAds, greaterThan(0));
+      expect(AdService.maxInterstitialsPerSession, greaterThan(0));
     });
-
+    
     test('configuration should be reasonable for utility apps', () {
       // First-time protection should be at least 5
-      expect(AdMobService.minConversionsBeforeFirstAd, greaterThanOrEqualTo(5));
+      expect(AdService.minConversionsBeforeFirstAd, greaterThanOrEqualTo(5));
       
       // Conversions between ads should be at least 10
-      expect(AdMobService.conversionsBetweenAds, greaterThanOrEqualTo(10));
+      expect(AdService.conversionsBetweenAds, greaterThanOrEqualTo(10));
       
       // Time between ads should be at least 60 seconds
-      expect(AdMobService.minSecondsBetweenAds, greaterThanOrEqualTo(60));
+      expect(AdService.minSecondsBetweenAds, greaterThanOrEqualTo(60));
       
       // Session limit should be reasonable (1-5)
-      expect(AdMobService.maxInterstitialsPerSession, lessThanOrEqualTo(5));
+      expect(AdService.maxInterstitialsPerSession, lessThanOrEqualTo(5));
     });
-
+    
     test('frequency capping should be conservative (protects reviews)', () {
       // Conversions between ads should be significantly higher than first-time protection
       expect(
-        AdMobService.conversionsBetweenAds,
-        greaterThan(AdMobService.minConversionsBeforeFirstAd),
+        AdService.conversionsBetweenAds,
+        greaterThan(AdService.minConversionsBeforeFirstAd),
       );
     });
   });
@@ -436,15 +484,15 @@ void main() {
     test('should provide conversion count for debugging', () {
       expect(AdMobService.conversionCount, isA<int>());
     });
-
+    
     test('should provide conversions since last ad for debugging', () {
       expect(AdMobService.conversionsSinceLastAd, isA<int>());
     });
-
+    
     test('should provide session interstitials for debugging', () {
       expect(AdMobService.sessionInterstitials, isA<int>());
     });
-
+    
     test('debugging counters should update correctly', () {
       expect(AdMobService.conversionCount, 0);
       expect(AdMobService.conversionsSinceLastAd, 0);

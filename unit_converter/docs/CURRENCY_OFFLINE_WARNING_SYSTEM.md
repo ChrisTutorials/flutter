@@ -116,27 +116,9 @@ Created comprehensive tests covering all scenarios:
 
 **Total: 23 comprehensive tests**
 
-### 4. Three-Tier Fallback System ✅
+### 4. Three-Tier Fallback System 
 
-The currency converter implements a robust three-tier fallback system:
-
-#### Tier 1: Live API (Online)
-- Fetches live exchange rates from `https://api.frankfurter.dev/v1`
-- Returns real-time data
-- Caches results for offline use
-- **No warning displayed**
-
-#### Tier 2: Cached Data (Offline)
-- If API fails, uses previously cached currencies
-- Allows users to see currency list without internet
-- Conversion still requires internet (no cached rates)
-- **Warning: "Using cached data - offline mode"**
-
-#### Tier 3: Default Currencies (Offline, No Cache)
-- If no cache available, returns default currencies
-- Provides basic functionality even on first run offline
-- Defaults: USD, EUR, GBP, JPY, CAD, AUD
-- **Warning: "Using default currencies - offline mode, no cache available"**
+The currency converter implements a robust three-tier fallback system. For detailed architecture information, see [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md#three-tier-fallback-system).
 
 ## User Experience
 

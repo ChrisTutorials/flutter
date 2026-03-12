@@ -266,6 +266,10 @@ flutter test --coverage
    - First run offline scenario with defaults and warning
    - Track last update timestamp across complete workflow
 
+## Search Bar Integration
+
+Currency conversion does **not** work with the home screen search bar's instant conversion feature. For detailed explanation of why this is an intentional design decision, see [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md#search-bar-integration).
+
 ## Benefits
 
 ### For Users

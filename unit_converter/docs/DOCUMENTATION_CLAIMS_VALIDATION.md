@@ -53,7 +53,7 @@ This test suite serves as a critical quality assurance measure:
 - Validates precision maintenance
 
 #### 6. 📱 Multi-Category Support
-- Tests all 7 categories:
+- Tests all 8 categories:
   - Length
   - Weight
   - Temperature
@@ -61,6 +61,7 @@ This test suite serves as a critical quality assurance measure:
   - Area
   - Speed
   - Time
+  - Currency
 - Confirms conversion works in each category
 
 #### 7. 🌡️ Signed Number Support

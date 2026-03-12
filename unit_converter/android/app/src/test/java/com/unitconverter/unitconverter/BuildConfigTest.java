@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.regex.Pattern;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -30,9 +32,51 @@ public class BuildConfigTest {
         
         assertTrue(
             "AdMob app ID must be configured in build.gradle.kts. " +
-            "Add: manifestPlaceholders[\"adMobAppId\"] = \"ca-app-pub-xxxxxxxxxx~xxxxxxxxxx\"",
-            buildGradleContent.contains("adMobAppId") ||
-            buildGradleContent.contains("adMobAppId")
+            "Add debug and release manifestPlaceholders entries for adMobAppId.",
+            buildGradleContent.contains("manifestPlaceholders[\"adMobAppId\"]")
+        );
+    }
+
+    /**
+     * Test 1b: Verify debug builds use Google's official AdMob test app ID
+     * Failure cause: emulator/debug startup can crash before Flutter boots
+     */
+    @Test
+    public void testDebugAdMobAppIdUsesOfficialTestId() throws IOException {
+        String buildGradleContent = readBuildGradle();
+
+        assertTrue(
+            "Debug builds should use Google's official test AdMob app ID so emulator startup does not depend on production credentials.",
+            buildGradleContent.contains("ca-app-pub-3940256099942544~3347511713")
+        );
+    }
+
+    /**
+     * Test 1c: Verify release builds source their AdMob app ID from environment configuration
+     * Failure cause: hardcoded malformed release IDs can crash the app on startup
+     */
+    @Test
+    public void testReleaseAdMobAppIdIsEnvironmentDriven() throws IOException {
+        String buildGradleContent = readBuildGradle();
+
+        assertTrue(
+            "Release AdMob app ID should come from UNIT_CONVERTER_ADMOB_APP_ID so invalid hardcoded values do not ship.",
+            buildGradleContent.contains("UNIT_CONVERTER_ADMOB_APP_ID")
+        );
+    }
+
+    /**
+     * Test 1d: Verify any hardcoded AdMob app IDs in build.gradle.kts use the expected format
+     * Failure cause: malformed app IDs crash the process during Mobile Ads initialization
+     */
+    @Test
+    public void testHardcodedAdMobAppIdsUseValidFormat() throws IOException {
+        String buildGradleContent = readBuildGradle();
+        Pattern appIdPattern = Pattern.compile("ca-app-pub-\\d{16}~\\d{10}");
+
+        assertTrue(
+            "Any hardcoded AdMob app IDs must match the expected ca-app-pub-<16 digits>~<10 digits> format.",
+            appIdPattern.matcher(buildGradleContent).find()
         );
     }
 

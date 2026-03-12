@@ -1,10 +1,70 @@
 # Fastfile for Flutter Android Deployment
 # This file defines automation lanes for building, validating, and deploying Flutter apps to Google Play Store
 
+require 'fileutils'
+
 # Opt out of anonymous analytics
 opt_out_usage
 
 default_platform(:android)
+
+def sync_play_store_metadata
+  android_root = File.expand_path('..', __dir__)
+  app_root = File.expand_path('..', android_root)
+  workspace_root = File.expand_path('..', app_root)
+
+  screenshots_dir = File.join(workspace_root, 'marketing', 'unit_converter', 'screenshots', 'store_screenshots')
+  graphics_dir = File.join(workspace_root, 'marketing', 'unit_converter', 'graphics')
+  metadata_root = File.join(android_root, 'fastlane', 'metadata', 'android')
+  locale_images_root = File.join(metadata_root, 'en-US', 'images')
+
+  unless Dir.exist?(screenshots_dir)
+    UI.user_error!("❌ Screenshot directory not found at #{screenshots_dir}")
+  end
+
+  unless Dir.exist?(graphics_dir)
+    UI.user_error!("❌ Graphics directory not found at #{graphics_dir}")
+  end
+
+  phone_dir = File.join(locale_images_root, 'phoneScreenshots')
+  seven_inch_dir = File.join(locale_images_root, 'sevenInchScreenshots')
+  ten_inch_dir = File.join(locale_images_root, 'tenInchScreenshots')
+  shared_images_dir = File.join(metadata_root, 'images')
+
+  [phone_dir, seven_inch_dir, ten_inch_dir, shared_images_dir].each do |directory|
+    FileUtils.mkdir_p(directory)
+    Dir.glob(File.join(directory, '*')).each do |entry|
+      FileUtils.rm_rf(entry)
+    end
+  end
+
+  Dir.glob(File.join(screenshots_dir, '*.png')).sort.each do |source|
+    file_name = File.basename(source)
+    destination_dir = case file_name
+                      when /^phone_/
+                        phone_dir
+                      when /^tablet7_/
+                        seven_inch_dir
+                      when /^tablet10_/
+                        ten_inch_dir
+                      else
+                        UI.user_error!("❌ Unrecognized screenshot naming pattern: #{file_name}")
+                      end
+
+    FileUtils.cp(source, File.join(destination_dir, file_name))
+  end
+
+  FileUtils.cp(
+    File.join(graphics_dir, 'unit-converter-logo.png'),
+    File.join(shared_images_dir, 'icon.png'),
+  )
+  FileUtils.cp(
+    File.join(graphics_dir, 'feature-graphic-unit-converter.png'),
+    File.join(shared_images_dir, 'featureGraphic.png'),
+  )
+
+  UI.success('✅ Play Store metadata assets synchronized')
+end
 
 platform :android do
   # =========================================================================
@@ -29,11 +89,14 @@ platform :android do
     
     # Check 5: Verify AdMob configuration
     validate_admob_config
+
+    # Check 6: Verify purchase flow is production-only
+    validate_purchase_release_configuration
     
-    # Check 6: Check for test IDs in production
+    # Check 7: Check for test IDs in production
     check_for_test_ids
     
-    # Check 7: Verify signing configuration
+    # Check 8: Verify signing configuration
     validate_signing_config
     
     UI.success("✅ All validation checks passed!")
@@ -54,6 +117,18 @@ platform :android do
     # Check AdMob Application ID
     unless manifest_content.include?('com.google.android.gms.ads.APPLICATION_ID')
       UI.user_error!("❌ AdMob Application ID meta-data is missing from AndroidManifest.xml")
+    end
+
+    application_start = manifest_content.index('<application')
+    application_end = manifest_content.index('</application>')
+
+    unless application_start && application_end && application_end > application_start
+      UI.user_error!("❌ AndroidManifest.xml is missing a valid <application> block")
+    end
+
+    application_block = manifest_content[application_start...application_end]
+    unless application_block.include?('com.google.android.gms.ads.APPLICATION_ID')
+      UI.user_error!("❌ AdMob Application ID must be declared inside the <application> block or the app will crash on startup")
     end
 
     # Check if AdMob Application ID is commented out
@@ -191,6 +266,22 @@ platform :android do
     unless build_gradle_content.include?('adMobAppId')
       UI.user_error!("❌ AdMob app ID not configured in build.gradle.kts")
     end
+
+    unless build_gradle_content.match?(/ca-app-pub-\d{16}~\d{10}/)
+      UI.user_error!("❌ No valid AdMob app ID format found in build.gradle.kts")
+    end
+
+    if ENV['UNIT_CONVERTER_ADMOB_APP_ID']
+      unless ENV['UNIT_CONVERTER_ADMOB_APP_ID'].match?(/^ca-app-pub-\d{16}~\d{10}$/)
+        UI.user_error!("❌ UNIT_CONVERTER_ADMOB_APP_ID is set but not in valid AdMob app ID format")
+      end
+
+      if ENV['UNIT_CONVERTER_ADMOB_APP_ID'].include?('3940256099942544')
+        UI.user_error!("❌ UNIT_CONVERTER_ADMOB_APP_ID is using Google's test app ID; configure the real production AdMob app ID before release")
+      end
+    else
+      UI.important("⚠️  UNIT_CONVERTER_ADMOB_APP_ID is not set. Debug builds are safe, but release builds will fall back to the Google test app ID and must not be published.")
+    end
     
     UI.success("✅ AdMob configuration is valid")
   end
@@ -198,16 +289,49 @@ platform :android do
   desc "Check for test IDs in production configuration"
   lane :check_for_test_ids do
     UI.message("🧪 Checking for test IDs...")
-    
-    build_gradle_path = File.join(Dir.pwd, '../app/build.gradle.kts')
-    build_gradle_content = File.read(build_gradle_path)
-    
-    # Check for AdMob test ID
-    if build_gradle_content.include?('ca-app-pub-3940256099942544')
-      UI.important("⚠️  Warning: AdMob app ID is set to test ID. This should be changed to production ID.")
+
+    if ENV['UNIT_CONVERTER_ADMOB_APP_ID']
+      if ENV['UNIT_CONVERTER_ADMOB_APP_ID'].include?('3940256099942544')
+        UI.important("⚠️  Warning: UNIT_CONVERTER_ADMOB_APP_ID is set to Google's test app ID. Configure the real production AdMob app ID before release.")
+      else
+        UI.success("✅ Release AdMob app ID is not using Google's test app ID")
+      end
     else
-      UI.success("✅ No test IDs found in production configuration")
+      UI.message("ℹ️  Debug builds intentionally use Google's test AdMob app ID. Set UNIT_CONVERTER_ADMOB_APP_ID before publishing a release build.")
     end
+  end
+
+  desc "Validate production purchase UI and runtime configuration"
+  lane :validate_purchase_release_configuration do
+    UI.message("🛍️ Checking production purchase configuration...")
+
+    settings_screen_path = File.join(Dir.pwd, '../../lib/screens/settings_screen.dart')
+    purchase_service_path = File.join(Dir.pwd, '../../lib/services/purchase_service.dart')
+
+    unless File.exist?(settings_screen_path)
+      UI.user_error!("❌ Settings screen not found at #{settings_screen_path}")
+    end
+
+    unless File.exist?(purchase_service_path)
+      UI.user_error!("❌ Purchase service not found at #{purchase_service_path}")
+    end
+
+    settings_content = File.read(settings_screen_path)
+    purchase_service_content = File.read(purchase_service_path)
+
+    if settings_content.include?('Ad-free mode (Development)') ||
+       settings_content.include?('Use the purchase button above for real purchases.') ||
+       settings_content.include?('kDebugMode') ||
+       settings_content.include?('PremiumService.setPremium') ||
+       settings_content.include?('AdMobService.setPremiumStatus')
+      UI.user_error!('❌ Production settings still contain a development-only premium entitlement path. Remove local premium toggles before release.')
+    end
+
+    if purchase_service_content.match?(/\btestPurchase\b|\btestRefund\b/)
+      UI.user_error!('❌ PurchaseService still contains test-only entitlement helpers. Keep runtime purchase code free of development shortcuts.')
+    end
+
+    UI.success('✅ Production purchase configuration is valid')
   end
 
   desc "Validate signing configuration"
@@ -386,35 +510,37 @@ platform :android do
   lane :upload_screenshots do
     UI.header("📸 Uploading Screenshots")
 
-    upload_screenshots_to_play_store(
-      package_name: ENV['PACKAGE_NAME'] || 'com.moonbark-studio.unit-converter',
+    sync_play_store_metadata
+
+    upload_to_play_store(
+      package_name: ENV['PACKAGE_NAME'] || 'com.unitconverter.unit_converter',
+      metadata_path: './fastlane/metadata/android',
+      skip_upload_apk: true,
+      skip_upload_aab: true,
       skip_upload_metadata: true,
       skip_upload_images: true,
-      android_screenshots_path: '../marketing/unit_converter/screenshots/store_screenshots'
+      skip_upload_screenshots: false
     )
 
     UI.success("✅ Screenshots uploaded successfully")
   end
 
-  desc "Generate store screenshots using golden_screenshot"
+  desc "Process deterministic store screenshots and sync Play metadata assets"
   lane :generate_screenshots do
-    UI.header("📸 Generating Store Screenshots")
+    UI.header("📸 Preparing Store Screenshots")
 
     # Navigate to Flutter project root
     Dir.chdir('..') do
-      # Run screenshot generation script
-      if File.exist?('scripts/generate-store-screenshots.ps1')
-        sh('powershell -ExecutionPolicy Bypass -File scripts/generate-store-screenshots.ps1 -UpdateGolden -CopyToMarketing')
-      else
-        # Fallback to direct flutter test command
-        sh('flutter test test/golden_screenshots/store_screenshots_test.dart --update-goldens')
-
-        # Copy screenshots to marketing directory
-        sh('cp test/golden_screenshots/golden/*.png marketing/unit_converter/screenshots/store_screenshots/')
+      unless File.exist?('scripts/generate-store-screenshots.ps1')
+        UI.user_error!('❌ Screenshot preparation script not found at scripts/generate-store-screenshots.ps1')
       end
+
+      sh('powershell -ExecutionPolicy Bypass -File scripts/generate-store-screenshots.ps1')
     end
 
-    UI.success("✅ Screenshots generated successfully")
+    sync_play_store_metadata
+
+    UI.success("✅ Screenshots prepared successfully")
   end
 
   desc "Generate and upload screenshots to Play Store"
@@ -433,16 +559,27 @@ platform :android do
   desc "Upload metadata to Play Store"
   lane :upload_metadata do
     UI.header("📝 Uploading Metadata")
+
+    sync_play_store_metadata
     
     upload_to_play_store(
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_screenshots: true,
       skip_upload_images: true,
-      metadata_path: '../marketing/unit_converter/metadata'
+      metadata_path: './fastlane/metadata/android'
     )
     
     UI.success("✅ Metadata uploaded successfully")
+  end
+
+  desc "Prepare Play Store metadata files and synced assets"
+  lane :prepare_play_store_metadata do
+    UI.header("🗂️ Preparing Play Store Metadata")
+
+    generate_screenshots
+
+    UI.success("✅ Play Store metadata is ready for upload")
   end
 
   # =========================================================================

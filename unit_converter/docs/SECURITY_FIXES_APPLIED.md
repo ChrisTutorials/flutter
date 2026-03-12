@@ -148,14 +148,15 @@ Comprehensive ProGuard rules for:
    - Ensure it's not committed to git
 
 3. **Configure Production AdMob IDs**
-   - Get production AdMob app ID and ad unit IDs from AdMob console
-   - Update `manifestPlaceholders["adMobAppId"]` in build.gradle.kts
-   - Or use environment variables when building:
-     ```bash
-     flutter build apk --release \
-       --dart-define=BANNER_AD_UNIT_ID=ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY \
-       --dart-define=INTERSTITIAL_AD_UNIT_ID=ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ
-     ```
+    - Get production AdMob app ID and ad unit IDs from AdMob console
+    - Update `manifestPlaceholders["adMobAppId"]` in build.gradle.kts
+    - Or use environment variables when building:
+      ```bash
+      flutter build apk --release \
+        --dart-define=BANNER_AD_UNIT_ID=ca-app-pub-your-banner-ad-unit-id-here \
+        --dart-define=INTERSTITIAL_AD_UNIT_ID=ca-app-pub-your-interstitial-ad-unit-id-here
+      ```
+    IMPORTANT: Replace the above placeholder IDs with your actual ad unit IDs from the AdMob Console.
 
 4. **Test Release Build**
    ```bash

@@ -33,6 +33,59 @@ Navigation helper utilities to reduce boilerplate code.
 - Fullscreen dialog support
 - Type-safe navigation
 
+### 4. Responsive Layout (`responsive_layout.dart`)
+Responsive design utilities for adaptive layouts.
+
+#### Features
+- Screen size detection (mobile, tablet, desktop)
+- Grid column calculations
+- Responsive padding and spacing
+- Card aspect ratio calculations
+- Font size scaling
+- Orientation detection
+
+### 5. Theme Controller (`theme_controller.dart`)
+Theme management with persistence support.
+
+#### Features
+- Theme mode switching (light, dark, system)
+- SharedPreferences persistence
+- Current theme detection
+- Simple, extensible API
+
+### 6. Premium Service (`premium_service.dart`)
+Premium status management for apps with paid features.
+
+#### Features
+- Premium status persistence
+- Simple async API
+- Enable/disable/clear operations
+- No external dependencies
+- Integration with Google Play Billing via PurchaseService
+
+### 7. Purchase Service (`purchase_service.dart`)
+Google Play Billing integration for one-time purchases.
+
+#### Features
+- One-time in-app purchases (non-consumable)
+- Purchase verification
+- Purchase restoration across devices
+- Automatic premium status updates
+- Integration with AdService for ad removal
+- Callbacks for purchase success/error/pending
+
+### 8. Number Formatter (`number_formatter.dart`)
+Number formatting utilities for display.
+
+#### Features
+- Compact notation (1K, 1M, 1B)
+- Precision formatting
+- Currency formatting
+- Percentage formatting
+- Thousand separators
+- Scientific notation
+- Truncation and rounding
+
 ## Quick Start
 
 ### 1. Add Dependency
@@ -216,10 +269,12 @@ AdUnitIds.test.apply();
 ### Production IDs
 ```dart
 AdUnitIds.configureProduction(
-  bannerId: 'ca-app-pub-xxxxxxxxxx/yyyyyyyyyy',
-  interstitialId: 'ca-app-pub-xxxxxxxxxx/yyyyyyyyyy',
-  appOpenId: 'ca-app-pub-xxxxxxxxxx/yyyyyyyyyy',
+  bannerId: 'ca-app-pub-your-banner-id-here',
+  interstitialId: 'ca-app-pub-your-interstitial-id-here',
+  appOpenId: 'ca-app-pub-your-app-open-id-here',
 );
+// IMPORTANT: Replace the above placeholder IDs with your actual AdMob ad unit IDs
+// from your AdMob account before building for release.
 ```
 
 ## Best Practices
@@ -258,6 +313,537 @@ print('Session interstitials: ${AdService.sessionInterstitials}');
 print('Conversions since last ad: ${AdService.conversionsSinceLastAd}');
 ```
 
+## Responsive Layout Usage
+
+### Basic Responsive Detection
+
+```dart
+import 'package:common_flutter_utilities/responsive_layout.dart';
+
+class MyWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ResponsiveLayout.isMobile(context)
+          ? MobileLayout()
+          : DesktopLayout(),
+    );
+  }
+}
+```
+
+### Grid Layouts
+
+```dart
+// Responsive grid
+Widget buildGrid(BuildContext context) {
+  final columns = ResponsiveLayout.getGridColumns(context);
+  final spacing = ResponsiveLayout.getCardSpacing(context);
+
+  return GridView.builder(
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: columns,
+      crossAxisSpacing: spacing,
+      mainAxisSpacing: spacing,
+    ),
+    itemBuilder: (context, index) => CardWidget(),
+  );
+}
+```
+
+### Responsive Padding and Spacing
+
+```dart
+// Responsive padding
+Widget buildContent(BuildContext context) {
+  return Padding(
+    padding: ResponsiveLayout.getCardPadding(context),
+    child: Column(
+      children: [
+        // Content with responsive section spacing
+        SizedBox(height: ResponsiveLayout.getSectionSpacing(context)),
+        Section1(),
+        SizedBox(height: ResponsiveLayout.getSectionSpacing(context)),
+        Section2(),
+      ],
+    ),
+  );
+}
+```
+
+### Card Aspect Ratio
+
+```dart
+// Responsive card with proper aspect ratio
+Widget buildCard(BuildContext context) {
+  final aspectRatio = ResponsiveLayout.getCardAspectRatio(
+    context,
+    targetHeight: 200,
+  );
+
+  return AspectRatio(
+    aspectRatio: aspectRatio,
+    child: Card(
+      child: Center(child: Text('Responsive Card')),
+    ),
+  );
+}
+```
+
+### Font Scaling
+
+```dart
+// Scale font size based on screen
+Text buildResponsiveText(BuildContext context) {
+  final multiplier = ResponsiveLayout.getFontSizeMultiplier(context);
+  return Text(
+    'Hello',
+    style: TextStyle(fontSize: 16 * multiplier),
+  );
+}
+```
+
+## Theme Controller Usage
+
+### Basic Theme Management
+
+```dart
+import 'package:common_flutter_utilities/theme_controller.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final themeController = ThemeController();
+  await themeController.load();
+
+  runApp(MyApp(themeController: themeController));
+}
+
+class MyApp extends StatelessWidget {
+  final ThemeController themeController;
+
+  const MyApp({super.key, required this.themeController});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: themeController,
+      builder: (context, child) {
+        return MaterialApp(
+          themeMode: themeController.themeMode,
+          theme: buildLightTheme(),
+          darkTheme: buildDarkTheme(),
+          home: HomeScreen(themeController: themeController),
+        );
+      },
+    );
+  }
+}
+```
+
+### Theme Switching
+
+```dart
+class SettingsScreen extends StatelessWidget {
+  final ThemeController themeController;
+
+  const SettingsScreen({super.key, required this.themeController});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        ListTile(
+          title: Text('Theme Mode'),
+          trailing: DropdownButton<AppThemeMode>(
+            value: themeController.themeModeSetting,
+            items: AppThemeMode.values.map((mode) {
+              return DropdownMenuItem(
+                value: mode,
+                child: Text(themeModeLabel(mode)),
+              );
+            }).toList(),
+            onChanged: (mode) {
+              if (mode != null) {
+                themeController.updateThemeMode(mode);
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+
+### Check Current Theme
+
+```dart
+Widget build(BuildContext context) {
+  final isDark = ThemeController().isDarkMode(context);
+
+  return Container(
+    color: isDark ? Colors.black : Colors.white,
+    child: Text(isDark ? 'Dark Mode' : 'Light Mode'),
+  );
+}
+```
+
+## Premium Service Usage
+
+### Basic Premium Check
+
+```dart
+import 'package:common_flutter_utilities/premium_service.dart';
+
+class PremiumFeatures extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: PremiumService.isPremium(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        final isPremium = snapshot.data ?? false;
+
+        if (isPremium) {
+          return PremiumContent();
+        } else {
+          return FreeContent();
+        }
+      },
+    );
+  }
+}
+```
+
+### Enable Premium
+
+```dart
+Future<void> purchasePremium() async {
+  // After successful purchase
+  await PremiumService.enablePremium();
+  // Refresh UI
+}
+```
+
+### Disable Premium
+
+```dart
+Future<void> cancelPremium() async {
+  // After cancellation
+  await PremiumService.disablePremium();
+  // Refresh UI
+}
+```
+
+### Integration with Ad Service
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Check premium status
+  final isPremium = await PremiumService.isPremium();
+
+  // Configure ad service with premium check
+  AdService.configure(
+    premiumCheck: () async {
+      return await PremiumService.isPremium();
+    },
+  );
+
+  await AdService.initialize();
+
+  runApp(MyApp());
+}
+```
+
+## Purchase Service Usage
+
+### Basic Setup
+
+```dart
+import 'package:common_flutter_ads/purchase_service.dart';
+import 'package:common_flutter_ads/premium_service.dart';
+import 'package:common_flutter_ads/ad_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize purchase service
+  await PurchaseService.initialize(
+    adRemovalProductId: 'ad_removal_one_time', // Must match Google Play Console
+    onPurchaseSuccess: (message) {
+      // Handle successful purchase
+      print('Purchase successful: $message');
+      // Refresh UI or show success message
+    },
+    onPurchaseError: (error) {
+      // Handle purchase error
+      print('Purchase error: $error');
+      // Show error message to user
+    },
+    onPurchasePending: () {
+      // Handle pending purchase (e.g., waiting for approval)
+      print('Purchase pending');
+    },
+  );
+
+  // Initialize ad service (will automatically check premium status)
+  await AdService.initialize();
+
+  runApp(MyApp());
+}
+```
+
+**IMPORTANT**: Before you can use in-app purchases, you must add the BILLING permission to your Android manifest. Add this to your `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Billing permission for in-app purchases -->
+    <uses-permission android:name="com.android.vending.BILLING"/>
+
+    <application>
+        <!-- Your application configuration -->
+    </application>
+</manifest>
+```
+
+Without this permission, Google Play Console will not allow you to create in-app products. See [GOOGLE_PLAY_CONSOLE_SETUP.md](docs/GOOGLE_PLAY_CONSOLE_SETUP.md) for complete setup instructions.
+
+### Check Purchase Status
+
+```dart
+// Check if user has purchased ad removal
+final hasPurchased = await PurchaseService.hasPurchasedAdRemoval();
+
+// Or use PremiumService
+final isPremium = await PremiumService.isPremium();
+```
+
+### Purchase Ad Removal
+
+```dart
+// Purchase ad removal
+final success = await PurchaseService.purchaseAdRemoval();
+
+// Or use PremiumService convenience method
+final success = await PremiumService.purchaseAdRemoval();
+
+if (success) {
+  // Purchase initiated successfully
+  // Wait for callback to confirm completion
+} else {
+  // Purchase failed to initiate
+}
+```
+
+### Restore Purchases
+
+```dart
+// Restore previous purchases (call on app startup)
+await PurchaseService.restorePurchases();
+
+// Or use PremiumService convenience method
+await PremiumService.restorePurchases();
+```
+
+### Get Product Price
+
+```dart
+// Get the price of ad removal
+final price = PurchaseService.adRemovalPrice;
+
+// Or use PremiumService convenience method
+final price = PremiumService.getAdRemovalPrice();
+
+// Check if ad removal is available
+final isAvailable = PurchaseService.isAdRemovalAvailable;
+```
+
+### Complete Purchase UI Example
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:common_flutter_ads/premium_service.dart';
+
+class AdRemovalPurchaseScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Remove Ads')),
+      body: FutureBuilder<bool>(
+        future: PremiumService.isPremium(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final isPremium = snapshot.data ?? false;
+
+          if (isPremium) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle, size: 80, color: Colors.green),
+                  SizedBox(height: 16),
+                  Text(
+                    'Ads Removed!',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text('Thank you for your support!'),
+                ],
+              ),
+            );
+          }
+
+          final price = PremiumService.getAdRemovalPrice();
+          final isAvailable = PremiumService.isAdRemovalAvailable();
+
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.block, size: 80, color: Colors.red),
+                  SizedBox(height: 16),
+                  Text(
+                    'Remove Ads Forever',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Enjoy an ad-free experience with a one-time purchase.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 24),
+                  if (isAvailable && price != null)
+                    ElevatedButton(
+                      onPressed: () async {
+                        final success = await PremiumService.purchaseAdRemoval();
+                        if (!success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Purchase failed')),
+                          );
+                        }
+                      },
+                      child: Text('Purchase for $price'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      ),
+                    )
+                  else if (!isAvailable)
+                    Text(
+                      'Purchases not available',
+                      style: TextStyle(color: Colors.grey),
+                    )
+                  else
+                    CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+
+### Integration with Ad Service
+
+The AdService automatically checks premium status via PremiumService. When a user purchases ad removal:
+
+1. The purchase is saved locally
+2. The AdService detects the premium status
+3. Ads are automatically disabled
+4. The premium status persists across app restarts
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize purchase service first
+  await PurchaseService.initialize(
+    adRemovalProductId: 'ad_removal_one_time',
+  );
+
+  // AdService will automatically check premium status
+  await AdService.initialize();
+
+  runApp(MyApp());
+}
+```
+
+### Google Play Console Setup
+
+To use the purchase service, you need to set up your in-app product in Google Play Console. See [GOOGLE_PLAY_CONSOLE_SETUP.md](docs/GOOGLE_PLAY_CONSOLE_SETUP.md) for detailed instructions.
+
+## Number Formatter Usage
+
+### Basic Formatting
+
+```dart
+import 'package:common_flutter_utilities/number_formatter.dart';
+
+void main() {
+  // Compact notation
+  print(NumberFormatter.formatCompact(1500)); // 1.5K
+  print(NumberFormatter.formatCompact(1500000)); // 1.5M
+
+  // Precise formatting
+  print(NumberFormatter.formatPrecise(42.0)); // 42
+  print(NumberFormatter.formatPrecise(42.123456789)); // 42.12345679
+
+  // Number formatting
+  print(NumberFormatter.formatNumber(100)); // 100
+  print(NumberFormatter.formatNumber(100.5)); // 100.5
+}
+```
+
+### Currency Formatting
+
+```dart
+// Currency
+print(NumberFormatter.formatCurrency(1234.56)); // $1,234.56
+print(NumberFormatter.formatCurrency(1234.56, currencyCode: 'EUR')); // €1,234.56
+print(NumberFormatter.formatCurrency(1234.56, symbol: '£')); // £1,234.56
+```
+
+### Percentage Formatting
+
+```dart
+// Percentage
+print(NumberFormatter.formatPercentage(0.1234)); // 12.3%
+print(NumberFormatter.formatPercentage(0.5)); // 50%
+```
+
+### Thousand Separators
+
+```dart
+// With thousands
+print(NumberFormatter.formatWithThousands(1000000)); // 1,000,000
+print(NumberFormatter.formatWithThousands(1234.56, decimalPlaces: 2)); // 1,234.56
+```
+
+### Truncation and Rounding
+
+```dart
+// Truncate (no rounding)
+print(NumberFormatter.truncate(3.14159, decimalPlaces: 2)); // 3.14
+
+// Round
+print(NumberFormatter.round(3.14159, decimalPlaces: 2)); // 3.14
+print(NumberFormatter.round(3.14999, decimalPlaces: 2)); // 3.15
+```
+
 ## Required Dependencies
 
 Make sure your app includes these dependencies:
@@ -266,6 +852,8 @@ Make sure your app includes these dependencies:
 dependencies:
   google_mobile_ads: ^7.0.0
   shared_preferences: ^2.3.2
+  intl: ^0.19.0
+  in_app_purchase: ^3.1.13
 ```
 
 ## Platform Utils Usage

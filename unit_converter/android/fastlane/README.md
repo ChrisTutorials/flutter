@@ -71,6 +71,14 @@ Validate AdMob configuration
 
 Check for test IDs in production configuration
 
+### android validate_purchase_release_configuration
+
+```sh
+[bundle exec] fastlane android validate_purchase_release_configuration
+```
+
+Validate production purchase UI and runtime configuration
+
 ### android validate_signing_config
 
 ```sh
@@ -135,6 +143,22 @@ Validate, build, and upload to production
 
 Upload screenshots to Play Store
 
+### android generate_screenshots
+
+```sh
+[bundle exec] fastlane android generate_screenshots
+```
+
+Process deterministic store screenshots and sync Play metadata assets
+
+### android update_screenshots
+
+```sh
+[bundle exec] fastlane android update_screenshots
+```
+
+Generate and upload screenshots to Play Store
+
 ### android upload_metadata
 
 ```sh
@@ -142,6 +166,14 @@ Upload screenshots to Play Store
 ```
 
 Upload metadata to Play Store
+
+### android prepare_play_store_metadata
+
+```sh
+[bundle exec] fastlane android prepare_play_store_metadata
+```
+
+Prepare Play Store metadata files and synced assets
 
 ### android test
 

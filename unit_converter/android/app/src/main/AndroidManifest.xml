@@ -8,17 +8,16 @@
     <!-- Advertising ID declaration for Android 13+ -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
-    <!-- AdMob app ID (configured in build.gradle.kts) -->
-    <meta-data
-        android:name="com.google.android.gms.ads.APPLICATION_ID"
-        android:value="${adMobAppId}"/>
-
     <application
-        android:label="Unit Converter"
+        android:label="All-in-One Unit Converter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="false"
         android:networkSecurityConfig="@xml/network_security_config">
+        <!-- AdMob app ID must live under application for MobileAdsInitProvider -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${adMobAppId}"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

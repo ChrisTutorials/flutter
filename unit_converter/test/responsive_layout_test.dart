@@ -161,7 +161,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Theme mode'), findsOneWidget);
-    expect(find.text('Premium tier'), findsOneWidget);
+    expect(find.text('Upgrades'), findsOneWidget);
 
     await pumpScreen(
       tester,
@@ -172,6 +172,23 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Theme mode'), findsOneWidget);
     expect(find.text('Cloud history sync'), findsOneWidget);
+  });
+
+  testWidgets('settings screen only exposes the production purchase flow', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      const Size(390, 844),
+      SettingsScreen(themeController: ThemeController(), widgetAvailable: true),
+    );
+
+    expect(tester.takeException(), isNull);
+
+    expect(find.text('Ad-free mode (Development)'), findsNothing);
+    expect(find.text('This local switch is for testing. Use the purchase button above for real purchases.'), findsNothing);
+    expect(find.text('Go Ad-Free'), findsOneWidget);
+    expect(find.text('Restore'), findsOneWidget);
   });
 
   group('ResponsiveLayout Utility Tests', () {
@@ -632,6 +649,40 @@ void main() {
 
         final cardSize = tester.getSize(find.byKey(const Key('currency_tool_card')));
         expect(cardSize.height, lessThan(130));
+      });
+
+      testWidgets('quick presets section is hidden when filtered on mobile', (tester) async {
+        await pumpHome(tester, const Size(390, 844));
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Quick presets'), findsOneWidget);
+
+        // Search for something that doesn't match any presets
+        await tester.enterText(
+          find.byKey(const Key('home_search_field')),
+          'xyznonexistent',
+        );
+        await tester.pumpAndSettle();
+
+        // Quick presets section should be hidden when filtered
+        expect(find.text('Quick presets'), findsNothing);
+      });
+
+      testWidgets('quick presets section is hidden when filtered on desktop', (tester) async {
+        await pumpHome(tester, const Size(1440, 900));
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Quick presets'), findsOneWidget);
+
+        // Search for something that doesn't match any presets
+        await tester.enterText(
+          find.byKey(const Key('home_search_field')),
+          'xyznonexistent',
+        );
+        await tester.pumpAndSettle();
+
+        // Quick presets section should be hidden when filtered
+        expect(find.text('Quick presets'), findsNothing);
       });
     });
   });

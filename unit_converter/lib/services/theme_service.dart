@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AppPalette { sage, terracotta, ocean }
@@ -44,24 +45,24 @@ class ThemeController extends ChangeNotifier {
   }
 
   Future<void> updatePalette(AppPalette palette) async {
-    if (_palette == palette) {
-      return;
-    }
+    final changed = _palette != palette;
 
-    _palette = palette;
-    notifyListeners();
+    if (changed) {
+      _palette = palette;
+      notifyListeners();
+    }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_paletteKey, palette.index);
   }
 
   Future<void> updateThemeMode(AppThemeMode mode) async {
-    if (_themeMode == mode) {
-      return;
-    }
+    final changed = _themeMode != mode;
 
-    _themeMode = mode;
-    notifyListeners();
+    if (changed) {
+      _themeMode = mode;
+      notifyListeners();
+    }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeModeKey, mode.index);
@@ -102,16 +103,39 @@ ThemeData buildAppTheme({
             fontFamily: 'Georgia',
           );
 
+  final baseSurface = brightness == Brightness.dark
+      ? colorScheme.surfaceContainerHigh
+      : Colors.white;
+  final overlayStyle = brightness == Brightness.dark
+      ? SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: surface,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarDividerColor: surface,
+        )
+      : SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: surface,
+          systemNavigationBarIconBrightness: Brightness.dark,
+          systemNavigationBarDividerColor: surface,
+        );
+
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
     scaffoldBackgroundColor: surface,
     textTheme: textTheme,
+    canvasColor: baseSurface,
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
       foregroundColor: colorScheme.onSurface,
       elevation: 0,
       scrolledUnderElevation: 0,
+      systemOverlayStyle: overlayStyle,
       titleTextStyle: textTheme.titleLarge?.copyWith(
         fontWeight: FontWeight.w700,
         color: colorScheme.onSurface,
@@ -136,6 +160,32 @@ ThemeData buildAppTheme({
       backgroundColor: colorScheme.secondaryContainer.withValues(alpha: 0.65),
       selectedColor: colorScheme.primaryContainer,
       labelStyle: TextStyle(color: colorScheme.onSecondaryContainer),
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: baseSurface,
+      textStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: baseSurface,
+      surfaceTintColor: Colors.transparent,
+      titleTextStyle: textTheme.titleLarge?.copyWith(
+        color: colorScheme.onSurface,
+        fontWeight: FontWeight.w700,
+      ),
+      contentTextStyle: textTheme.bodyMedium?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: baseSurface,
+      surfaceTintColor: Colors.transparent,
+      modalBackgroundColor: baseSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

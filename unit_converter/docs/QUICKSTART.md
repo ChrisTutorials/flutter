@@ -32,12 +32,13 @@ The APK will be at: \uild/app/outputs/flutter-apk/app-release.apk\
 ## Step 3: Test the APK
 
 1. Transfer the APK to your Android device
-2. Install it (you may need to enable \"Install from Unknown Sources\")
+2. Install it (you may need to enable "Install from Unknown Sources")
 3. Test all features:
-   - All 7 conversion categories
+   - All 8 conversion categories (including currency)
    - Recent conversions
    - Copy to clipboard
    - Ad display (test ads should show)
+   - Currency offline mode
 
 ## Step 4: Prepare for Play Store
 
