@@ -56,11 +56,14 @@ For a single command flow, run:
 
 ## Credential Requirements
 
+- `c:\dev\flutter\unit_converter\.env` is the source of truth for release configuration on local development machines.
 - `android/key.properties` for release signing.
 - `android/fastlane/google-play-service-account.json` or `GOOGLE_PLAY_JSON_KEY_FILE` for Play Console upload.
 - `GOOGLE_APPLICATION_CREDENTIALS` for Google Cloud services (see [Google Cloud Credentials Configuration](GOOGLE_CLOUD_CREDENTIALS.md)).
 - `UNIT_CONVERTER_ADMOB_APP_ID` for production AdMob configuration (see [Release Credentials Setup Guide](RELEASE_CREDENTIALS_SETUP.md)).
 - `PACKAGE_NAME` only if overriding the default application ID.
+
+Gradle, Fastlane, and the PowerShell release scripts load values from `.env` first. If a key is not present there, Fastlane and the PowerShell scripts then fall back to process, user, and machine environment scopes on Windows.
 
 ## First-Time Setup
 

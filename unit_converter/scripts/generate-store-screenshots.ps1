@@ -11,6 +11,36 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$TestTimeout = "3s"
+
+function Load-DotEnv {
+    param([Parameter(Mandatory=$true)][string]$Path)
+
+    if (-not (Test-Path $Path)) {
+        return
+    }
+
+    foreach ($line in Get-Content $Path) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $separatorIndex = $trimmed.IndexOf('=')
+        if ($separatorIndex -lt 1) {
+            continue
+        }
+
+        $name = $trimmed.Substring(0, $separatorIndex).Trim()
+        $value = $trimmed.Substring($separatorIndex + 1).Trim()
+
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+
+        Set-Item -Path "Env:$name" -Value $value
+    }
+}
 
 # Colors
 $Green = [ConsoleColor]::Green
@@ -103,6 +133,8 @@ if (-not (Test-Path "pubspec.yaml")) {
     exit 1
 }
 
+Load-DotEnv -Path (Join-Path (Resolve-Path '.') '.env')
+
 Write-Info "Starting deterministic store screenshot preparation..."
 Write-Host ""
 
@@ -138,7 +170,7 @@ if (-not $ValidateOnly) {
 
 Write-Info "Validating screenshot workflow outputs..."
 Invoke-Step -Command "dart run bin/store_screenshots.dart validate $relativeSpecPath" -WorkingDirectory $toolRoot
-Invoke-Step -Command "dart test" -WorkingDirectory $toolRoot
+Invoke-Step -Command "dart test --timeout $TestTimeout" -WorkingDirectory $toolRoot
 Write-Success "Screenshot tooling validation passed"
 Write-Host ""
 
@@ -164,6 +196,9 @@ if ($UploadToPlayStore) {
     Push-Location android
     try {
         fastlane upload_screenshots
+        if ($LASTEXITCODE -ne 0) {
+            throw "Fastlane upload_screenshots failed with exit code $LASTEXITCODE"
+        }
         Write-Success "Screenshots uploaded to Play Store"
     } catch {
         Write-Error "Failed to upload screenshots to Play Store"

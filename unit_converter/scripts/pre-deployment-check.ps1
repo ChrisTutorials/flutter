@@ -2,6 +2,38 @@
 # This script runs all critical tests to ensure the app is ready for Play Store deployment
 
 $ErrorActionPreference = "Stop"
+$TestTimeout = "3s"
+
+function Load-DotEnv {
+    param([Parameter(Mandatory=$true)][string]$Path)
+
+    if (-not (Test-Path $Path)) {
+        return
+    }
+
+    foreach ($line in Get-Content $Path) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $separatorIndex = $trimmed.IndexOf('=')
+        if ($separatorIndex -lt 1) {
+            continue
+        }
+
+        $name = $trimmed.Substring(0, $separatorIndex).Trim()
+        $value = $trimmed.Substring($separatorIndex + 1).Trim()
+
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+
+        Set-Item -Path "Env:$name" -Value $value
+    }
+}
+
+Load-DotEnv -Path (Join-Path (Resolve-Path '.') '.env')
 
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "Pre-Deployment Verification Script" -ForegroundColor Cyan
@@ -23,6 +55,32 @@ function Print-Warning {
     param([string]$Message)
     Write-Host "[WARN] $Message" -ForegroundColor Yellow
 }
+
+function Resolve-EnvironmentValue {
+    param([Parameter(Mandatory=$true)][string]$Name)
+
+    $processValue = [Environment]::GetEnvironmentVariable($Name, 'Process')
+    if (-not [string]::IsNullOrWhiteSpace($processValue)) {
+        return $processValue
+    }
+
+    $userValue = [Environment]::GetEnvironmentVariable($Name, 'User')
+    if (-not [string]::IsNullOrWhiteSpace($userValue)) {
+        Set-Item -Path "Env:$Name" -Value $userValue
+        return $userValue
+    }
+
+    $machineValue = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+    if (-not [string]::IsNullOrWhiteSpace($machineValue)) {
+        Set-Item -Path "Env:$Name" -Value $machineValue
+        return $machineValue
+    }
+
+    return $null
+}
+
+$googleApplicationCredentials = Resolve-EnvironmentValue -Name 'GOOGLE_APPLICATION_CREDENTIALS'
+$adMobAppId = Resolve-EnvironmentValue -Name 'UNIT_CONVERTER_ADMOB_APP_ID'
 
 # 1. Check Flutter installation
 Write-Host "1. Checking Flutter installation..." -ForegroundColor Cyan
@@ -60,7 +118,7 @@ Write-Host ""
 Write-Host "4. Running pubspec configuration tests..." -ForegroundColor Cyan
 try {
     Push-Location test/release_checks
-    flutter test pubspec_test.dart
+    flutter test pubspec_test.dart --timeout $TestTimeout
     Pop-Location
     Print-Success "Pubspec configuration tests passed"
 } catch {
@@ -232,7 +290,7 @@ Print-Success "Purchase flow is limited to the production IAP path"
 Write-Host ""
 Write-Host "10. Running Flutter tests..." -ForegroundColor Cyan
 try {
-    flutter test
+    flutter test --timeout $TestTimeout
     Print-Success "Flutter tests passed"
 } catch {
     Print-Error "Flutter tests failed"
@@ -273,8 +331,8 @@ if (-not (Test-Path "android/key.properties")) {
 # Check if Google Cloud credentials are configured
 Write-Host ""
 Write-Host "13. Checking Google Cloud credentials..." -ForegroundColor Cyan
-if ($env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path $env:GOOGLE_APPLICATION_CREDENTIALS)) {
-    Print-Success "Google Cloud credentials configured: $env:GOOGLE_APPLICATION_CREDENTIALS"
+if ($googleApplicationCredentials -and (Test-Path $googleApplicationCredentials)) {
+    Print-Success "Google Cloud credentials configured: $googleApplicationCredentials"
 } else {
     Print-Warning "GOOGLE_APPLICATION_CREDENTIALS not configured - Google Cloud services will not be available"
     Write-Host "       See docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions" -ForegroundColor Gray
@@ -283,15 +341,15 @@ if ($env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path $env:GOOGLE_APPLICATION_
 # Check if AdMob App ID is configured for release
 Write-Host ""
 Write-Host "14. Checking AdMob App ID for release..." -ForegroundColor Cyan
-if ($env:UNIT_CONVERTER_ADMOB_APP_ID) {
-    if ($env:UNIT_CONVERTER_ADMOB_APP_ID -match 'ca-app-pub-3940256099942544') {
+if ($adMobAppId) {
+    if ($adMobAppId -match 'ca-app-pub-3940256099942544') {
         Print-Error "UNIT_CONVERTER_ADMOB_APP_ID is set to test ID - must use production AdMob App ID"
     } else {
-        Print-Success "AdMob App ID configured for release: $env:UNIT_CONVERTER_ADMOB_APP_ID"
+        Print-Success "AdMob App ID configured for release: $adMobAppId"
     }
 } else {
-    Print-Warning "UNIT_CONVERTER_ADMOB_APP_ID not configured - release builds will use test AdMob configuration"
-}    Write-Host "       See docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions" -ForegroundColor Gray
+    Print-Warning "UNIT_CONVERTER_ADMOB_APP_ID not configured in process, user, or machine scope - release builds will use test AdMob configuration"
+    Write-Host "       See docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions" -ForegroundColor Gray
 }
 
 # Summary

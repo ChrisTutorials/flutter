@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/models/conversion.dart';
-import '../lib/services/unit_settings_service.dart';
+import '../../lib/models/conversion.dart';
+import '../../lib/services/unit_settings_service.dart';
 
 void main() {
   group('Conversion Data Filtering Tests', () {
@@ -234,3 +234,4 @@ void main() {
     });
   });
 }
+

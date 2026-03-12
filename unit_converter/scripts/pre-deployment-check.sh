@@ -5,6 +5,14 @@
 
 set -e  # Exit on any error
 
+TEST_TIMEOUT="3s"
+
+if [ -f ".env" ]; then
+    set -a
+    . ./.env
+    set +a
+fi
+
 echo "========================================="
 echo "Pre-Deployment Verification Script"
 echo "========================================="
@@ -69,7 +77,7 @@ fi
 echo ""
 echo "4. Running pubspec configuration tests..."
 cd test/release_checks
-if flutter test pubspec_test.dart; then
+if flutter test pubspec_test.dart --timeout "$TEST_TIMEOUT"; then
     print_success "Pubspec configuration tests passed"
 else
     print_error "Pubspec configuration tests failed"
@@ -195,7 +203,7 @@ done
 # 9. Run Flutter tests
 echo ""
 echo "9. Running Flutter tests..."
-if flutter test; then
+if flutter test --timeout "$TEST_TIMEOUT"; then
     print_success "Flutter tests passed"
 else
     print_error "Flutter tests failed"

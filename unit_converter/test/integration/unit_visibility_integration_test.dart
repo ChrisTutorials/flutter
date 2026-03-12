@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/main.dart';
-import '../lib/services/unit_settings_service.dart';
-import '../lib/models/conversion.dart';
-import '../lib/screens/category_selection_screen.dart';
-import '../lib/screens/conversion_screen.dart';
+import '../../lib/main.dart';
+import '../../lib/services/unit_settings_service.dart';
+import '../../lib/models/conversion.dart';
+import '../../lib/screens/category_selection_screen.dart';
+import '../../lib/screens/conversion_screen.dart';
 
 void main() {
   group('Unit Visibility Integration Tests', () {
@@ -269,3 +269,4 @@ void main() {
     });
   });
 }
+

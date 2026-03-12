@@ -20,6 +20,60 @@ param(
 $projectRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 Set-Location $projectRoot
 
+function Load-DotEnv {
+    param([Parameter(Mandatory=$true)][string]$Path)
+
+    if (-not (Test-Path $Path)) {
+        return
+    }
+
+    foreach ($line in Get-Content $Path) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $separatorIndex = $trimmed.IndexOf('=')
+        if ($separatorIndex -lt 1) {
+            continue
+        }
+
+        $name = $trimmed.Substring(0, $separatorIndex).Trim()
+        $value = $trimmed.Substring($separatorIndex + 1).Trim()
+
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+
+        Set-Item -Path "Env:$name" -Value $value
+    }
+}
+
+Load-DotEnv -Path (Join-Path $projectRoot '.env')
+
+function Resolve-EnvironmentValue {
+    param([Parameter(Mandatory=$true)][string]$Name)
+
+    $processValue = [Environment]::GetEnvironmentVariable($Name, 'Process')
+    if (-not [string]::IsNullOrWhiteSpace($processValue)) {
+        return $processValue
+    }
+
+    $userValue = [Environment]::GetEnvironmentVariable($Name, 'User')
+    if (-not [string]::IsNullOrWhiteSpace($userValue)) {
+        Set-Item -Path "Env:$Name" -Value $userValue
+        return $userValue
+    }
+
+    $machineValue = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+    if (-not [string]::IsNullOrWhiteSpace($machineValue)) {
+        Set-Item -Path "Env:$Name" -Value $machineValue
+        return $machineValue
+    }
+
+    return $null
+}
+
 function Get-BumpedBuildVersion {
     param([string]$PubspecContent)
 
@@ -65,16 +119,19 @@ if ($PrepareStoreAssets) {
 }
 
 $fastlaneAvailable = $null -ne (Get-Command fastlane -ErrorAction SilentlyContinue)
-$serviceAccountConfigured = (Test-Path 'android\fastlane\google-play-service-account.json') -or $env:GOOGLE_PLAY_JSON_KEY_FILE
-$googleCloudCredentialsConfigured = $env:GOOGLE_APPLICATION_CREDENTIALS -and (Test-Path $env:GOOGLE_APPLICATION_CREDENTIALS)
-$adMobAppIdConfigured = $env:UNIT_CONVERTER_ADMOB_APP_ID -and $env:UNIT_CONVERTER_ADMOB_APP_ID -notmatch 'ca-app-pub-3940256099942544'
+$googlePlayJsonKeyFile = Resolve-EnvironmentValue -Name 'GOOGLE_PLAY_JSON_KEY_FILE'
+$googleApplicationCredentials = Resolve-EnvironmentValue -Name 'GOOGLE_APPLICATION_CREDENTIALS'
+$adMobAppId = Resolve-EnvironmentValue -Name 'UNIT_CONVERTER_ADMOB_APP_ID'
+$serviceAccountConfigured = (Test-Path 'android\fastlane\google-play-service-account.json') -or $googlePlayJsonKeyFile
+$googleCloudCredentialsConfigured = $googleApplicationCredentials -and (Test-Path $googleApplicationCredentials)
+$adMobAppIdConfigured = $adMobAppId -and $adMobAppId -notmatch 'ca-app-pub-3940256099942544'
 
 # Check if Google Cloud credentials are configured (optional for current deployment)
 if (-not $googleCloudCredentialsConfigured) {
     Write-Host '[WARN] GOOGLE_APPLICATION_CREDENTIALS not configured. Google Cloud services will not be available.' -ForegroundColor Yellow
     Write-Host '[INFO] See docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions.' -ForegroundColor Cyan
 } else {
-    Write-Host '[PASS] Google Cloud credentials configured' -ForegroundColor Green
+    Write-Host "[PASS] Google Cloud credentials configured: $googleApplicationCredentials" -ForegroundColor Green
 }
 
 # Check if AdMob App ID is configured for release
@@ -82,7 +139,7 @@ if (-not $adMobAppIdConfigured) {
     Write-Host '[WARN] UNIT_CONVERTER_ADMOB_APP_ID not configured or using test ID. Release builds will use test AdMob configuration.' -ForegroundColor Yellow
     Write-Host '[INFO] See docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions.' -ForegroundColor Cyan
 } else {
-    Write-Host "[PASS] AdMob App ID configured for release: $($env:UNIT_CONVERTER_ADMOB_APP_ID)" -ForegroundColor Green
+    Write-Host "[PASS] AdMob App ID configured for release: $adMobAppId" -ForegroundColor Green
 }
 
 if ($fastlaneAvailable -and $serviceAccountConfigured) {
@@ -90,6 +147,9 @@ if ($fastlaneAvailable -and $serviceAccountConfigured) {
     Push-Location android
     try {
         fastlane "deploy_$Track"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Fastlane deploy_$Track failed with exit code $LASTEXITCODE"
+        }
     } finally {
         Pop-Location
     }

@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.io.FileInputStream
+import java.io.File
 
 plugins {
     id("com.android.application")
@@ -15,10 +16,33 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+fun loadDotEnv(file: File): Map<String, String> {
+    if (!file.exists()) {
+        return emptyMap()
+    }
+
+    return file.readLines()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") && it.contains("=") }
+        .associate { line ->
+            val separatorIndex = line.indexOf('=')
+            val key = line.substring(0, separatorIndex).trim()
+            var value = line.substring(separatorIndex + 1).trim()
+
+            if ((value.startsWith('"') && value.endsWith('"')) ||
+                (value.startsWith('\'') && value.endsWith('\''))) {
+                value = value.substring(1, value.length - 1)
+            }
+
+            key to value
+        }
+}
+
 val debugAdMobAppId = "ca-app-pub-3940256099942544~3347511713"
-val releaseAdMobAppId = providers.environmentVariable("UNIT_CONVERTER_ADMOB_APP_ID")
-    .orElse(debugAdMobAppId)
-    .get()
+val dotEnv = loadDotEnv(rootProject.file("../.env"))
+val releaseAdMobAppId = dotEnv["UNIT_CONVERTER_ADMOB_APP_ID"]
+    ?: providers.environmentVariable("UNIT_CONVERTER_ADMOB_APP_ID").orNull
+    ?: debugAdMobAppId
 
 android {
     namespace = "com.unitconverter.unit_converter"

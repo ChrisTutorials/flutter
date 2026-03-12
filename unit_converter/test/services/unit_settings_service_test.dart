@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/services/unit_settings_service.dart';
-import '../lib/models/conversion.dart';
+import '../../lib/services/unit_settings_service.dart';
+import '../../lib/models/conversion.dart';
 
 void main() {
   group('UnitSettingsService', () {
@@ -57,3 +57,4 @@ void main() {
     });
   });
 }
+

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/screens/settings_screen.dart';
-import '../lib/services/unit_settings_service.dart';
-import '../lib/services/theme_service.dart';
+import '../../lib/screens/settings_screen.dart';
+import '../../lib/services/unit_settings_service.dart';
+import '../../lib/services/theme_service.dart';
 
 void main() {
   group('Unit Settings UI Tests', () {
@@ -242,3 +242,4 @@ void main() {
     });
   });
 }
+

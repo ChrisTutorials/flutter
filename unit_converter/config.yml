@@ -1,0 +1,59 @@
+# Project-specific configuration for unit_converter app
+# This file contains settings that vary between different Flutter projects
+# Copy to config.local.yml for local overrides (not committed to version control)
+
+project:
+  name: "unit_converter"
+  display_name: "All-in-One Unit Converter"
+  package_name: "com.unitconverter.unit_converter"
+  version: "1.0.4+8"
+
+# API endpoints and external services
+apis:
+  currency:
+    primary: "https://api.frankfurter.dev/v1"
+    fallback: "https://api.exchangerate.host/v1"
+    timeout_seconds: 10
+    cache_duration_hours: 24
+
+# AdMob configuration (values overridden by environment variables for security)
+admob:
+  app_id:
+    debug: "ca-app-pub-3940256099942544~3347511713"  # Test ID
+    # Release ID set via UNIT_CONVERTER_ADMOB_APP_ID environment variable
+  banner_ad_unit_id:
+    debug: "ca-app-pub-3940256099942544/6300978111"  # Test ID
+    # Release ID set via UNIT_CONVERTER_BANNER_AD_UNIT_ID environment variable
+  interstitial_ad_unit_id:
+    debug: "ca-app-pub-3940256099942544/1033173712"  # Test ID
+    # Release ID set via UNIT_CONVERTER_INTERSTITIAL_AD_UNIT_ID environment variable
+
+# Feature flags
+features:
+  enable_debug_logs: false
+  enable_currency_api: true
+  enable_offline_mode: true
+  enable_recent_conversions: true
+  enable_widget: true
+  enable_in_app_purchases: true
+
+# Build configuration
+build:
+  min_sdk_version: 21
+  target_sdk_version: 34
+  compile_sdk_version: 34
+  minify_enabled: true
+  shrink_resources: true
+  use_proguard: true
+
+# Firebase/Analytics (if used)
+analytics:
+  enabled: false
+  # firebase_config_path: "./firebase.json"
+
+# Play Store configuration
+play_store:
+  track: "internal"  # internal, alpha, beta, production
+  rollout_percentage: 100
+  release_status: "completed"  # completed, halted, inProgress
+  # Service account credentials handled via GOOGLE_APPLICATION_CREDENTIALS env var

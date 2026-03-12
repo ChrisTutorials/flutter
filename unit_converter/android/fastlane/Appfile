@@ -1,6 +1,29 @@
 # Appfile for Fastlane
 # This file contains app-specific configuration
 
+def load_project_dotenv
+	env_file = File.expand_path('../../.env', __dir__)
+	return unless File.exist?(env_file)
+
+	File.foreach(env_file) do |line|
+		stripped = line.strip
+		next if stripped.empty? || stripped.start_with?('#') || !stripped.include?('=')
+
+		key, value = stripped.split('=', 2)
+		next if key.nil? || value.nil?
+
+		cleaned_value = value.strip
+		if (cleaned_value.start_with?('"') && cleaned_value.end_with?('"')) ||
+			 (cleaned_value.start_with?("'") && cleaned_value.end_with?("'"))
+			cleaned_value = cleaned_value[1..-2]
+		end
+
+		ENV[key.strip] = cleaned_value
+	end
+end
+
+load_project_dotenv
+
 # The package name of your app
 package_name(ENV['PACKAGE_NAME'] || 'com.unitconverter.unit_converter')
 

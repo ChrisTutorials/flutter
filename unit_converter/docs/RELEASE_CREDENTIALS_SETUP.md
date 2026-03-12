@@ -24,7 +24,18 @@ This guide walks you through setting up the two required credentials for Play St
    - You'll see an App ID in the format: `ca-app-pub-5684393858412931~XXXXXXXXXX`
    - Copy this entire App ID
 
-4. **Set the Environment Variable**
+4. **Populate the Project `.env` File**
+
+   Copy [unit_converter/.env.example](unit_converter/.env.example) to `c:\dev\flutter\unit_converter\.env` and set the values there.
+
+   Recommended contents:
+   ```powershell
+   GOOGLE_APPLICATION_CREDENTIALS=C:/Users/chris/.keys/your-google-cloud-key.json
+   GOOGLE_PLAY_JSON_KEY_FILE=C:/dev/flutter/unit_converter/android/fastlane/google-play-service-account.json
+   UNIT_CONVERTER_ADMOB_APP_ID=ca-app-pub-5684393858412931~XXXXXXXXXX
+   ```
+
+5. **Optional Environment Variable Setup**
 
    **Windows PowerShell (User Level - Persistent):**
    ```powershell
@@ -41,12 +52,18 @@ This guide walks you through setting up the two required credentials for Play St
    echo 'export UNIT_CONVERTER_ADMOB_APP_ID=ca-app-pub-5684393858412931~XXXXXXXXXX' >> ~/.bashrc
    ```
 
-5. **Verify the Configuration**
+6. **Verify the Configuration**
    ```powershell
    echo $env:UNIT_CONVERTER_ADMOB_APP_ID
    ```
 
    Should output: `ca-app-pub-5684393858412931~XXXXXXXXXX`
+
+7. **How the Release Workflow Resolves It**
+   - The project `.env` file is now the source of truth for release credentials.
+   - Gradle, Fastlane, and the PowerShell deployment scripts load values from `c:\dev\flutter\unit_converter\.env` first.
+   - If a value is missing from `.env`, Fastlane and the PowerShell scripts fall back to process, Windows user, then Windows machine environment scopes.
+   - Direct manual commands like `flutter build appbundle --release` now also pick up `UNIT_CONVERTER_ADMOB_APP_ID` from `.env` through Gradle.
 
 ## Blocker 2: Play Console Service Account
 
@@ -157,7 +174,8 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy-to-play-store.ps1 -Track
 **Solution**:
 - Verify `UNIT_CONVERTER_ADMOB_APP_ID` environment variable is set
 - Check the value format: `ca-app-pub-5684393858412931~XXXXXXXXXX`
-- Restart your terminal/IDE after setting the environment variable
+- Fastlane and the PowerShell deployment scripts now also check Windows user and machine environment scopes automatically
+- Restart your terminal or export `$env:UNIT_CONVERTER_ADMOB_APP_ID` only if you are running `flutter build` directly in the current shell
 
 ### Play Console Access Issues
 

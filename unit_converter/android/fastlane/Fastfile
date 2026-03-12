@@ -2,11 +2,72 @@
 # This file defines automation lanes for building, validating, and deploying Flutter apps to Google Play Store
 
 require 'fileutils'
+require 'tmpdir'
+
+begin
+  require 'win32/registry' if Gem.win_platform?
+rescue LoadError
+end
+
+TEST_TIMEOUT = '3s'
+DOTENV_PATH = File.expand_path('../../.env', __dir__)
+
+def load_project_dotenv(path = DOTENV_PATH)
+  return unless File.exist?(path)
+
+  File.foreach(path) do |line|
+    stripped = line.strip
+    next if stripped.empty? || stripped.start_with?('#') || !stripped.include?('=')
+
+    key, value = stripped.split('=', 2)
+    next if key.nil? || value.nil?
+
+    cleaned_value = value.strip
+    if (cleaned_value.start_with?('"') && cleaned_value.end_with?('"')) ||
+       (cleaned_value.start_with?("'") && cleaned_value.end_with?("'"))
+      cleaned_value = cleaned_value[1..-2]
+    end
+
+    ENV[key.strip] = cleaned_value
+  end
+end
+
+load_project_dotenv
 
 # Opt out of anonymous analytics
 opt_out_usage
 
 default_platform(:android)
+
+def resolve_windows_environment_value(name)
+  return nil unless Gem.win_platform? && defined?(Win32::Registry)
+
+  [Win32::Registry::HKEY_CURRENT_USER, Win32::Registry::HKEY_LOCAL_MACHINE].each do |root|
+    begin
+      root.open('Environment') do |registry|
+        value = registry[name]
+        return value unless value.to_s.strip.empty?
+      end
+    rescue StandardError
+      next
+    end
+  end
+
+  nil
+end
+
+def resolve_environment_value(name)
+  process_value = ENV[name]
+  return process_value unless process_value.to_s.strip.empty?
+
+  resolve_windows_environment_value(name)
+end
+
+def hydrate_environment_value(name)
+  value = resolve_environment_value(name)
+  ENV[name] = value unless value.to_s.strip.empty?
+  value
+end
 
 def sync_play_store_metadata
   android_root = File.expand_path('..', __dir__)
@@ -64,6 +125,19 @@ def sync_play_store_metadata
   )
 
   UI.success('✅ Play Store metadata assets synchronized')
+end
+
+def with_locale_metadata_root(metadata_root)
+  Dir.mktmpdir('play-store-metadata') do |temp_root|
+    Dir.glob(File.join(metadata_root, '*')).sort.each do |entry|
+      next unless File.directory?(entry)
+      next if File.basename(entry) == 'images'
+
+      FileUtils.cp_r(entry, temp_root)
+    end
+
+    yield temp_root
+  end
 end
 
 platform :android do
@@ -250,6 +324,8 @@ platform :android do
   desc "Validate AdMob configuration"
   lane :validate_admob_config do
     UI.message("📱 Checking AdMob configuration...")
+
+    admob_app_id = hydrate_environment_value('UNIT_CONVERTER_ADMOB_APP_ID')
     
     manifest_path = File.join(Dir.pwd, '../app/src/main/AndroidManifest.xml')
     manifest_content = File.read(manifest_path)
@@ -271,16 +347,16 @@ platform :android do
       UI.user_error!("❌ No valid AdMob app ID format found in build.gradle.kts")
     end
 
-    if ENV['UNIT_CONVERTER_ADMOB_APP_ID']
-      unless ENV['UNIT_CONVERTER_ADMOB_APP_ID'].match?(/^ca-app-pub-\d{16}~\d{10}$/)
+    if admob_app_id
+      unless admob_app_id.match?(/^ca-app-pub-\d{16}~\d{10}$/)
         UI.user_error!("❌ UNIT_CONVERTER_ADMOB_APP_ID is set but not in valid AdMob app ID format")
       end
 
-      if ENV['UNIT_CONVERTER_ADMOB_APP_ID'].include?('3940256099942544')
+      if admob_app_id.include?('3940256099942544')
         UI.user_error!("❌ UNIT_CONVERTER_ADMOB_APP_ID is using Google's test app ID; configure the real production AdMob app ID before release")
       end
     else
-      UI.important("⚠️  UNIT_CONVERTER_ADMOB_APP_ID is not set. Debug builds are safe, but release builds will fall back to the Google test app ID and must not be published.")
+      UI.important("⚠️  UNIT_CONVERTER_ADMOB_APP_ID is not available in the current process, user, or machine environment. Release builds will fall back to the Google test app ID and must not be published.")
     end
     
     UI.success("✅ AdMob configuration is valid")
@@ -290,14 +366,16 @@ platform :android do
   lane :check_for_test_ids do
     UI.message("🧪 Checking for test IDs...")
 
-    if ENV['UNIT_CONVERTER_ADMOB_APP_ID']
-      if ENV['UNIT_CONVERTER_ADMOB_APP_ID'].include?('3940256099942544')
+    admob_app_id = hydrate_environment_value('UNIT_CONVERTER_ADMOB_APP_ID')
+
+    if admob_app_id
+      if admob_app_id.include?('3940256099942544')
         UI.important("⚠️  Warning: UNIT_CONVERTER_ADMOB_APP_ID is set to Google's test app ID. Configure the real production AdMob app ID before release.")
       else
         UI.success("✅ Release AdMob app ID is not using Google's test app ID")
       end
     else
-      UI.message("ℹ️  Debug builds intentionally use Google's test AdMob app ID. Set UNIT_CONVERTER_ADMOB_APP_ID before publishing a release build.")
+      UI.message("ℹ️  Debug builds intentionally use Google's test AdMob app ID. Set UNIT_CONVERTER_ADMOB_APP_ID in the process, user, or machine environment before publishing a release build.")
     end
   end
 
@@ -475,19 +553,25 @@ platform :android do
     UI.success("✅ Successfully deployed to beta testing track")
   end
 
-  desc "Validate, build, and upload to production"
-  lane :deploy_production do
-    UI.header("🚀 Deploying to Production")
-    
-    # Confirm production deployment
-    UI.important("⚠️  You are about to deploy to PRODUCTION!")
-    UI.important("This will be visible to all users!")
-    
-    confirm = UI.confirm("Are you sure you want to deploy to production?")
-    
-    unless confirm
-      UI.user_error!("❌ Deployment cancelled by user")
-    end
+   desc "Validate, build, and upload to production"
+   lane :deploy_production do
+     UI.header("🚀 Deploying to Production")
+     
+     # Confirm production deployment
+     UI.important("⚠️  You are about to deploy to PRODUCTION!")
+     UI.important("This will be visible to all users!")
+     
+     # Check if we can interact (not in CI/non-interactive mode)
+     if UI.interactive?
+       confirm = UI.confirm("Are you sure you want to deploy to production?")
+     else
+       UI.message("✅ Skipping confirmation in non-interactive mode.")
+       confirm = true
+     end
+     
+     unless confirm
+       UI.user_error!("❌ Deployment cancelled by user")
+     end
     
     # Step 1: Validate
     validate
@@ -501,7 +585,8 @@ platform :android do
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: true,
       skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
     )
     
     UI.success("✅ Successfully deployed to production")
@@ -513,15 +598,18 @@ platform :android do
 
     sync_play_store_metadata
 
-    upload_to_play_store(
-      package_name: ENV['PACKAGE_NAME'] || 'com.unitconverter.unit_converter',
-      metadata_path: './fastlane/metadata/android',
-      skip_upload_apk: true,
-      skip_upload_aab: true,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: false
-    )
+    with_locale_metadata_root('./fastlane/metadata/android') do |metadata_root|
+      upload_to_play_store(
+        package_name: ENV['PACKAGE_NAME'] || 'com.unitconverter.unit_converter',
+        metadata_path: metadata_root,
+        skip_upload_apk: true,
+        skip_upload_aab: true,
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: false,
+        skip_upload_changelogs: true
+      )
+    end
 
     UI.success("✅ Screenshots uploaded successfully")
   end
@@ -562,14 +650,17 @@ platform :android do
     UI.header("📝 Uploading Metadata")
 
     sync_play_store_metadata
-    
-    upload_to_play_store(
-      skip_upload_apk: true,
-      skip_upload_aab: true,
-      skip_upload_screenshots: true,
-      skip_upload_images: true,
-      metadata_path: './fastlane/metadata/android'
-    )
+
+    with_locale_metadata_root('./fastlane/metadata/android') do |metadata_root|
+      upload_to_play_store(
+        skip_upload_apk: true,
+        skip_upload_aab: true,
+        skip_upload_screenshots: true,
+        skip_upload_images: true,
+        skip_upload_changelogs: true,
+        metadata_path: metadata_root
+      )
+    end
     
     UI.success("✅ Metadata uploaded successfully")
   end
@@ -592,7 +683,7 @@ platform :android do
     UI.header("🧪 Running Flutter Tests")
     
     Dir.chdir('..') do
-      sh('flutter test')
+      sh("flutter test --timeout #{TEST_TIMEOUT}")
     end
     
     UI.success("✅ All Flutter tests passed")

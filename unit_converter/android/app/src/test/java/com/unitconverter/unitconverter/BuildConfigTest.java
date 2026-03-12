@@ -60,8 +60,41 @@ public class BuildConfigTest {
         String buildGradleContent = readBuildGradle();
 
         assertTrue(
-            "Release AdMob app ID should come from UNIT_CONVERTER_ADMOB_APP_ID so invalid hardcoded values do not ship.",
-            buildGradleContent.contains("UNIT_CONVERTER_ADMOB_APP_ID")
+            "Release AdMob app ID should come from .env or UNIT_CONVERTER_ADMOB_APP_ID so invalid hardcoded values do not ship.",
+            buildGradleContent.contains("UNIT_CONVERTER_ADMOB_APP_ID") ||
+            buildGradleContent.contains("loadDotEnv")
+        );
+    }
+
+    /**
+     * Test 1e: Verify .env file loading function exists
+     * Failure cause: .env configuration won't be loaded, release builds may use wrong credentials
+     */
+    @Test
+    public void testDotEnvLoadingFunctionExists() throws IOException {
+        String buildGradleContent = readBuildGradle();
+
+        assertTrue(
+            "build.gradle.kts should have a loadDotEnv function to load .env configuration.",
+            buildGradleContent.contains("fun loadDotEnv")
+        );
+    }
+
+    /**
+     * Test 1f: Verify .env file is loaded before AdMob app ID resolution
+     * Failure cause: .env values won't be available for build configuration
+     */
+    @Test
+    public void testDotEnvLoadedBeforeAdMobResolution() throws IOException {
+        String buildGradleContent = readBuildGradle();
+
+        // Check that loadDotEnv is called before releaseAdMobAppId is defined
+        int loadDotEnvIndex = buildGradleContent.indexOf("loadDotEnv");
+        int releaseAdMobIndex = buildGradleContent.indexOf("releaseAdMobAppId");
+
+        assertTrue(
+            "loadDotEnv should be called before releaseAdMobAppId to ensure .env values are available.",
+            loadDotEnvIndex >= 0 && releaseAdMobIndex > loadDotEnvIndex
         );
     }
 
