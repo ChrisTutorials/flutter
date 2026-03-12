@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Use Common Folder for Reusable Code
 
 ## Overview

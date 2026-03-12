@@ -24,13 +24,16 @@ void main() {
         minimumSecondsBetweenAds: 60,
         maxAdsPerSession: 2,
       );
-      
+
       // Set test ad units
       AdUnitIds.test.apply();
-      
+
+      // Simulate mobile platform for testing
+      AdService.setPlatformOverrideForTesting(true);
+
       // Initialize
       await AdService.initialize();
-      
+
       expect(AdService.isInitialized, isTrue);
       expect(AdService.adsEnabled, isTrue);
       expect(AdService.conversionCount, equals(0));
@@ -46,26 +49,27 @@ void main() {
         minimumSecondsBetweenAds: 0, // No time limit for testing
         maxAdsPerSession: 5,
       );
-      
+
       AdUnitIds.test.apply();
+      AdService.setPlatformOverrideForTesting(true);
       await AdService.initialize();
-      
+
       // Track conversions
       AdService.trackConversion();
       expect(AdService.conversionCount, equals(1));
       expect(AdService.conversionsSinceLastAd, equals(1));
-      
+
       AdService.trackConversion();
       expect(AdService.conversionCount, equals(2));
       expect(AdService.conversionsSinceLastAd, equals(2));
-      
+
       // Should not show interstitial yet (need 2 more conversions)
       expect(AdService.shouldShowInterstitial(), isFalse);
-      
+
       AdService.trackConversion();
       expect(AdService.conversionCount, equals(3));
       expect(AdService.conversionsSinceLastAd, equals(3));
-      
+
       // Now should show interstitial
       expect(AdService.shouldShowInterstitial(), isTrue);
     });
@@ -77,8 +81,9 @@ void main() {
         minimumSecondsBetweenAds: 0,
         maxAdsPerSession: 5,
       );
-      
+
       AdUnitIds.test.apply();
+      AdService.setPlatformOverrideForTesting(true);
       await AdService.initialize();
       
       // Track 4 conversions (less than protection threshold)
@@ -102,8 +107,9 @@ void main() {
         minimumSecondsBetweenAds: 0,
         maxAdsPerSession: 2,
       );
-      
+
       AdUnitIds.test.apply();
+      AdService.setPlatformOverrideForTesting(true);
       await AdService.initialize();
       
       // Track conversions to trigger interstitial
@@ -123,8 +129,9 @@ void main() {
       AdService.configure(
         premiumCheck: () async => true, // User is premium
       );
-      
+
       AdUnitIds.test.apply();
+      AdService.setPlatformOverrideForTesting(true);
       await AdService.initialize();
       
       expect(AdService.adsEnabled, isFalse);
@@ -141,8 +148,9 @@ void main() {
         minimumSecondsBetweenAds: 0,
         maxAdsPerSession: 2, // Low limit for testing
       );
-      
+
       AdUnitIds.test.apply();
+      AdService.setPlatformOverrideForTesting(true);
       await AdService.initialize();
       
       // Track conversions and simulate interstitial shows
@@ -159,12 +167,94 @@ void main() {
       AdService.resetSessionCounters();
       expect(AdService.sessionInterstitials, equals(0));
     });
+
+    test('should disable ads on desktop platforms (Windows)', () async {
+      // Simulate Windows platform
+      AdService.setPlatformOverrideForTesting(false);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      expect(AdService.isInitialized, isTrue);
+      expect(AdService.adsEnabled, isFalse);
+      // Ads should not be loaded on desktop
+    });
+
+    test('should disable ads on desktop platforms (macOS)', () async {
+      // Simulate macOS platform
+      AdService.setPlatformOverrideForTesting(false);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      expect(AdService.isInitialized, isTrue);
+      expect(AdService.adsEnabled, isFalse);
+    });
+
+    test('should disable ads on desktop platforms (Linux)', () async {
+      // Simulate Linux platform
+      AdService.setPlatformOverrideForTesting(false);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      expect(AdService.isInitialized, isTrue);
+      expect(AdService.adsEnabled, isFalse);
+    });
+
+    test('should disable ads on web platform', () async {
+      // Simulate web platform
+      AdService.setPlatformOverrideForTesting(false);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      expect(AdService.isInitialized, isTrue);
+      expect(AdService.adsEnabled, isFalse);
+    });
+
+    test('should enable ads on mobile platforms (Android)', () async {
+      // Simulate Android platform
+      AdService.setPlatformOverrideForTesting(true);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      expect(AdService.isInitialized, isTrue);
+      expect(AdService.adsEnabled, isTrue);
+    });
+
+    test('should enable ads on mobile platforms (iOS)', () async {
+      // Simulate iOS platform
+      AdService.setPlatformOverrideForTesting(true);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      expect(AdService.isInitialized, isTrue);
+      expect(AdService.adsEnabled, isTrue);
+    });
+
+    test('should not attempt to load ads on desktop platforms', () async {
+      // Simulate desktop platform
+      AdService.setPlatformOverrideForTesting(false);
+      AdUnitIds.test.apply();
+
+      await AdService.initialize();
+
+      // Track conversions - should not try to show ads
+      AdService.trackConversion();
+      AdService.trackConversion();
+      AdService.trackConversion();
+
+      // Should not show interstitial on desktop
+      expect(AdService.shouldShowInterstitial(), isFalse);
+    });
   });
 
   group('AdConfig Tests', () {
     test('should configure utility app settings', () {
       AdConfig.configureForUtilityApp();
-      
       // These are static values, so we can't directly test them
       // In a real app, you would verify the behavior matches expected settings
       expect(true, isTrue); // Placeholder test

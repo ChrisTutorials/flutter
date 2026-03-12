@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'platform_utils.dart';
 
 /// Reusable ad service for Flutter applications
 ///
@@ -43,6 +43,9 @@ class AdService {
   // Test flag - set to true to skip MobileAds initialization
   static bool skipMobileAdsInitialization = false;
 
+  // Test override for platform detection - only used in tests
+  static bool? _isMobileOverride;
+
   // Ad unit IDs - Override these with your app-specific IDs
   static String bannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111'; // Test ID
   static String interstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'; // Test ID
@@ -76,6 +79,16 @@ class AdService {
       return;
     }
 
+    // Skip MobileAds initialization on non-mobile platforms
+    // AdMob only supports Android and iOS
+    final isMobile = _isMobileOverride ?? PlatformUtils.isMobile;
+    if (!isMobile) {
+      debugPrint('AdService: Skipping MobileAds initialization on ${PlatformUtils.isWeb ? "web" : "desktop"} platform');
+      _adsEnabled = false; // Disable ads on non-mobile platforms
+      _isInitialized = true;
+      return;
+    }
+
     if (!skipMobileAdsInitialization) {
       try {
         await MobileAds.instance.initialize();
@@ -88,8 +101,8 @@ class AdService {
 
     await _loadPersistentData();
 
-    // Preload ads
-    if (!skipMobileAdsInitialization) {
+    // Preload ads only on mobile platforms
+    if (isMobile && !skipMobileAdsInitialization) {
       try {
         loadInterstitialAd();
         loadAppOpenAd();
@@ -339,7 +352,14 @@ class AdService {
     _appOpenAd = null;
     isPremiumUser = null;
     skipMobileAdsInitialization = true; // Skip MobileAds in tests
+    _isMobileOverride = null; // Clear platform override
     debugPrint('AdService: Reset for testing');
+  }
+
+  /// Set platform override for testing (only used in tests)
+  static void setPlatformOverrideForTesting(bool isMobile) {
+    _isMobileOverride = isMobile;
+    debugPrint('AdService: Platform override set to ${isMobile ? "mobile" : "non-mobile"} for testing');
   }
 
   /// Update premium status and reinitialize if needed

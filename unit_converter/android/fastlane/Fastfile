@@ -424,7 +424,8 @@ platform :android do
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: true,
       skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
     )
     
     UI.success("✅ Successfully deployed to internal testing track")

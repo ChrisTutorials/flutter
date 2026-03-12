@@ -45,6 +45,11 @@ class HomeSearch {
     caseSensitive: false,
   );
 
+  static final RegExp _valueWithUnitsPattern = RegExp(
+    r'^\s*([-+]?(?:\d+(?:[\.,]\d+)?|[\.,]\d+))\s*(.+?)\s*$',
+    caseSensitive: false,
+  );
+
   static HomeSearchInterpretation analyze(
     String query,
     List<ConversionCategory> categories,
@@ -54,7 +59,10 @@ class HomeSearch {
       return const HomeSearchInterpretation(rawQuery: '', filterTokens: []);
     }
 
-    final instantConversion = _tryParseInstantConversion(trimmedQuery, categories);
+    final instantConversion = _tryParseInstantConversion(
+      trimmedQuery,
+      categories,
+    );
 
     return HomeSearchInterpretation(
       rawQuery: trimmedQuery,
@@ -70,10 +78,9 @@ class HomeSearch {
   }
 
   static List<String> buildFilterTokens(String query) {
-    return _tokenize(query)
-        .where((token) => !_stopWords.contains(token))
-        .toSet()
-        .toList();
+    return _tokenize(
+      query,
+    ).where((token) => !_stopWords.contains(token)).toSet().toList();
   }
 
   static bool matchesTokens(String value, List<String> tokens) {
@@ -98,18 +105,71 @@ class HomeSearch {
     String query,
     List<ConversionCategory> categories,
   ) {
-    final match = _instantPattern.firstMatch(query);
-    if (match == null) {
+    final explicitMatch = _instantPattern.firstMatch(query);
+    if (explicitMatch != null) {
+      return _buildInstantConversionMatch(
+        valueText: explicitMatch.group(1)!,
+        fromUnitText: explicitMatch.group(2)!,
+        toUnitText: explicitMatch.group(3)!,
+        categories: categories,
+      );
+    }
+
+    final impliedMatch = _valueWithUnitsPattern.firstMatch(query);
+    if (impliedMatch == null) {
       return null;
     }
 
-    final value = double.tryParse(match.group(1)!.replaceAll(',', '.'));
+    final remainder = impliedMatch.group(2)!.trim();
+    if (remainder.isEmpty) {
+      return null;
+    }
+
+    final resolvedMatches = <InstantConversionMatch>[];
+    for (final separator in RegExp(r'\s+').allMatches(remainder)) {
+      final fromUnitText = remainder.substring(0, separator.start).trim();
+      final toUnitText = remainder.substring(separator.end).trim();
+
+      if (fromUnitText.isEmpty || toUnitText.isEmpty) {
+        continue;
+      }
+
+      final resolvedMatch = _buildInstantConversionMatch(
+        valueText: impliedMatch.group(1)!,
+        fromUnitText: fromUnitText,
+        toUnitText: toUnitText,
+        categories: categories,
+      );
+      if (resolvedMatch != null) {
+        resolvedMatches.add(resolvedMatch);
+      }
+    }
+
+    final uniqueMatches = <String, InstantConversionMatch>{};
+    for (final resolvedMatch in resolvedMatches) {
+      uniqueMatches[_instantConversionKey(resolvedMatch)] = resolvedMatch;
+    }
+
+    if (uniqueMatches.length != 1) {
+      return null;
+    }
+
+    return uniqueMatches.values.single;
+  }
+
+  static InstantConversionMatch? _buildInstantConversionMatch({
+    required String valueText,
+    required String fromUnitText,
+    required String toUnitText,
+    required List<ConversionCategory> categories,
+  }) {
+    final value = double.tryParse(valueText.replaceAll(',', '.'));
     if (value == null) {
       return null;
     }
 
-    final fromCandidates = _resolveUnitCandidates(match.group(2)!, categories);
-    final toCandidates = _resolveUnitCandidates(match.group(3)!, categories);
+    final fromCandidates = _resolveUnitCandidates(fromUnitText, categories);
+    final toCandidates = _resolveUnitCandidates(toUnitText, categories);
 
     final resolvedMatches = <InstantConversionMatch>[];
     for (final fromCandidate in fromCandidates) {
@@ -142,6 +202,10 @@ class HomeSearch {
     return resolvedMatches.single;
   }
 
+  static String _instantConversionKey(InstantConversionMatch match) {
+    return '${match.category.name}|${match.fromUnit.symbol}|${match.toUnit.symbol}|${match.inputValue}';
+  }
+
   static List<_ResolvedUnitCandidate> _resolveUnitCandidates(
     String rawUnit,
     List<ConversionCategory> categories,
@@ -167,7 +231,9 @@ class HomeSearch {
 
     final normalizedUnit = _normalize(trimmedUnit);
     final symbolMatches = candidates
-        .where((candidate) => _normalize(candidate.unit.symbol) == normalizedUnit)
+        .where(
+          (candidate) => _normalize(candidate.unit.symbol) == normalizedUnit,
+        )
         .toList();
     if (symbolMatches.length == 1) {
       return symbolMatches;
@@ -175,9 +241,9 @@ class HomeSearch {
 
     return candidates
         .where(
-          (candidate) => _aliasesForUnit(candidate.unit)
-              .map(_normalize)
-              .contains(normalizedUnit),
+          (candidate) => _aliasesForUnit(
+            candidate.unit,
+          ).map(_normalize).contains(normalizedUnit),
         )
         .toList();
   }

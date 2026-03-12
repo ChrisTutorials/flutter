@@ -12,11 +12,7 @@ void main() {
   });
 
   group('home search discovery', () {
-    final scenarios = <({
-      String query,
-      String visibleText,
-      String hiddenText,
-    })>[
+    final scenarios = <({String query, String visibleText, String hiddenText})>[
       (query: 'travel', visibleText: 'USD to EUR', hiddenText: 'Pressure'),
       (query: 'psi', visibleText: 'Pressure', hiddenText: 'Length'),
       (query: 'fahrenheit', visibleText: 'Temperature', hiddenText: 'Volume'),
@@ -47,14 +43,15 @@ void main() {
         resultText: '60 g = 0.13227736 lb',
         category: 'Weight',
       ),
-      (
-        query: '32 F to C',
-        resultText: '32 °F = 0 °C',
-        category: 'Temperature',
-      ),
+      (query: '32 F to C', resultText: '32 °F = 0 °C', category: 'Temperature'),
       (
         query: '2 liters to mL',
         resultText: '2 L = 2000 mL',
+        category: 'Volume',
+      ),
+      (
+        query: '20 gal l',
+        resultText: '20 gal = 75.70823568 L',
         category: 'Volume',
       ),
     ];
@@ -71,7 +68,10 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('instant_conversion_card')), findsOneWidget);
+        expect(
+          find.byKey(const Key('instant_conversion_card')),
+          findsOneWidget,
+        );
         expect(find.text(scenario.resultText), findsOneWidget);
         expect(find.text(scenario.category), findsWidgets);
       });
@@ -84,14 +84,14 @@ void main() {
 
       await tester.enterText(
         find.byKey(const Key('home_search_field')),
-        '60g to lb',
+        '20 gal l',
       );
       await tester.pumpAndSettle();
 
       await tester.testTextInput.receiveAction(TextInputAction.search);
       await tester.pumpAndSettle();
 
-      expect(find.text('60 g to lb'), findsOneWidget);
+      expect(find.text('20 gal to L'), findsOneWidget);
       expect(find.text('Live conversion'), findsOneWidget);
     });
   });
@@ -150,7 +150,10 @@ void main() {
   });
 }
 
-Future<void> _pumpHome(WidgetTester tester, {Size size = const Size(390, 844)}) async {
+Future<void> _pumpHome(
+  WidgetTester tester, {
+  Size size = const Size(390, 844),
+}) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(() {

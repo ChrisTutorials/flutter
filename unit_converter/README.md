@@ -234,9 +234,9 @@ lib/
 ## Dependencies
 
 - flutter: SDK
-- google_mobile_ads: ^5.1.0 - AdMob ads
+- google_mobile_ads: ^7.0.0 - AdMob ads
 - shared_preferences: ^2.3.2 - Local storage
-- intl: ^0.19.0 - Number formatting
+- intl: ^0.20.2 - Number formatting
 
 ## License
 
