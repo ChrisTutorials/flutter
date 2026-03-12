@@ -1,0 +1,495 @@
+# Fastfile for Flutter Android Deployment
+# This file defines automation lanes for building, validating, and deploying Flutter apps to Google Play Store
+
+# Opt out of anonymous analytics
+opt_out_usage
+
+default_platform(:android)
+
+platform :android do
+  # =========================================================================
+  # VALIDATION LANES
+  # =========================================================================
+
+  desc "Run all pre-deployment validation checks"
+  lane :validate do
+    UI.header("🔍 Running Pre-Deployment Validation Checks")
+    
+    # Check 1: Verify AndroidManifest.xml
+    validate_android_manifest
+    
+    # Check 2: Verify build configuration
+    validate_build_config
+    
+    # Check 3: Verify version format
+    validate_version_format
+    
+    # Check 4: Verify required permissions
+    validate_permissions
+    
+    # Check 5: Verify AdMob configuration
+    validate_admob_config
+    
+    # Check 6: Check for test IDs in production
+    check_for_test_ids
+    
+    # Check 7: Verify signing configuration
+    validate_signing_config
+    
+    UI.success("✅ All validation checks passed!")
+  end
+
+  desc "Validate AndroidManifest.xml for Play Store compliance"
+  lane :validate_android_manifest do
+    UI.message("📋 Checking AndroidManifest.xml...")
+
+    manifest_path = File.join(Dir.pwd, '../app/src/main/AndroidManifest.xml')
+
+    unless File.exist?(manifest_path)
+      UI.user_error!("❌ AndroidManifest.xml not found at #{manifest_path}")
+    end
+    
+    manifest_content = File.read(manifest_path)
+    
+    # Check AdMob Application ID
+    unless manifest_content.include?('com.google.android.gms.ads.APPLICATION_ID')
+      UI.user_error!("❌ AdMob Application ID meta-data is missing from AndroidManifest.xml")
+    end
+
+    # Check if AdMob Application ID is commented out
+    # Look for the meta-data tag being inside a comment
+    admob_meta_data_commented = manifest_content.match(/<!--[^>]*com\.google\.android\.gms\.ads\.APPLICATION_ID[^>]*-->/m)
+    if admob_meta_data_commented
+      UI.user_error!("❌ AdMob Application ID is commented out in AndroidManifest.xml")
+    end
+    
+    # Check advertising ID permission
+    unless manifest_content.include?('com.google.android.gms.permission.AD_ID')
+      UI.user_error!("❌ Advertising ID permission is missing (required for Android 13+)")
+    end
+    
+    # Check billing permission
+    unless manifest_content.include?('com.android.vending.BILLING')
+      UI.user_error!("❌ Billing permission is missing (required for in-app purchases)")
+    end
+    
+    # Check internet permission
+    unless manifest_content.include?('android.permission.INTERNET')
+      UI.user_error!("❌ Internet permission is missing (required for AdMob and currency API)")
+    end
+    
+    # Check MainActivity is exported
+    unless manifest_content.include?('android:name=".MainActivity"') && manifest_content.include?('android:exported="true"')
+      UI.user_error!("❌ MainActivity must be exported to be launchable")
+    end
+    
+    UI.success("✅ AndroidManifest.xml validation passed")
+  end
+
+  desc "Validate build.gradle.kts configuration"
+  lane :validate_build_config do
+    UI.message("🔧 Checking build.gradle.kts...")
+    
+    build_gradle_path = File.join(Dir.pwd, '../app/build.gradle.kts')
+    
+    unless File.exist?(build_gradle_path)
+      UI.user_error!("❌ build.gradle.kts not found at #{build_gradle_path}")
+    end
+    
+    build_gradle_content = File.read(build_gradle_path)
+    
+    # Check code shrinking
+    unless build_gradle_content.include?('isMinifyEnabled = true')
+      UI.user_error!("❌ Code shrinking must be enabled for release builds")
+    end
+    
+    # Check resource shrinking
+    unless build_gradle_content.include?('isShrinkResources = true')
+      UI.user_error!("❌ Resource shrinking must be enabled for release builds")
+    end
+    
+    # Check ProGuard
+    unless build_gradle_content.include?('proguardFiles')
+      UI.user_error!("❌ ProGuard must be configured for code obfuscation")
+    end
+    
+    UI.success("✅ build.gradle.kts validation passed")
+  end
+
+  desc "Validate version format in pubspec.yaml"
+  lane :validate_version_format do
+    UI.message("📦 Checking version format...")
+    
+    pubspec_path = File.join(Dir.pwd, '../../pubspec.yaml')
+    
+    unless File.exist?(pubspec_path)
+      UI.user_error!("❌ pubspec.yaml not found at #{pubspec_path}")
+    end
+    
+    pubspec_content = File.read(pubspec_path)
+    
+    # Check version format
+    version_match = pubspec_content.match(/^version:\s*(\d+\.\d+\.\d+\+(\d+))/)
+    
+    unless version_match
+      UI.user_error!("❌ Version must be in format x.y.z+buildNumber (e.g., 1.0.0+1)")
+    end
+    
+    build_number = version_match[2].to_i
+    
+    if build_number <= 0
+      UI.user_error!("❌ Build number must be greater than 0")
+    end
+    
+    UI.success("✅ Version format validation passed (#{version_match[1]})")
+  end
+
+  desc "Validate required permissions"
+  lane :validate_permissions do
+    UI.message("🔐 Checking required permissions...")
+    
+    manifest_path = File.join(Dir.pwd, '../app/src/main/AndroidManifest.xml')
+    manifest_content = File.read(manifest_path)
+    
+    required_permissions = [
+      'android.permission.INTERNET',
+      'com.android.vending.BILLING',
+      'com.google.android.gms.permission.AD_ID'
+    ]
+    
+    missing_permissions = []
+    
+    required_permissions.each do |permission|
+      unless manifest_content.include?(permission)
+        missing_permissions << permission
+      end
+    end
+    
+    unless missing_permissions.empty?
+      UI.user_error!("❌ Missing required permissions: #{missing_permissions.join(', ')}")
+    end
+    
+    UI.success("✅ All required permissions are present")
+  end
+
+  desc "Validate AdMob configuration"
+  lane :validate_admob_config do
+    UI.message("📱 Checking AdMob configuration...")
+    
+    manifest_path = File.join(Dir.pwd, '../app/src/main/AndroidManifest.xml')
+    manifest_content = File.read(manifest_path)
+    
+    build_gradle_path = File.join(Dir.pwd, '../app/build.gradle.kts')
+    build_gradle_content = File.read(build_gradle_path)
+    
+    # Check AdMob in manifest
+    unless manifest_content.include?('com.google.android.gms.ads.APPLICATION_ID')
+      UI.user_error!("❌ AdMob Application ID not found in AndroidManifest.xml")
+    end
+    
+    # Check AdMob in build.gradle.kts
+    unless build_gradle_content.include?('adMobAppId')
+      UI.user_error!("❌ AdMob app ID not configured in build.gradle.kts")
+    end
+    
+    UI.success("✅ AdMob configuration is valid")
+  end
+
+  desc "Check for test IDs in production configuration"
+  lane :check_for_test_ids do
+    UI.message("🧪 Checking for test IDs...")
+    
+    build_gradle_path = File.join(Dir.pwd, '../app/build.gradle.kts')
+    build_gradle_content = File.read(build_gradle_path)
+    
+    # Check for AdMob test ID
+    if build_gradle_content.include?('ca-app-pub-3940256099942544')
+      UI.important("⚠️  Warning: AdMob app ID is set to test ID. This should be changed to production ID.")
+    else
+      UI.success("✅ No test IDs found in production configuration")
+    end
+  end
+
+  desc "Validate signing configuration"
+  lane :validate_signing_config do
+    UI.message("🔑 Checking signing configuration...")
+    
+    build_gradle_path = File.join(Dir.pwd, '../app/build.gradle.kts')
+    build_gradle_content = File.read(build_gradle_path)
+    
+    # Check for signing configs
+    unless build_gradle_content.include?('signingConfigs')
+      UI.important("⚠️  Warning: No signing configuration found. App will be signed with debug keys.")
+    else
+      # Check if key.properties exists
+      key_properties_path = File.join(Dir.pwd, '../key.properties')
+      
+      if File.exist?(key_properties_path)
+        UI.success("✅ Production signing configuration found")
+      else
+        UI.important("⚠️  Warning: key.properties not found. App will be signed with debug keys (not secure for production).")
+      end
+    end
+  end
+
+  # =========================================================================
+  # BUILD LANES
+  # =========================================================================
+
+  desc "Build release AAB"
+  lane :build_release do
+    UI.header("🔨 Building Release AAB")
+    
+    # Navigate to Flutter project root
+    Dir.chdir('..') do
+      # Clean build
+      UI.message("Cleaning Flutter build...")
+      sh('flutter clean')
+      
+      # Get dependencies
+      UI.message("Getting Flutter dependencies...")
+      sh('flutter pub get')
+      
+      # Build AAB
+      UI.message("Building release AAB...")
+      sh('flutter build appbundle --release')
+    end
+    
+    UI.success("✅ Release AAB built successfully")
+  end
+
+  desc "Build release APK"
+  lane :build_apk do
+    UI.header("🔨 Building Release APK")
+    
+    # Navigate to Flutter project root
+    Dir.chdir('..') do
+      # Clean build
+      UI.message("Cleaning Flutter build...")
+      sh('flutter clean')
+      
+      # Get dependencies
+      UI.message("Getting Flutter dependencies...")
+      sh('flutter pub get')
+      
+      # Build APK
+      UI.message("Building release APK...")
+      sh('flutter build apk --release')
+    end
+    
+    UI.success("✅ Release APK built successfully")
+  end
+
+  # =========================================================================
+  # DEPLOYMENT LANES
+  # =========================================================================
+
+  desc "Validate, build, and upload to internal testing track"
+  lane :deploy_internal do
+    UI.header("🚀 Deploying to Internal Testing Track")
+    
+    # Step 1: Validate
+    validate
+    
+    # Step 2: Build
+    build_release
+    
+    # Step 3: Upload
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+    
+    UI.success("✅ Successfully deployed to internal testing track")
+  end
+
+  desc "Validate, build, and upload to alpha testing track"
+  lane :deploy_alpha do
+    UI.header("🚀 Deploying to Alpha Testing Track")
+    
+    # Step 1: Validate
+    validate
+    
+    # Step 2: Build
+    build_release
+    
+    # Step 3: Upload
+    upload_to_play_store(
+      track: 'alpha',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+    
+    UI.success("✅ Successfully deployed to alpha testing track")
+  end
+
+  desc "Validate, build, and upload to beta testing track"
+  lane :deploy_beta do
+    UI.header("🚀 Deploying to Beta Testing Track")
+    
+    # Step 1: Validate
+    validate
+    
+    # Step 2: Build
+    build_release
+    
+    # Step 3: Upload
+    upload_to_play_store(
+      track: 'beta',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+    
+    UI.success("✅ Successfully deployed to beta testing track")
+  end
+
+  desc "Validate, build, and upload to production"
+  lane :deploy_production do
+    UI.header("🚀 Deploying to Production")
+    
+    # Confirm production deployment
+    UI.important("⚠️  You are about to deploy to PRODUCTION!")
+    UI.important("This will be visible to all users!")
+    
+    confirm = UI.confirm("Are you sure you want to deploy to production?")
+    
+    unless confirm
+      UI.user_error!("❌ Deployment cancelled by user")
+    end
+    
+    # Step 1: Validate
+    validate
+    
+    # Step 2: Build
+    build_release
+    
+    # Step 3: Upload
+    upload_to_play_store(
+      track: 'production',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+    
+    UI.success("✅ Successfully deployed to production")
+  end
+
+  desc "Upload screenshots to Play Store"
+  lane :upload_screenshots do
+    UI.header("📸 Uploading Screenshots")
+    
+    upload_screenshots_to_play_store(
+      package_name: ENV['PACKAGE_NAME'] || 'com.ChrisTutorials.unit-converter',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      android_screenshots_path: '../marketing/unit_converter/screenshots/store_screenshots'
+    )
+    
+    UI.success("✅ Screenshots uploaded successfully")
+  end
+
+  desc "Upload metadata to Play Store"
+  lane :upload_metadata do
+    UI.header("📝 Uploading Metadata")
+    
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_screenshots: true,
+      skip_upload_images: true,
+      metadata_path: '../marketing/unit_converter/metadata'
+    )
+    
+    UI.success("✅ Metadata uploaded successfully")
+  end
+
+  # =========================================================================
+  # UTILITY LANES
+  # =========================================================================
+
+  desc "Run Flutter tests"
+  lane :test do
+    UI.header("🧪 Running Flutter Tests")
+    
+    Dir.chdir('..') do
+      sh('flutter test')
+    end
+    
+    UI.success("✅ All Flutter tests passed")
+  end
+
+  desc "Run Flutter tests and build validation"
+  lane :ci do
+    UI.header("🔄 CI Pipeline")
+    
+    # Run Flutter tests
+    test
+    
+    # Run validation checks
+    validate
+    
+    # Build release AAB
+    build_release
+    
+    UI.success("✅ CI pipeline completed successfully")
+  end
+
+  desc "Increment build number"
+  lane :bump_build_number do
+    UI.header("🔢 Bumping Build Number")
+    
+    pubspec_path = File.join(Dir.pwd, '../../pubspec.yaml')
+    pubspec_content = File.read(pubspec_path)
+    
+    # Extract current version
+    version_match = pubspec_content.match(/^version:\s*(\d+\.\d+\.\d+)\+(\d+)/)
+    
+    unless version_match
+      UI.user_error!("❌ Could not parse version from pubspec.yaml")
+    end
+    
+    version = version_match[1]
+    build_number = version_match[2].to_i
+    new_build_number = build_number + 1
+    
+    # Update version in pubspec.yaml
+    new_version_line = "version: #{version}+#{new_build_number}"
+    pubspec_content.sub!(/^version:\s*\d+\.\d+\.\d+\+\d+/, new_version_line)
+    
+    File.write(pubspec_path, pubspec_content)
+    
+    UI.success("✅ Build number bumped from #{build_number} to #{new_build_number}")
+    UI.message("📦 New version: #{new_version_line}")
+  end
+
+  desc "Show current version"
+  lane :show_version do
+    pubspec_path = File.join(Dir.pwd, '../../pubspec.yaml')
+    pubspec_content = File.read(pubspec_path)
+    
+    version_match = pubspec_content.match(/^version:\s*(\d+\.\d+\.\d+\+(\d+))/)
+    
+    if version_match
+      UI.message("📦 Current version: #{version_match[1]}")
+      UI.message("🔢 Build number: #{version_match[2]}")
+    else
+      UI.user_error!("❌ Could not parse version from pubspec.yaml")
+    end
+  end
+
+  # =========================================================================
+  # ERROR HANDLING
+  # =========================================================================
+
+  error do |lane, exception|
+    UI.error("❌ Lane #{lane} failed with exception: #{exception}")
+  end
+end

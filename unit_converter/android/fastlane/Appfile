@@ -1,0 +1,27 @@
+# Appfile for Fastlane
+# This file contains app-specific configuration
+
+# The package name of your app
+package_name("com.ChrisTutorials.unit-converter")
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
+
+# Play Store Service Account Configuration
+# To use Play Store upload functionality, you need to:
+# 1. Create a service account in Google Play Console
+# 2. Download the JSON key file
+# 3. Store it securely (never commit to git!)
+# 4. Set the json_key_file path below or use environment variable
+
+# Option 1: Use a JSON key file (recommended for development)
+# json_key_file("path/to/your/google-play-service-account.json")
+
+# Option 2: Use environment variable (recommended for CI/CD)
+# Set GOOGLE_PLAY_SERVICE_ACCOUNT_JSON environment variable with the JSON content
+
+# For more information on setting up a service account:
+# https://docs.fastlane.tools/actions/supply/#setup
+
+# Note: For security reasons, do not commit the JSON key file to version control
+# Add it to your .gitignore file
