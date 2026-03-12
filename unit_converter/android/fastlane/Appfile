@@ -2,7 +2,7 @@
 # This file contains app-specific configuration
 
 # The package name of your app
-package_name("com.ChrisTutorials.unit-converter")
+package_name("com.moonbark-studio.unit-converter")
 
 # For more information about the Appfile, see:
 #     https://docs.fastlane.tools/advanced/#appfile

@@ -178,7 +178,7 @@ cp -r unit_converter/android/fastlane other_project/android/fastlane
 
 # Update package name in Appfile
 # Edit other_project/android/fastlane/Appfile
-# Change: package_name("com.ChrisTutorials.unit-converter")
+# Change: package_name("com.moonbark-studio.unit-converter")
 # To: package_name("com.yourpackage.name")
 ```
 
