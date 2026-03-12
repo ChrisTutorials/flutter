@@ -5,52 +5,74 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.0008411">
+      <testcase classname="fastlane.lanes" name="00: opt_out_usage" time="0.0006251">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.0004096">
+      <testcase classname="fastlane.lanes" name="01: default_platform" time="0.0002928">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: Switch to android validate_android_manifest lane" time="0.0005251">
+      <testcase classname="fastlane.lanes" name="02: Switch to android validate lane" time="0.0003011">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: Switch to android validate_build_config lane" time="0.0007018">
+      <testcase classname="fastlane.lanes" name="03: Switch to android validate_android_manifest lane" time="0.0002788">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: Switch to android validate_version_format lane" time="0.0005491">
+      <testcase classname="fastlane.lanes" name="04: Switch to android validate_build_config lane" time="0.0002909">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: Switch to android validate_permissions lane" time="0.0005196">
+      <testcase classname="fastlane.lanes" name="05: Switch to android validate_version_format lane" time="0.0002965">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: Switch to android validate_admob_config lane" time="0.0005393">
+      <testcase classname="fastlane.lanes" name="06: Switch to android validate_permissions lane" time="0.0002811">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: Switch to android validate_purchase_release_configuration lane" time="0.0004166">
+      <testcase classname="fastlane.lanes" name="07: Switch to android validate_admob_config lane" time="0.0002756">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="8: Switch to android check_for_test_ids lane" time="0.0004324">
+      <testcase classname="fastlane.lanes" name="08: Switch to android validate_purchase_release_configuration lane" time="0.0002859">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="9: Switch to android validate_signing_config lane" time="0.0005581">
+      <testcase classname="fastlane.lanes" name="09: Switch to android check_for_test_ids lane" time="0.0002742">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: Switch to android validate_signing_config lane" time="0.0002876">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="11: Switch to android build_release lane" time="0.0005111">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="12: flutter clean" time="0.7514223">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="13: flutter pub get" time="0.9903161">
+        
+          <failure message="C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/actions/actions_helper.rb:67:in &apos;Fastlane::Actions.execute_action&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/fast_file.rb:224:in &apos;Fastlane::FastFile.sh&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/fast_file.rb:216:in &apos;Fastlane::FastFile#sh&apos;&#10;Fastfile:375:in &apos;block (3 levels) in Fastlane::FastFile#parsing_binding&apos;&#10;Fastfile:368:in &apos;Dir.chdir&apos;&#10;Fastfile:368:in &apos;block (2 levels) in Fastlane::FastFile#parsing_binding&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/lane.rb:41:in &apos;Fastlane::Lane#call&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/runner.rb:204:in &apos;Fastlane::Runner#try_switch_to_lane&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/runner.rb:146:in &apos;Fastlane::Runner#trigger_action_by_name&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/fast_file.rb:159:in &apos;Fastlane::FastFile#method_missing&apos;&#10;Fastfile:419:in &apos;block (2 levels) in Fastlane::FastFile#parsing_binding&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/lane.rb:41:in &apos;Fastlane::Lane#call&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/runner.rb:49:in &apos;block in Fastlane::Runner#execute&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/runner.rb:45:in &apos;Dir.chdir&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/runner.rb:45:in &apos;Fastlane::Runner#execute&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/lane_manager.rb:46:in &apos;Fastlane::LaneManager.cruise_lane&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/command_line_handler.rb:34:in &apos;Fastlane::CommandLineHandler.handle&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/commands_generator.rb:110:in &apos;block (2 levels) in Fastlane::CommandsGenerator#run&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/commander-4.6.0/lib/commander/command.rb:187:in &apos;Commander::Command#call&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/commander-4.6.0/lib/commander/command.rb:157:in &apos;Commander::Command#run&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/commander-4.6.0/lib/commander/runner.rb:444:in &apos;Commander::Runner#run_active_command&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:124:in &apos;Commander::Runner#run!&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/commander-4.6.0/lib/commander/delegates.rb:18:in &apos;Commander::Delegates#run!&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/commands_generator.rb:363:in &apos;Fastlane::CommandsGenerator#run&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/commands_generator.rb:43:in &apos;Fastlane::CommandsGenerator.start&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/fastlane/lib/fastlane/cli_tools_distributor.rb:132:in &apos;Fastlane::CLIToolsDistributor.take_off&apos;&#10;C:/Ruby34-x64/lib/ruby/gems/3.4.0/gems/fastlane-2.232.2/bin/fastlane:23:in &apos;&lt;top (required)&gt;&apos;&#10;C:/Ruby34-x64/bin/fastlane:36:in &apos;Kernel#load&apos;&#10;C:/Ruby34-x64/bin/fastlane:36:in &apos;&lt;main&gt;&apos;&#10;&#10;Exit status of command &apos;flutter pub get&apos; was 1 instead of 0.&#10;Resolving dependencies in `C:\dev\flutter\unit_converter`...&#10;Because every version of common_flutter_ads from path depends on intl ^0.19.0 and unit_converter depends on intl ^0.20.2, common_flutter_ads from path is forbidden.&#10;So, because unit_converter depends on common_flutter_ads from path, version solving failed.&#10;&#10;&#10;You can try the following suggestion to make the pubspec resolve:&#10;* Consider downgrading your constraint on intl: flutter pub add intl:^0.19.0&#10;Failed to update packages.&#10;" />
         
       </testcase>
     
