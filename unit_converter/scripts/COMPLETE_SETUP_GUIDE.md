@@ -1,6 +1,6 @@
-Ôªø# Google Play Store Setup - Complete Guide
+# Google Play Store Setup - Complete Guide
 
-## üìã Quick Copy-Paste Content
+## ?? Quick Copy-Paste Content
 
 ### 1. APP NAME (30 chars max)
 Unit Converter Pro
@@ -14,126 +14,126 @@ The ultimate unit converter for professionals, students, and everyday users. Con
 
 KEY FEATURES:
 
-‚úÖ 8+ Unit Categories
-‚Ä¢ Length (meters, feet, inches, miles, kilometers, and more)
-‚Ä¢ Weight (kilograms, pounds, ounces, tons, grams, and more)
-‚Ä¢ Temperature (Celsius, Fahrenheit, Kelvin)
-‚Ä¢ Volume (liters, gallons, milliliters, cubic meters, and more)
-‚Ä¢ Area (square meters, square feet, acres, hectares, and more)
-‚Ä¢ Speed (km/h, mph, m/s, knots, and more)
-‚Ä¢ Time (seconds, minutes, hours, days, weeks, months, years)
-‚Ä¢ Currency (USD, EUR, GBP, and 150+ more)
+? 8+ Unit Categories
+ï Length (meters, feet, inches, miles, kilometers, and more)
+ï Weight (kilograms, pounds, ounces, tons, grams, and more)
+ï Temperature (Celsius, Fahrenheit, Kelvin)
+ï Volume (liters, gallons, milliliters, cubic meters, and more)
+ï Area (square meters, square feet, acres, hectares, and more)
+ï Speed (km/h, mph, m/s, knots, and more)
+ï Time (seconds, minutes, hours, days, weeks, months, years)
+ï Currency (USD, EUR, GBP, and 150+ more)
 
-‚úÖ Custom Units
-‚Ä¢ Create your own conversion units for specialized needs
-‚Ä¢ Perfect for engineers, scientists, and professionals
-‚Ä¢ Save custom units locally on your device
-‚Ä¢ Use custom units just like built-in units
+? Custom Units
+ï Create your own conversion units for specialized needs
+ï Perfect for engineers, scientists, and professionals
+ï Save custom units locally on your device
+ï Use custom units just like built-in units
 
-‚úÖ Live Currency Conversion
-‚Ä¢ Real-time exchange rates via Frankfurter API
-‚Ä¢ Offline fallback with cached rates
-‚Ä¢ Support for 150+ currencies
-‚Ä¢ Automatic rate updates
+? Live Currency Conversion
+ï Real-time exchange rates via Frankfurter API
+ï Offline fallback with cached rates
+ï Support for 150+ currencies
+ï Automatic rate updates
 
-‚úÖ Quick Presets
-‚Ä¢ One-tap common conversions
-‚Ä¢ ¬∞F ‚Üî ¬∞C (Fahrenheit to Celsius)
-‚Ä¢ kg ‚Üî lb (Kilograms to Pounds)
-‚Ä¢ in ‚Üî cm (Inches to Centimeters)
-‚Ä¢ gal ‚Üî L (Gallons to Liters)
-‚Ä¢ USD ‚Üî EUR (US Dollar to Euro)
-‚Ä¢ EUR ‚Üî GBP (Euro to British Pound)
+? Quick Presets
+ï One-tap common conversions
+ï ∞F ? ∞C (Fahrenheit to Celsius)
+ï kg ? lb (Kilograms to Pounds)
+ï in ? cm (Inches to Centimeters)
+ï gal ? L (Gallons to Liters)
+ï USD ? EUR (US Dollar to Euro)
+ï EUR ? GBP (Euro to British Pound)
 
-‚úÖ Beautiful Themes
-‚Ä¢ 5 stunning color palettes (Default, Blue, Green, Orange, Purple)
-‚Ä¢ Dark mode for night use
-‚Ä¢ Light mode for day use
-‚Ä¢ System theme to match your device
-‚Ä¢ Smooth theme transitions
+? Beautiful Themes
+ï 5 stunning color palettes (Default, Blue, Green, Orange, Purple)
+ï Dark mode for night use
+ï Light mode for day use
+ï System theme to match your device
+ï Smooth theme transitions
 
-‚úÖ Offline-First Architecture
-‚Ä¢ Works without internet for most features
-‚Ä¢ Cached currency rates for offline use
-‚Ä¢ All conversions happen locally
-‚Ä¢ No data usage for basic conversions
+? Offline-First Architecture
+ï Works without internet for most features
+ï Cached currency rates for offline use
+ï All conversions happen locally
+ï No data usage for basic conversions
 
-‚úÖ Smart Search
-‚Ä¢ Search across all categories, units, and presets
-‚Ä¢ Find converters instantly
-‚Ä¢ Search by unit name, symbol, or category
-‚Ä¢ Filter results in real-time
+? Smart Search
+ï Search across all categories, units, and presets
+ï Find converters instantly
+ï Search by unit name, symbol, or category
+ï Filter results in real-time
 
-‚úÖ Recent Conversions
-‚Ä¢ Quick access to previous conversions
-‚Ä¢ Timestamp for each conversion
-‚Ä¢ One-tap to repeat conversions
-‚Ä¢ Clear history when needed
+? Recent Conversions
+ï Quick access to previous conversions
+ï Timestamp for each conversion
+ï One-tap to repeat conversions
+ï Clear history when needed
 
-‚úÖ Favorites
-‚Ä¢ Save your most-used conversions
-‚Ä¢ Quick access from home screen
-‚Ä¢ Organize your workflow
-‚Ä¢ Never lose important conversions
+? Favorites
+ï Save your most-used conversions
+ï Quick access from home screen
+ï Organize your workflow
+ï Never lose important conversions
 
 PERFECT FOR:
 
-üîß Engineers & Scientists
-‚Ä¢ Custom units for specialized measurements
-‚Ä¢ Precise calculations
-‚Ä¢ Offline reliability
+?? Engineers & Scientists
+ï Custom units for specialized measurements
+ï Precise calculations
+ï Offline reliability
 
-üåç Travelers
-‚Ä¢ Live currency conversion
-‚Ä¢ Offline fallback
-‚Ä¢ Quick unit conversions on the go
+?? Travelers
+ï Live currency conversion
+ï Offline fallback
+ï Quick unit conversions on the go
 
-üìö Students & Educators
-‚Ä¢ Easy to understand interface
-‚Ä¢ Comprehensive unit coverage
-‚Ä¢ Perfect for homework and teaching
+?? Students & Educators
+ï Easy to understand interface
+ï Comprehensive unit coverage
+ï Perfect for homework and teaching
 
-üíº Professionals
-‚Ä¢ Reliable conversions
-‚Ä¢ Custom workflows
-‚Ä¢ Multi-platform support
+?? Professionals
+ï Reliable conversions
+ï Custom workflows
+ï Multi-platform support
 
-üè† Everyday Users
-‚Ä¢ Simple and intuitive
-‚Ä¢ Beautiful design
-‚Ä¢ Works offline
+?? Everyday Users
+ï Simple and intuitive
+ï Beautiful design
+ï Works offline
 
 MULTI-PLATFORM SUPPORT:
 
 Works seamlessly on:
-‚Ä¢ Android (this app)
-‚Ä¢ iOS (coming soon)
-‚Ä¢ Windows
-‚Ä¢ macOS
-‚Ä¢ Linux
-‚Ä¢ Web
+ï Android (this app)
+ï iOS (coming soon)
+ï Windows
+ï macOS
+ï Linux
+ï Web
 
 Consistent experience across all your devices!
 
 WHY CHOOSE US?
 
 Unlike other unit converters, we offer:
-‚úÖ Custom units - Create your own measurements
-‚úÖ Live currency with offline - Best of both worlds
-‚úÖ Beautiful themes - 5 color palettes
-‚úÖ True multi-platform - Works on 6 platforms
-‚úÖ Offline-first - No internet required
-‚úÖ Smart search - Find anything instantly
-‚úÖ No ads in the way - Clean, focused experience
-‚úÖ Privacy-focused - Your data stays on your device
+? Custom units - Create your own measurements
+? Live currency with offline - Best of both worlds
+? Beautiful themes - 5 color palettes
+? True multi-platform - Works on 6 platforms
+? Offline-first - No internet required
+? Smart search - Find anything instantly
+? No ads in the way - Clean, focused experience
+? Privacy-focused - Your data stays on your device
 
 PRIVACY:
 
-‚Ä¢ No account required
-‚Ä¢ No data collection beyond local storage
-‚Ä¢ No tracking or analytics
-‚Ä¢ Your custom units and preferences stay on your device
-‚Ä¢ Open source and transparent
+ï No account required
+ï No data collection beyond local storage
+ï No tracking or analytics
+ï Your custom units and preferences stay on your device
+ï Open source and transparent
 
 DOWNLOAD NOW:
 
@@ -142,18 +142,18 @@ Start converting with the most powerful unit converter available. Perfect for pr
 ### 4. RELEASE NOTES (500 chars max)
 
 Initial release:
-‚Ä¢ 8+ unit categories with custom units
-‚Ä¢ Live currency conversion with offline fallback
-‚Ä¢ Quick presets for common conversions
-‚Ä¢ 5 beautiful themes with dark/light mode
-‚Ä¢ Offline-first architecture
-‚Ä¢ Smart search functionality
-‚Ä¢ Recent conversions and favorites
-‚Ä¢ Multi-platform support
+ï 8+ unit categories with custom units
+ï Live currency conversion with offline fallback
+ï Quick presets for common conversions
+ï 5 beautiful themes with dark/light mode
+ï Offline-first architecture
+ï Smart search functionality
+ï Recent conversions and favorites
+ï Multi-platform support
 
-## üì∏ How to Take Screenshots
+## ?? How to Take Screenshots
 
-### ‚ö†Ô∏è IMPORTANT: No Emulator Required
+### ?? IMPORTANT: No Emulator Required
 
 **Do not use Android emulator for screenshots.** Use web browser or Playwright for a much faster, more efficient workflow.
 
@@ -224,7 +224,7 @@ Initial release:
  - Show dark/light/system toggle
 
 5. **Custom Units Screen** (05_custom_units.png)
- - Go to Settings ‚Üí Custom Units
+ - Go to Settings ? Custom Units
  - Show list of custom units
  - Show Add Custom Unit button
 
@@ -242,7 +242,7 @@ Initial release:
 - Show key features clearly
 
 **Note**: Web browser screenshots are much faster and easier than emulator screenshots. No emulator setup required!
-## üé® App Icon Creation
+## ?? App Icon Creation
 
 ### Create a 512x512 PNG icon:
 
@@ -264,7 +264,7 @@ Initial release:
 - Use your brand colors
 - Test at different sizes (32px, 48px, 72px, 96px, 144px, 192px)
 
-## üîê Privacy Policy Setup
+## ?? Privacy Policy Setup
 
 ### Create a Free Privacy Policy:
 
@@ -295,7 +295,7 @@ Initial release:
 - https://unit-converter-privacy-policy.netlify.app/
 - https://yourwebsite.com/privacy-policy
 
-## üìù Content Rating Questionnaire
+## ?? Content Rating Questionnaire
 
 ### Answer these questions in Google Play Console:
 
@@ -328,7 +328,7 @@ Initial release:
 
 ### Expected Result: Everyone rating
 
-## üí∞ Pricing and Distribution
+## ?? Pricing and Distribution
 
 ### Settings in Google Play Console:
 
@@ -344,14 +344,14 @@ Initial release:
 4. **US Export Laws:**
    - Check the box to confirm compliance
 
-## üì¶ App Bundle Location
+## ?? App Bundle Location
 
 Your release AAB is ready at:
 C:\dev\flutter\unit_converter\build\app\outputs\bundle\release\app-release.aab
 
 Size: 46.8MB
 
-## üöÄ Complete Setup Checklist
+## ?? Complete Setup Checklist
 
 ### Store Listing
 - [ ] App name: Unit Converter Pro
@@ -382,13 +382,13 @@ Size: 46.8MB
 - [ ] Release notes added
 - [ ] Submitted for review
 
-## üìû Contact Information
+## ?? Contact Information
 
 Add to Google Play Console:
 - Support email: your-email@moonbarkstudio.com
 - Website: your-website.com (optional)
 
-## üéØ Next Steps After Setup
+## ?? Next Steps After Setup
 
 1. Upload AAB to Internal Testing
 2. Test the app yourself
@@ -398,10 +398,11 @@ Add to Google Play Console:
 6. Wait for Google review (1-3 days)
 7. App goes live!
 
-## üìö Additional Resources
+## ?? Additional Resources
 
 - Google Play Console: https://play.google.com/console
 - Flutter Deployment: https://flutter.dev/docs/deployment/android
 - AdMob Setup: https://developers.google.com/admob/android/quick-start
+
 
 

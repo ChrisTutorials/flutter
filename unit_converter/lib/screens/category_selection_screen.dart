@@ -6,9 +6,11 @@ import '../models/conversion.dart';
 import '../models/favorite_conversion.dart';
 import '../models/quick_preset.dart';
 import '../services/admob_service.dart';
+import '../services/currency_service.dart';
 import '../services/favorite_conversions_service.dart';
 import '../services/recent_conversions_service.dart';
 import '../services/theme_service.dart';
+import '../services/windows_store_access_policy.dart';
 import '../services/widget_service.dart';
 import '../utils/home_search.dart';
 import '../utils/navigation_utils.dart';
@@ -31,11 +33,13 @@ import 'about_screen.dart';
 class CategorySelectionScreen extends StatefulWidget {
   final ThemeController themeController;
   final ScreenshotScrollTarget initialScrollTarget;
+  final WindowsStoreAccessPolicy? windowsStoreAccessPolicy;
 
   const CategorySelectionScreen({
     super.key,
     required this.themeController,
     this.initialScrollTarget = ScreenshotScrollTarget.none,
+    this.windowsStoreAccessPolicy,
   });
 
   @override
@@ -45,10 +49,12 @@ class CategorySelectionScreen extends StatefulWidget {
 
 class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   BannerAd? _bannerAd;
+  late final WindowsStoreAccessPolicy _windowsStoreAccessPolicy;
   final FavoriteConversionsService _favoritesService =
       FavoriteConversionsService();
   final RecentConversionsService _recentConversionsService =
       RecentConversionsService();
+  final CurrencyService _currencyService = CurrencyService();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _historySectionGlobalKey = GlobalKey();
@@ -58,10 +64,14 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   bool _widgetAvailable = false;
   String _searchQuery = '';
   bool _didAttemptInitialScroll = false;
+  Map<String, String> _currencyNames = {};
+  bool _isPremiumUnlocked = false;
 
   @override
   void initState() {
     super.initState();
+    _windowsStoreAccessPolicy =
+        widget.windowsStoreAccessPolicy ?? WindowsStoreAccessPolicy();
     _loadBannerAd();
     _refreshHomeData();
 
@@ -83,6 +93,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       _favoritesService.getFavorites(),
       _recentConversionsService.getRecentConversions(),
       WidgetService.isAvailable(),
+      _currencyService.getCurrencies(),
     ]);
 
     if (!mounted) {
@@ -94,6 +105,17 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       _favorites = results[1] as List<FavoriteConversion>;
       _recentConversions = results[2] as List<RecentConversion>;
       _widgetAvailable = results[3] as bool;
+      _currencyNames = results[4] as Map<String, String>;
+    });
+
+    final isPremiumUnlocked =
+        await _windowsStoreAccessPolicy.isPremiumUnlocked();
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isPremiumUnlocked = isPremiumUnlocked;
     });
 
     _scheduleInitialScrollIfNeeded();
@@ -147,6 +169,18 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     String? presetLabel,
     double? sampleValue,
   }) async {
+    final canAccess = await _windowsStoreAccessPolicy.canAccessCategory(
+      categoryName,
+    );
+    if (!canAccess) {
+      _showPremiumDialog(
+        title: '$categoryName is part of Premium',
+        message:
+            'Unlock advanced converters on Windows, including $categoryName, Currency, and Custom Units.',
+      );
+      return;
+    }
+
     final category = await ConversionData.getCategoryWithCustomUnits(
       categoryName,
     );
@@ -169,6 +203,16 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   }
 
   Future<void> _openCurrency({QuickPreset? preset}) async {
+    final canAccess = await _windowsStoreAccessPolicy.canAccessCurrency();
+    if (!canAccess) {
+      _showPremiumDialog(
+        title: 'Currency is part of Premium',
+        message:
+            'Unlock live currency conversion and the rest of the advanced Windows toolset.',
+      );
+      return;
+    }
+
     await NavigationUtils.pushAndAwait<dynamic>(
       context,
       CurrencyConverterScreen(preset: preset),
@@ -189,6 +233,67 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       toSymbol: preset.toSymbol,
       presetLabel: preset.label,
       sampleValue: preset.sampleValue,
+    );
+  }
+
+  Future<void> _openCustomUnits() async {
+    final canAccess = await _windowsStoreAccessPolicy.canAccessCustomUnits();
+    if (!canAccess) {
+      _showPremiumDialog(
+        title: 'Custom Units is part of Premium',
+        message:
+            'Unlock Custom Units on Windows to create and save your own conversions.',
+      );
+      return;
+    }
+
+    await NavigationUtils.pushAndAwait<dynamic>(
+      context,
+      const CustomUnitsScreen(),
+    );
+    _refreshHomeData();
+  }
+
+  void _showPremiumDialog({
+    required String title,
+    required String message,
+  }) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Maybe later'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await NavigationUtils.pushAndAwait<dynamic>(
+                  context,
+                  SettingsScreen(
+                    themeController: widget.themeController,
+                    widgetAvailable: _widgetAvailable,
+                    isWindowsPlatform:
+                        _windowsStoreAccessPolicy.isWindowsStorePolicyActive,
+                  ),
+                );
+                _refreshHomeData();
+              },
+              child: Text(
+                _isPremiumUnlocked
+                    ? 'Premium Active'
+                    : (_windowsStoreAccessPolicy.isWindowsStorePolicyActive
+                          ? 'Unlock Premium'
+                          : 'Upgrade'),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -329,11 +434,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             icon: const Icon(Icons.extension_outlined),
             tooltip: 'Custom units',
             onPressed: () async {
-               await NavigationUtils.pushAndAwait(
-                 context,
-                 const AboutScreen(),
-               );
-              _refreshHomeData();
+              await _openCustomUnits();
             },
           ),
           IconButton(
@@ -542,6 +643,8 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
 
   Widget _buildCurrencyCard() {
     final theme = Theme.of(context);
+    final isLocked =
+        _windowsStoreAccessPolicy.isCurrencyPremium() && !_isPremiumUnlocked;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -587,7 +690,9 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   ),
                   SizedBox(height: compact ? 1 : 4),
                   Text(
-                    'Live rates via Frankfurter',
+                    isLocked
+                        ? 'Live rates with Premium'
+                        : 'Live rates via Frankfurter',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -596,6 +701,14 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (isLocked) ...[
+                    SizedBox(height: compact ? 4 : 8),
+                    Icon(
+                      Icons.workspace_premium,
+                      size: compact ? 16 : 18,
+                      color: theme.colorScheme.secondary,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -606,9 +719,15 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   }
 
   Widget _buildCategoryCard(ConversionCategory category) {
+    final isLocked =
+        _windowsStoreAccessPolicy.isPremiumCategory(category.name) &&
+        !_isPremiumUnlocked;
+
     return CategoryCard(
       category: category,
       onTap: () => _openCategory(category.name),
+      isLocked: isLocked,
+      lockedSubtitle: '${category.units.length} units',
     );
   }
 
@@ -798,6 +917,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                   presetLabel: favorite.title,
                 ),
                 onRemove: () => _removeFavorite(favorite),
+                currencyNames: _currencyNames,
               );
             },
           ),
@@ -836,6 +956,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               return PresetCard(
                 preset: preset,
                 onTap: () => _handlePresetTap(preset),
+                currencyNames: _currencyNames,
               );
             },
           ),
@@ -848,6 +969,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     return RecentConversionCard(
       conversion: conversion,
       onDelete: () => _deleteConversion(conversion),
+      currencyNames: _currencyNames,
     );
   }
 

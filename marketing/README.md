@@ -53,3 +53,4 @@ These materials are used for:
 - Website and social media marketing
 - Documentation and presentations
 - Promotional materials
+

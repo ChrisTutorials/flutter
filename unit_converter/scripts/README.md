@@ -1,6 +1,6 @@
-﻿# Automated CLI Upload - Summary
+# Automated CLI Upload - Summary
 
-## ✅ What We've Accomplished
+## ? What We've Accomplished
 
 ### 1. Built Release App Bundle
 - File: build\app\outputs\bundle\release\app-release.aab
@@ -10,14 +10,14 @@
 ### 2. Created Deployment Script
 - File: scripts\deploy-to-play-store.ps1
 - Usage: .\scripts\deploy-to-play-store.ps1 -Track 'internal' -ReleaseNotes 'Your notes'
-- Status: Working ✅
+- Status: Working ?
 
 ### 3. Created Documentation
 - PLAY_STORE_SETUP.md - Complete setup guide
 - QUICK_START.md - Quick start for first release
 - Status: Ready to use
 
-## 🚀 What You Need to Do Now
+## ?? What You Need to Do Now
 
 ### Immediate Next Steps (Manual Upload - Recommended for First Release)
 
@@ -40,19 +40,19 @@
    - You'll get email notifications
    - Once approved, your app goes live!
 
-## 📁 Files Created
+## ?? Files Created
 
 `
 c:\dev\flutter\unit_converter\
-├── build\app\outputs\bundle\release\
-│   └── app-release.aab (46.8MB) ✅ Ready for upload
-└── scripts\
-    ├── deploy-to-play-store.ps1 ✅ Deployment script
-    ├── PLAY_STORE_SETUP.md ✅ Complete setup guide
-    └── QUICK_START.md ✅ Quick start guide
++-- build\app\outputs\bundle\release\
+�   +-- app-release.aab (46.8MB) ? Ready for upload
++-- scripts\
+    +-- deploy-to-play-store.ps1 ? Deployment script
+    +-- PLAY_STORE_SETUP.md ? Complete setup guide
+    +-- QUICK_START.md ? Quick start guide
 `
 
-## 🔧 Future Automation (Optional)
+## ?? Future Automation (Optional)
 
 For fully automated uploads in future releases, you'll need to:
 
@@ -64,7 +64,7 @@ For fully automated uploads in future releases, you'll need to:
 
 This is optional - you can always upload manually using the AAB file we built.
 
-## 💡 Pro Tips
+## ?? Pro Tips
 
 1. **Use Internal Testing First**
    - Upload to internal testing track before production
@@ -85,9 +85,10 @@ This is optional - you can always upload manually using the AAB file we built.
    - Read user reviews
    - Fix bugs quickly
 
-## 📞 Need Help?
+## ?? Need Help?
 
 - Check QUICK_START.md for detailed instructions
 - Check PLAY_STORE_SETUP.md for complete setup
 - Google Play Console Help: https://support.google.com/googleplay/android-developer
+
 

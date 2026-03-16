@@ -69,8 +69,8 @@ flutter test test/integration/store_screenshots_validation_test.dart
 
 For complete technical details, algorithms, troubleshooting, and threshold explanations, see:
 
-- **[FULL_SCREEN_SCREENSHOT_METHODOLOGY.md](../../unit_converter/docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md)** - Complete technical documentation
-- **[SCREENSHOT_GENERATION_WORKFLOW.md](../../unit_converter/docs/SCREENSHOT_GENERATION_WORKFLOW.md)** - Step-by-step workflow
+- **[full-screen-screenshot-methodology.md](../../unit_converter/docs/full-screen-screenshot-methodology.md)** - Complete technical documentation
+- **[screenshot-generation-workflow.md](../../unit_converter/docs/screenshot-generation-workflow.md)** - Step-by-step workflow
 - **[FULL_SCREEN_SCREENSHOT_IMPLEMENTATION.md](../../unit_converter/FULL_SCREEN_SCREENSHOT_IMPLEMENTATION.md)** - Quick reference summary
 
 ## Validation Test
@@ -152,3 +152,4 @@ Regenerate screenshots when:
 - Bug fixes affect visual appearance
 - New device sizes are supported
 - Validation tests are improved
+

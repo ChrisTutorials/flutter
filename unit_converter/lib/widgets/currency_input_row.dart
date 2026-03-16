@@ -67,11 +67,19 @@ class CurrencyInputRow extends StatelessWidget {
               child: DropdownButtonFormField<String>(
                 initialValue: selectedCode,
                 isExpanded: true,
+                selectedItemBuilder: (context) {
+                  return items.entries.map((entry) {
+                    return DropdownMenuItem<String>(
+                      value: entry.key,
+                      child: Text(entry.key),
+                    );
+                  }).toList();
+                },
                 items: items.entries
                     .map(
                       (entry) => DropdownMenuItem<String>(
                         value: entry.key,
-                        child: Text(entry.key),
+                        child: Text('${entry.key} - ${entry.value}'),
                       ),
                     )
                     .toList(),

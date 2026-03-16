@@ -5,17 +5,117 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: opt_out_usage" time="0.0008777">
+      <testcase classname="fastlane.lanes" name="00: opt_out_usage" time="0.0009878">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.0005662">
+      <testcase classname="fastlane.lanes" name="01: default_platform" time="0.0005246">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: powershell -ExecutionPolicy Bypass -File scripts/generate-store-screenshots.ps1" time="31.2983423">
+      <testcase classname="fastlane.lanes" name="02: Switch to android validate lane" time="0.0007163">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="03: Switch to android validate_android_manifest lane" time="0.000501">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="04: Switch to android validate_build_config lane" time="0.0005375">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="05: Switch to android validate_version_format lane" time="0.0005924">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="06: Switch to android validate_permissions lane" time="0.0004922">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="07: Switch to android validate_admob_config lane" time="0.0004261">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="08: Switch to android validate_purchase_release_configuration lane" time="0.0004177">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="09: Switch to android check_for_test_ids lane" time="0.000525">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: Switch to android validate_signing_config lane" time="0.0004709">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="11: Switch to android bump_build_number lane" time="0.0004436">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="12: Switch to android generate_screenshots lane" time="0.0006412">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="13: powershell -ExecutionPolicy Bypass -File scripts/generate-store-screenshots.ps1" time="124.3460774">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="14: Switch to android upload_metadata lane" time="0.0006033">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="15: upload_to_play_store" time="2.1609281">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="16: Switch to android upload_screenshots lane" time="0.000639">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="17: upload_to_play_store" time="3.5898018">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="18: Switch to android build_release lane" time="0.0006248">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="19: flutter clean" time="3.1410316">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="20: flutter pub get" time="1.503184">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="21: flutter build appbundle --release" time="74.2380801">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="22: upload_to_play_store" time="34.2410927">
         
       </testcase>
     

@@ -984,3 +984,4 @@ void navigateToLogin(BuildContext context) {
 ## License
 
 This package is available for use in your Flutter projects.
+

@@ -53,6 +53,7 @@ Future<void> pumpStoreScreenshotApp(
     ScreenshotApp(
       device: device,
       title: 'All-in-One Unit Converter',
+      debugShowCheckedModeBanner: false,
       themeMode: harness.themeController.themeMode,
       theme: buildAppTheme(
         palette: harness.themeController.palette,

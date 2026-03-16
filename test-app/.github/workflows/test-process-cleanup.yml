@@ -1,0 +1,83 @@
+name: Test Process Cleanup
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-process-cleanup:
+    name: Test Process Cleanup
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Setup PowerShell
+        shell: pwsh
+        run: |
+          Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+
+      - name: Run Process Cleanup Tests
+        shell: pwsh
+        run: |
+          cd c:\dev\flutter
+          .\scripts\test-process-cleanup.ps1 -ShowDetails
+
+      - name: Test Deployment Script Cleanup
+        shell: pwsh
+        run: |
+          # Test that the deployment script can clean up processes
+          Write-Host "Testing deployment script cleanup function..."
+          cd c:\dev\flutter
+          .\scripts\deploy.ps1 -Platform windows -Track retail -SkipConfirmation -SkipScreenshots -SkipMetadata -SkipValidation 2>&1 | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Deployment failed, but checking for zombie processes..."
+          }
+
+          # Check for zombie processes
+          $dartProcesses = Get-Process | Where-Object {$_.ProcessName -like "*dart*" -or $_.ProcessName -like "*flutter*"}
+          $rubyProcesses = Get-Process | Where-Object {$_.ProcessName -like "*ruby*" -or $_.ProcessName -like "*fastlane*"}
+
+          if ($dartProcesses -or $rubyProcesses) {
+            Write-Host "ERROR: Zombie processes found after deployment!"
+            $dartProcesses | Format-Table
+            $rubyProcesses | Format-Table
+            exit 1
+          } else {
+            Write-Host "SUCCESS: No zombie processes found after deployment"
+          }
+
+      - name: Verify Clean State
+        shell: pwsh
+        run: |
+          # Final verification that no processes remain
+          Write-Host "Final verification of clean state..."
+          $allProcesses = Get-Process | Where-Object {$_.ProcessName -like "*dart*" -or $_.ProcessName -like "*flutter*" -or $_.ProcessName -like "*ruby*" -or $_.ProcessName -like "*fastlane*"}
+
+          if ($allProcesses) {
+            Write-Host "ERROR: Processes still running after all tests!"
+            $allProcesses | Format-Table -AutoSize
+            exit 1
+          } else {
+            Write-Host "SUCCESS: System is clean - no zombie processes detected"
+          }
+
+      - name: Report Test Results
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_JOB_STATUS -eq 'success') {
+            Write-Host "✅ All process cleanup tests passed!"
+          } else {
+            Write-Host "❌ Some process cleanup tests failed"
+            exit 1
+          }

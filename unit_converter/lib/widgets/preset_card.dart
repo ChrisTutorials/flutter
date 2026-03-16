@@ -7,10 +7,12 @@ class PresetCard extends StatelessWidget {
   const PresetCard({
     required this.preset,
     required this.onTap,
+    this.currencyNames,
   });
 
   final QuickPreset preset;
   final VoidCallback onTap;
+  final Map<String, String>? currencyNames;
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +48,15 @@ class PresetCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    preset.label,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                  Tooltip(
+                    message: currencyNames != null && preset.isCurrency
+                        ? '${preset.fromSymbol} (${currencyNames![preset.fromSymbol] ?? 'Unknown'}) to ${preset.toSymbol} (${currencyNames![preset.toSymbol] ?? 'Unknown'})'
+                        : preset.label,
+                    child: Text(
+                      preset.label,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),

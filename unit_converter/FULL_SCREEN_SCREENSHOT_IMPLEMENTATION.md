@@ -36,14 +36,14 @@ Added two new validation layers:
 
 Created three documentation files:
 
-#### FULL_SCREEN_SCREENSHOT_METHODOLOGY.md
+#### full-screen-screenshot-methodology.md
 - Detailed explanation of all validation layers
 - Algorithm descriptions (chunk detection, quadrant validation)
 - Technical details and threshold explanations
 - Troubleshooting guide
 - Integration with release process
 
-#### SCREENSHOT_GENERATION_WORKFLOW.md
+#### screenshot-generation-workflow.md
 - Step-by-step workflow for generating new screenshots
 - Commands to run for each step
 - Troubleshooting common issues
@@ -179,13 +179,14 @@ The enhanced validation correctly distinguishes between:
 - `.windsurf/scripts/fastlane-wrapper.ps1` - Fastlane wrapper
 
 ### Documentation
-- `docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md` - Detailed methodology
-- `docs/SCREENSHOT_GENERATION_WORKFLOW.md` - Step-by-step workflow
+- `docs/full-screen-screenshot-methodology.md` - Detailed methodology
+- `docs/screenshot-generation-workflow.md` - Step-by-step workflow
 - `SCREENSHOT_FIX_SUMMARY.md` - Original fix summary
 
 ## Questions?
 
 See the detailed documentation:
 - [.windsurf/skills/full-screen-screenshot-validation/](.windsurf/skills/full-screen-screenshot-validation/) for quick reference
-- [docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md](docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md) for technical details
-- [docs/SCREENSHOT_GENERATION_WORKFLOW.md](docs/SCREENSHOT_GENERATION_WORKFLOW.md) for step-by-step instructions
+- [docs/full-screen-screenshot-methodology.md](docs/full-screen-screenshot-methodology.md) for technical details
+- [docs/screenshot-generation-workflow.md](docs/screenshot-generation-workflow.md) for step-by-step instructions
+

@@ -1,11 +1,11 @@
-﻿# Quick Start Guide - Publishing Your First Release
+# Quick Start Guide - Publishing Your First Release
 
-## ✅ What's Ready
+## ? What's Ready
 - App bundle built successfully (46.8MB)
 - Deployment script working
 - AAB file ready at: build\app\outputs\bundle\release\app-release.aab
 
-## 🚀 Next Steps - Upload to Google Play Console
+## ?? Next Steps - Upload to Google Play Console
 
 ### Option 1: Manual Upload (Recommended for First Release)
 1. Open: https://play.google.com/console/u/2/developers/7048002971075729329/app/4973705976520115383/app-dashboard
@@ -25,7 +25,7 @@ cd C:\dev\flutter\unit_converter
 `
 Then manually upload the AAB file as shown in Option 1.
 
-## 📋 Required Information Before Publishing
+## ?? Required Information Before Publishing
 
 You must complete these sections in Google Play Console:
 
@@ -37,22 +37,22 @@ You must complete these sections in Google Play Console:
   The ultimate unit converter for professionals and everyday users.
   
   KEY FEATURES:
-  • 8+ Unit Categories - Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
-  • Custom Units - Create your own conversion units for specialized needs
-  • Live Currency - Real-time exchange rates with offline fallback
-  • Quick Presets - One-tap common conversions (°F↔°C, kg↔lb, in↔cm, gal↔L, USD↔EUR, EUR↔GBP)
-  • Beautiful Themes - 5 color palettes with dark/light/system modes
-  • Offline-First - Works without internet for most features
-  • Recent Conversions - Quick access to previous conversions
-  • Smart Search - Find converters, presets, and custom units instantly
-  • Favorites - Save your most-used conversions
+  � 8+ Unit Categories - Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+  � Custom Units - Create your own conversion units for specialized needs
+  � Live Currency - Real-time exchange rates with offline fallback
+  � Quick Presets - One-tap common conversions (�F?�C, kg?lb, in?cm, gal?L, USD?EUR, EUR?GBP)
+  � Beautiful Themes - 5 color palettes with dark/light/system modes
+  � Offline-First - Works without internet for most features
+  � Recent Conversions - Quick access to previous conversions
+  � Smart Search - Find converters, presets, and custom units instantly
+  � Favorites - Save your most-used conversions
   
   PERFECT FOR:
-  • Engineers and scientists with specialized measurement needs
-  • Travelers needing currency conversion
-  • Students and educators
-  • Professionals who need reliable conversions
-  • Anyone who values precision and convenience
+  � Engineers and scientists with specialized measurement needs
+  � Travelers needing currency conversion
+  � Students and educators
+  � Professionals who need reliable conversions
+  � Anyone who values precision and convenience
   
     `
 - **Screenshots**: 2-8 phone screenshots showing:
@@ -78,7 +78,7 @@ You must complete these sections in Google Play Console:
 - Select all countries or specific ones
 - Accept content guidelines
 
-## 📸 How to Take Screenshots
+## ?? How to Take Screenshots
 
 ### Using Web Browser (Recommended - Fastest)
 1. Build and run the app in a browser:
@@ -110,7 +110,7 @@ You must complete these sections in Google Play Console:
 
 **Note**: Do not use Android emulator for screenshots - it's slower and more complex. Use web browser or Playwright for a faster, more efficient workflow.
 
-## 🔧 Build Commands Reference
+## ?? Build Commands Reference
 
 `ash
 # Build release AAB (required for Play Store)
@@ -126,7 +126,7 @@ flutter clean
 flutter pub get
 `
 
-## 📝 Version Management
+## ?? Version Management
 
 Update version in pubspec.yaml before each release:
 `yaml
@@ -134,7 +134,7 @@ version: 1.0.0+1
 `
 Format: major.minor.patch+buildNumber
 
-## 🚦 Deployment Checklist
+## ?? Deployment Checklist
 
 Before submitting:
 - [ ] App name chosen
@@ -150,15 +150,16 @@ Before submitting:
 - [ ] AAB file built successfully
 - [ ] AAB file uploaded to Play Console
 
-## 🎯 After Submission
+## ?? After Submission
 
 1. Google will review your app (1-3 days)
 2. You'll get email notifications
 3. If rejected, fix issues and resubmit
 4. Once approved, your app goes live!
 
-## 📞 Support
+## ?? Support
 
 - Google Play Console Help: https://support.google.com/googleplay/android-developer
 - Flutter Deployment Docs: https://flutter.dev/docs/deployment/android
+
 

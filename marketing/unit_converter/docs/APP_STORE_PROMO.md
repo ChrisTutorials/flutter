@@ -1,8 +1,8 @@
 # App Store Promo Information
 
 ## Documentation Navigation
-- [Project Overview](README.md)
-- [Quick Start Guide](QUICKSTART.md)
+- [Project Overview](readme.md)
+- [Quick Start Guide](quickstart.md)
 - [Deployment Roadmap](DEPLOYMENT_ROADMAP.md)
 
 ## Google Play Store (Android)
@@ -292,3 +292,4 @@ Reference: [STORE_SCREENSHOT_REQUIREMENTS.md](STORE_SCREENSHOT_REQUIREMENTS.md)
 
 ### Value Proposition
 "The most elegant, powerful, and feature-rich unit converter available - with exclusive custom units support."
+

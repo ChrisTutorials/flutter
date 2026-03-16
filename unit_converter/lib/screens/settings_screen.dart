@@ -11,10 +11,12 @@ class SettingsScreen extends StatefulWidget {
     super.key,
     required this.themeController,
     required this.widgetAvailable,
+    this.isWindowsPlatform,
   });
 
   final ThemeController themeController;
   final bool widgetAvailable;
+  final bool? isWindowsPlatform;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -186,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const PurchaseButton(),
+            PurchaseButton(isWindowsPlatform: widget.isWindowsPlatform),
           ],
         ),
       ),

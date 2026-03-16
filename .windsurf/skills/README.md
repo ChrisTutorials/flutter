@@ -16,14 +16,73 @@ This directory contains reusable skills and workflows for working with this Flut
   - Validation methodology (5 layers)
   - Consecutive chunk detection
   - Troubleshooting
-  - Cross-references: [take-screenshots/](./take-screenshots/), [FULL_SCREEN_SCREENSHOT_METHODOLOGY.md](../../unit_converter/docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md)
+  - Cross-references: [take-screenshots/](./take-screenshots/), [full-screen-screenshot-methodology.md](../../unit_converter/docs/full-screen-screenshot-methodology.md)
 
 ### Deployment & Release
+
+- **[unified-deployment/](./unified-deployment/)** - Unified multi-platform deployment (Android, Windows, iOS)
+  - Single interface for all platforms
+  - Non-interactive mode for CI/CD
+  - Automatic process cleanup
+  - Cross-references: [process-cleanup/](./process-cleanup/), [ci-cd-setup/](./ci-cd-setup/)
+  - Documentation: [Multi-Platform Deployment Guide](../../docs/deployment/multi-platform-guide.md)
 
 - **[fastlane-setup/](./fastlane-setup/)** - Fastlane setup for automated deployment
   - Play Store deployment
   - Screenshot upload
+  - Non-interactive AI-agent release commands
   - Cross-references: [take-screenshots/](./take-screenshots/), [run-android-simulator/](./run-android-simulator/)
+  - Documentation: [Fastlane Patterns](../../docs/deployment/fastlane-patterns.md)
+
+- **[production-deployment/](./production-deployment/)** - Production deployment in non-interactive mode
+  - Non-interactive deployment commands
+  - CI/CD integration
+  - Best practices for hands-off deployment
+  - Cross-references: [fastlane-setup/](./fastlane-setup/), [unified-deployment/](./unified-deployment/)
+
+- **[ios-store-deployment/](./ios-store-deployment/)** - iOS App Store deployment in non-interactive mode
+  - iOS App Store deployment commands
+  - TestFlight and production deployment
+  - CI/CD integration for iOS
+  - Cross-references: [unified-deployment/](./unified-deployment/), [fastlane-setup/](./fastlane-setup/)
+
+- **[windows-store-deployment/](./windows-store-deployment/)** - Windows Store deployment in non-interactive mode
+  - Windows Store deployment commands
+  - Test cases for Windows deployment
+  - CI/CD integration for Windows
+  - Cross-references: [fastlane-setup/](./fastlane-setup/), [production-deployment/](./production-deployment/)
+
+### Infrastructure & Setup
+
+- **[process-cleanup/](./process-cleanup/)** - Clean up zombie processes from builds and deployments
+  - Identify and kill zombie dart/flutter/ruby/fastlane processes
+  - Automated cleanup in deployment scripts
+  - Process cleanup tests
+  - Cross-references: [unified-deployment/](./unified-deployment/), [ci-cd-setup/](./ci-cd-setup/)
+  - Documentation: [Process Cleanup Implementation](../../docs/deployment/process-cleanup.md)
+
+- **[ci-cd-setup/](./ci-cd-setup/)** - Set up CI/CD pipelines for Flutter apps
+  - GitHub Actions workflows
+  - Test, build, and deploy automation
+  - Secrets management
+  - Performance optimization
+  - Cross-references: [unified-deployment/](./unified-deployment/), [process-cleanup/](./process-cleanup/)
+  - Documentation: [CI/CD Patterns](../../docs/deployment/ci-cd-patterns.md)
+
+- **[new-app-setup/](./new-app-setup/)** - Create new Flutter app from template
+  - Interactive app setup wizard
+  - Multi-platform configuration
+  - Fastlane and CI/CD setup
+  - Testing infrastructure
+  - Cross-references: [ci-cd-setup/](./ci-cd-setup/), [testing-setup/](./testing-setup/)
+  - Documentation: [Utility App Template](../../docs/app-templates/utility-app.md)
+
+- **[testing-setup/](./testing-setup/)** - Set up comprehensive testing infrastructure
+  - Unit, integration, E2E, and golden screenshot tests
+  - Test coverage reporting
+  - CI/CD integration for tests
+  - Cross-references: [process-cleanup/](./process-cleanup/), [ci-cd-setup/](./ci-cd-setup/)
+  - Documentation: [Test Coverage Strategies](../../docs/testing/coverage-strategies.md), [Golden Screenshots](../../docs/testing/golden-screenshots.md)
 
 ### Testing & Development
 
@@ -36,8 +95,11 @@ This directory contains reusable skills and workflows for working with this Flut
 
 Reusable scripts are located in [../scripts/](../scripts/):
 
+- **deploy.ps1** - Unified multi-platform deployment script (Android, Windows, iOS)
+- **test-process-cleanup.ps1** - Process cleanup test suite
 - **fastlane-wrapper.ps1** - Fastlane automation wrapper
 - **fastlane-wrapper.sh** - Fastlane automation wrapper (Linux/Mac)
+- **setup-new-app.ps1** - Create new Flutter app from template (TODO)
 
 ## Related Rules
 
@@ -83,19 +145,39 @@ When adding a new skill:
 
 ## Quick Reference
 
+### For New Apps
+1. Create app: [new-app-setup/](./new-app-setup/) - Set up new Flutter app from template
+2. Set up testing: [testing-setup/](./testing-setup/) - Configure testing infrastructure
+3. Set up CI/CD: [ci-cd-setup/](./ci-cd-setup/) - Configure CI/CD pipelines
+
 ### For Store Screenshots
 1. Generate: [take-screenshots/](./take-screenshots/) (golden_screenshot method)
 2. Validate: [full-screen-screenshot-validation/](./full-screen-screenshot-validation/)
-3. Deploy: [fastlane-setup/](./fastlane-setup/)
+3. Deploy: [fastlane-setup/](./fastlane-setup/) or [unified-deployment/](./unified-deployment/)
 
 ### For Development Screenshots
 1. Take screenshots: [take-screenshots/](./take-screenshots/) (browser or Playwright method)
 2. No validation needed for development screenshots
 
 ### For Testing
-1. Run simulator: [run-android-simulator/](./run-android-simulator/)
-2. Run tests: Use Flutter test commands
+1. Set up tests: [testing-setup/](./testing-setup/)
+2. Run simulator: [run-android-simulator/](./run-android-simulator/)
+3. Run tests: Use Flutter test commands
 
 ### For Deployment
-1. Prepare: [fastlane-setup/](./fastlane-setup/)
-2. Deploy: Use Fastlane commands
+1. Clean up processes: [process-cleanup/](./process-cleanup/) - Clean up zombie processes before deployment
+2. Prepare: [unified-deployment/](./unified-deployment/) - **Unified multi-platform deployment (Android, Windows, iOS)**
+3. Deploy to Android production: [production-deployment/](./production-deployment/) (non-interactive mode)
+4. Deploy to Windows Store: [windows-store-deployment/](./windows-store-deployment/) (non-interactive mode)
+5. Deploy to iOS App Store: [ios-store-deployment/](./ios-store-deployment/) (non-interactive mode)
+
+### For CI/CD
+1. Set up CI/CD: [ci-cd-setup/](./ci-cd-setup/)
+2. Configure process cleanup: [process-cleanup/](./process-cleanup/)
+3. Configure testing: [testing-setup/](./testing-setup/)
+
+### For Process Issues
+1. Check for zombie processes: [process-cleanup/](./process-cleanup/)
+2. Run process cleanup tests: [process-cleanup/](./process-cleanup/)
+3. Verify clean state: [process-cleanup/](./process-cleanup/)
+

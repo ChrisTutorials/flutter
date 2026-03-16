@@ -51,3 +51,4 @@ analyzer:
     
     # Treat invalid assignments as errors
     invalid_assignment: error
+

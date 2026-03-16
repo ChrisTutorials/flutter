@@ -30,3 +30,4 @@ When adding a new rule:
 
 - **[../skills/](../skills/)** - Skills and workflows for common tasks
 - **[../scripts/](../scripts/)** - Reusable scripts for automation
+

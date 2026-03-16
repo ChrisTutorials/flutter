@@ -66,6 +66,7 @@ Future<void> _generateScreenshot(
 
   await tester.pumpWidget(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       themeMode: themeMode == AppThemeMode.dark ? ThemeMode.dark : ThemeMode.light,
       theme: buildAppTheme(
         palette: themeController.palette,

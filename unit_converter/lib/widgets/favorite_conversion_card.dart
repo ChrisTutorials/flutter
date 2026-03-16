@@ -8,11 +8,13 @@ class FavoriteConversionCard extends StatelessWidget {
     required this.favorite,
     required this.onTap,
     required this.onRemove,
+    this.currencyNames,
   });
 
   final FavoriteConversion favorite;
   final VoidCallback onTap;
   final VoidCallback onRemove;
+  final Map<String, String>? currencyNames;
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +63,17 @@ class FavoriteConversionCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  '${favorite.fromSymbol} to ${favorite.toSymbol}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                Tooltip(
+                  message: currencyNames != null && favorite.categoryName == 'Currency'
+                      ? '${favorite.fromSymbol} (${currencyNames![favorite.fromSymbol] ?? 'Unknown'}) to ${favorite.toSymbol} (${currencyNames![favorite.toSymbol] ?? 'Unknown'})'
+                      : '${favorite.fromSymbol} to ${favorite.toSymbol}',
+                  child: Text(
+                    '${favorite.fromSymbol} to ${favorite.toSymbol}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],

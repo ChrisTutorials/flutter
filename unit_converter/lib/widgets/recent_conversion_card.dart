@@ -9,10 +9,12 @@ class RecentConversionCard extends StatelessWidget {
     super.key,
     required this.conversion,
     required this.onDelete,
+    this.currencyNames,
   });
 
   final RecentConversion conversion;
   final VoidCallback onDelete;
+  final Map<String, String>? currencyNames;
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +38,17 @@ class RecentConversionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    '${NumberFormatter.formatCompact(conversion.inputValue)} ${conversion.fromUnit} -> ${NumberFormatter.formatCompact(conversion.outputValue)} ${conversion.toUnit}',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                  child: Tooltip(
+                    message: currencyNames != null && conversion.category == 'Currency'
+                        ? '${conversion.fromUnit} (${currencyNames![conversion.fromUnit] ?? 'Unknown'}) -> ${conversion.toUnit} (${currencyNames![conversion.toUnit] ?? 'Unknown'})'
+                        : '${NumberFormatter.formatCompact(conversion.inputValue)} ${conversion.fromUnit} -> ${NumberFormatter.formatCompact(conversion.outputValue)} ${conversion.toUnit}',
+                    child: Text(
+                      '${NumberFormatter.formatCompact(conversion.inputValue)} ${conversion.fromUnit} -> ${NumberFormatter.formatCompact(conversion.outputValue)} ${conversion.toUnit}',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(

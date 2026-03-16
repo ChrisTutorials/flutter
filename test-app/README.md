@@ -77,3 +77,4 @@ flutter test --coverage
 - **Total Tests**: 37 tests
 
 See [COVERAGE.md](COVERAGE.md) for detailed coverage report.
+

@@ -45,7 +45,7 @@ fastlane generate_screenshots
 
 For details on the validation methodology, see:
 - **[full-screen-screenshot-validation/](../full-screen-screenshot-validation/)** - Validation methodology and troubleshooting
-- **[FULL_SCREEN_SCREENSHOT_METHODOLOGY.md](../../unit_converter/docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md)** - Complete technical documentation
+- **[full-screen-screenshot-methodology.md](../../unit_converter/docs/full-screen-screenshot-methodology.md)** - Complete technical documentation
 
 ### Detailed Documentation
 
@@ -290,3 +290,4 @@ await page.screenshot({
 - [Flutter Web Documentation](https://flutter.dev/web)
 - [Google Play Store Asset Guidelines](https://support.google.com/googleplay/android-developer/answer/10788323)
 - [Chrome DevTools Screenshots](https://developer.chrome.com/docs/devtools/screenshots/)
+

@@ -6,6 +6,7 @@ import 'package:unit_converter/models/conversion.dart';
 import 'package:unit_converter/screens/conversion_screen.dart';
 import 'package:unit_converter/screens/currency_converter_screen.dart';
 import 'package:unit_converter/services/theme_service.dart';
+import 'package:unit_converter/services/windows_store_access_policy.dart';
 import 'package:unit_converter/screens/category_selection_screen.dart';
 import 'package:unit_converter/screens/settings_screen.dart';
 import 'package:unit_converter/utils/responsive_layout.dart';
@@ -29,7 +30,13 @@ void main() {
       MediaQuery(
         data: MediaQueryData(size: size),
         child: MaterialApp(
-          home: CategorySelectionScreen(themeController: ThemeController()),
+          home: CategorySelectionScreen(
+            themeController: ThemeController(),
+            windowsStoreAccessPolicy: WindowsStoreAccessPolicy(
+              isWindowsPlatform: false,
+              premiumStatusLoader: () async => false,
+            ),
+          ),
         ),
       ),
     );
@@ -156,7 +163,11 @@ void main() {
     await pumpScreen(
       tester,
       const Size(390, 844),
-      SettingsScreen(themeController: ThemeController(), widgetAvailable: true),
+      SettingsScreen(
+        themeController: ThemeController(),
+        widgetAvailable: true,
+        isWindowsPlatform: false,
+      ),
     );
 
     expect(tester.takeException(), isNull);
@@ -166,7 +177,11 @@ void main() {
     await pumpScreen(
       tester,
       const Size(1366, 900),
-      SettingsScreen(themeController: ThemeController(), widgetAvailable: true),
+      SettingsScreen(
+        themeController: ThemeController(),
+        widgetAvailable: true,
+        isWindowsPlatform: false,
+      ),
     );
 
     expect(tester.takeException(), isNull);
@@ -180,7 +195,11 @@ void main() {
     await pumpScreen(
       tester,
       const Size(390, 844),
-      SettingsScreen(themeController: ThemeController(), widgetAvailable: true),
+      SettingsScreen(
+        themeController: ThemeController(),
+        widgetAvailable: true,
+        isWindowsPlatform: false,
+      ),
     );
 
     expect(tester.takeException(), isNull);

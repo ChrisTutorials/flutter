@@ -1,0 +1,14 @@
+source "https://rubygems.org"
+
+gem "fastlane", "~> 2.232"
+
+# Windows Store plugin for Fastlane
+# Install with: fastlane add_plugin windows_store
+# gem "fastlane-plugin-windows_store"
+
+# Additional plugins that may be useful
+# gem "fastlane-plugin-firebase_app_distribution"
+# gem "fastlane-plugin-sentry"
+
+plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
+eval_gemfile(plugins_path) if File.exist?(plugins_path)

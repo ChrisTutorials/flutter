@@ -68,4 +68,5 @@ When adding a new reusable script:
 ## Related Documentation
 
 - **[../../unit_converter/docs/DEPLOYMENT.md](../../unit_converter/docs/DEPLOYMENT.md)** - Deployment documentation
-- **[../../unit_converter/docs/PLAY_STORE_RELEASE_RUNBOOK.md](../../unit_converter/docs/PLAY_STORE_RELEASE_RUNBOOK.md)** - Play Store release process
+- **[../../unit_converter/docs/play-store-release-runbook.md](../../unit_converter/docs/play-store-release-runbook.md)** - Play Store release process
+

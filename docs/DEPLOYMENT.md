@@ -1,12 +1,32 @@
-﻿# Deployment Guide - Unit Converter App
+# Deployment Guide - Unit Converter App
 
-## 🚀 Quick Start
+## ?? Quick Start
 
-### Single Command Deployment
+### Unified Multi-Platform Deployment
 
-The fastest way to deploy is to use the automated Fastlane workflow:
+The recommended way to deploy is to use the **unified deployment script** that supports Android, Windows, and iOS:
 
-`powershell
+```powershell
+# Deploy to Android
+cd unit_converter
+..\scripts\deploy.ps1 -Platform android -Track internal -ReleaseNotes "Initial release"
+
+# Deploy to Windows (Manual upload required)
+# Build MSIX package: flutter pub run msix:create
+# Then manually upload to Microsoft Partner Center
+# ..\scripts\deploy.ps1 -Platform windows -Track retail -ReleaseNotes "Windows release"
+
+# Deploy to iOS (macOS only)
+../scripts/deploy.ps1 -Platform ios -Track beta -ReleaseNotes "TestFlight release"
+```
+
+For complete multi-platform deployment documentation, see [UNIFIED_DEPLOYMENT.md](UNIFIED_DEPLOYMENT.md).
+
+### Android-Only Deployment (Legacy)
+
+If you only need to deploy to Android, you can use the Android-specific script:
+
+```powershell
 # Deploy to internal testing (default)
 .\scripts\release.ps1
 
@@ -18,7 +38,7 @@ The fastest way to deploy is to use the automated Fastlane workflow:
 
 # Hotfix: deploy without updating screenshots
 .\scripts\release.ps1 -Track beta -SkipScreenshots
-`
+```
 
 ### Check Deployment Readiness
 
@@ -36,7 +56,7 @@ This will show:
 - Manual steps checklist
 - Quick deployment commands
 
-## 📋 Deployment Tracks
+## ?? Deployment Tracks
 
 The app supports four deployment tracks in Google Play Store:
 
@@ -48,12 +68,12 @@ The app supports four deployment tracks in Google Play Store:
 ### Recommended Deployment Flow
 
 `
-Internal → Alpha → Beta → Production
+Internal ? Alpha ? Beta ? Production
 `
 
 Start with internal testing, then move to alpha, then beta, and finally production.
 
-## 🔧 First-Time Setup
+## ?? First-Time Setup
 
 Before your first deployment, complete these setup steps:
 
@@ -101,7 +121,7 @@ fastlane release_status
 
 Ensure all checks pass before deploying.
 
-## 📸 Screenshot Management
+## ?? Screenshot Management
 
 ### Automated Screenshot Handling
 
@@ -142,7 +162,7 @@ This will:
 - **File size**: Under 8 MB total
 - **Format**: PNG
 
-## 🎯 Deployment Commands
+## ?? Deployment Commands
 
 ### All-in-One Deployment
 
@@ -214,7 +234,7 @@ fastlane upload_screenshots
 fastlane build_release
 `
 
-## 📝 Release Notes
+## ?? Release Notes
 
 Release notes describe what's new in your release. Good release notes:
 
@@ -224,22 +244,22 @@ Release notes describe what's new in your release. Good release notes:
 4. **List bug fixes**: Mention important bug fixes
 
 Examples:
-- ✅ "Added dark mode support and improved currency conversion accuracy"
-- ✅ "Fixed crash when searching for units and added 5 new conversion categories"
-- ❌ "Bug fixes and improvements" (too generic)
+- ? "Added dark mode support and improved currency conversion accuracy"
+- ? "Fixed crash when searching for units and added 5 new conversion categories"
+- ? "Bug fixes and improvements" (too generic)
 
-## 🔍 Validation Checks
+## ?? Validation Checks
 
 The deployment process automatically runs these validation checks:
 
-1. ✅ AndroidManifest.xml validation
-2. ✅ Build configuration validation
-3. ✅ Version format validation
-4. ✅ Required permissions validation
-5. ✅ AdMob configuration validation
-6. ✅ Purchase release configuration validation
-7. ✅ Test ID check
-8. ✅ Signing configuration validation
+1. ? AndroidManifest.xml validation
+2. ? Build configuration validation
+3. ? Version format validation
+4. ? Required permissions validation
+5. ? AdMob configuration validation
+6. ? Purchase release configuration validation
+7. ? Test ID check
+8. ? Signing configuration validation
 
 You can run these checks manually:
 
@@ -248,7 +268,7 @@ cd android
 fastlane validate
 `
 
-## 📊 Version Management
+## ?? Version Management
 
 ### Version Format
 
@@ -277,7 +297,7 @@ cd android
 fastlane show_version
 `
 
-## 🚨 Common Issues
+## ?? Common Issues
 
 ### Screenshot Upload Failures
 
@@ -323,14 +343,14 @@ fastlane show_version
 3. The deployment process automatically bumps the build number
 4. If you need to manually bump it: astlane bump_build_number
 
-## 📚 Additional Resources
+## ?? Additional Resources
 
-- [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md) - Complete production release workflow
+- [play-store-release-runbook.md](play-store-release-runbook.md) - Complete production release workflow
 - [RELEASE_CREDENTIALS_SETUP.md](RELEASE_CREDENTIALS_SETUP.md) - Credential setup instructions
 - [SECURITY_CONFIG.md](SECURITY_CONFIG.md) - Security and signing configuration
-- [QUICKSTART.md](QUICKSTART.md) - Quick start guide for testing and deployment
+- [quickstart.md](quickstart.md) - Quick start guide for testing and deployment
 
-## 🎓 Best Practices
+## ?? Best Practices
 
 1. **Always test on internal track first** - Deploy to internal testing before alpha/beta/production
 2. **Verify screenshots** - Run astlane verify_screenshots before production deployment
@@ -341,7 +361,7 @@ fastlane show_version
 7. **Use semantic versioning** - Follow semantic versioning (MAJOR.MINOR.PATCH)
 8. **Test on real devices** - Always test ads and purchases on a real device before production
 
-## 🔄 Deployment Workflow Summary
+## ?? Deployment Workflow Summary
 
 ### Typical Release Workflow
 
@@ -394,3 +414,4 @@ For urgent bug fixes:
 `
 
 Then follow the normal deployment flow for production.
+

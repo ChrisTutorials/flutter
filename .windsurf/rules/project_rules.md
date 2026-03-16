@@ -23,3 +23,4 @@ This project is **NOT** open source. Do not:
 - Use web browser or Playwright for all screenshot workflows
 - Web browser screenshots are faster and more efficient
 - See `.windsurf/skills/take-screenshots.md` for detailed instructions
+

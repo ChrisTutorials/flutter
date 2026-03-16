@@ -1,18 +1,18 @@
-﻿# Unit Converter
+# Unit Converter
 
 A beautiful, ad-supported unit converter app built with Flutter. Convert between 8 different unit categories including live currency conversion with offline support and recent conversion history.
 
 ## Features
 
-- 🔄 **8 Conversion Categories**: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
-- � **Live Currency Rates**: Real-time exchange rates via Frankfurter API
-- � **Recent Conversions**: Automatically saves your last 10 conversions
-- 📋 **Copy Results**: One-tap copy to clipboard
-- 🎨 **Beautiful UI**: Material Design 3 with deep purple theme
-- 📱 **Ad-Supported**: Banner ads and interstitial ads for monetization
-- 🌐 **Offline Mode**: Works without internet connection (currency uses cached data)
-- ⚡ **Real-time Conversion**: Instant results as you type
-- 🔍 **Instant Search**: Type conversions like "60 g to lb" directly in search bar
+- ?? **8 Conversion Categories**: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+- ? **Live Currency Rates**: Real-time exchange rates via Frankfurter API
+- ? **Recent Conversions**: Automatically saves your last 10 conversions
+- ?? **Copy Results**: One-tap copy to clipboard
+- ?? **Beautiful UI**: Material Design 3 with deep purple theme
+- ?? **Ad-Supported**: Banner ads and interstitial ads for monetization
+- ?? **Offline Mode**: Works without internet connection (currency uses cached data)
+- ? **Real-time Conversion**: Instant results as you type
+- ?? **Instant Search**: Type conversions like "60 g to lb" directly in search bar
 
 ## Supported Conversions
 
@@ -72,10 +72,10 @@ A beautiful, ad-supported unit converter app built with Flutter. Convert between
 
 For detailed documentation, see the [docs/](docs/) directory:
 
-   - [Project Overview](../docs/README.md) - Project overview and documentation index
+   - [Project Overview](../docs/readme.md) - Project overview and documentation index
    - [Complete deployment guide with automated workflow](../docs/DEPLOYMENT.md) - Complete deployment guide with automated workflow
-   - [Production release workflow](../docs/PLAY_STORE_RELEASE_RUNBOOK.md) - Production release workflow
-   - [Quick start guide for testing and deployment](../docs/QUICKSTART.md) - Quick start guide for testing and deployment
+   - [Production release workflow](../docs/play-store-release-runbook.md) - Production release workflow
+   - [Quick start guide for testing and deployment](../docs/quickstart.md) - Quick start guide for testing and deployment
    - [Architecture overview and design patterns](../docs/ARCHITECTURE.md) - Architecture overview and design patterns
    - [Complete API documentation](../docs/API.md) - Complete API documentation
    - [Security configuration guide](../docs/SECURITY_CONFIG.md) - Security configuration guide
@@ -83,8 +83,8 @@ For detailed documentation, see the [docs/](docs/) directory:
    - [Deployment phases and roadmap](../docs/DEPLOYMENT_ROADMAP.md) - Deployment phases and roadmap
    - [Test coverage validation](../docs/DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
    - [Test coverage report](../docs/TEST_COVERAGE.md) - Test coverage report
-   - [Comprehensive ad monetization strategy](../docs/AD_STRATEGY.md) - Comprehensive ad monetization strategy
-   - [Currency converter architecture and design](../docs/CURRENCY_ARCHITECTURE.md) - Currency converter architecture and design
+   - [Comprehensive ad monetization strategy](../docs/ad-strategy.md) - Comprehensive ad monetization strategy
+   - [Currency converter architecture and design](../docs/currency-architecture.md) - Currency converter architecture and design
 
 ## Building for Android
 
@@ -126,7 +126,7 @@ static const String _interstitialAdUnitId = 'ca-app-pub-your-interstitial-ad-uni
 IMPORTANT: Replace the above placeholder IDs with your actual ad unit IDs from the AdMob Console.
 ## Publishing to Google Play Store
 
-### 🚀 Recommended: Use Automated Deployment
+### ?? Recommended: Use Automated Deployment
 
 The fastest and easiest way to deploy is to use the automated Fastlane workflow:
 
@@ -143,16 +143,16 @@ fastlane release_status
 ```
 
 This single command handles:
-- ✅ Validation checks
-- ✅ Version bumping
-- ✅ Screenshot generation and upload
-- ✅ Metadata upload
-- ✅ Building release AAB
-- ✅ Uploading to Play Store
+- ? Validation checks
+- ? Version bumping
+- ? Screenshot generation and upload
+- ? Metadata upload
+- ? Building release AAB
+- ? Uploading to Play Store
 
 For complete deployment documentation, see:
 - [DEPLOYMENT.md](docs/DEPLOYMENT.md) - Complete deployment guide
-- [PLAY_STORE_RELEASE_RUNBOOK.md](docs/PLAY_STORE_RELEASE_RUNBOOK.md) - Production release workflow
+- [play-store-release-runbook.md](docs/play-store-release-runbook.md) - Production release workflow
 
 ### First-Time Setup
 
@@ -166,7 +166,7 @@ Before your first deployment, complete these steps:
 
 ### Manual Deployment (Alternative)
 
-If you prefer to deploy manually, see [QUICKSTART.md](docs/QUICKSTART.md) for step-by-step instructions.
+If you prefer to deploy manually, see [quickstart.md](docs/quickstart.md) for step-by-step instructions.
 
 ## App Description for Play Store
 
@@ -177,26 +177,26 @@ Convert between 8 categories including live currency rates instantly
 Unit Converter is the ultimate tool for quick and accurate unit conversions. Whether you're a student, professional, or just need to convert measurements, this app has you covered.
 
 **FEATURES:**
-✅ 8 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
-✅ Live currency exchange rates via Frankfurter API
-✅ Real-time conversion as you type
-✅ Recent conversions history (last 10)
-✅ Copy results to clipboard with one tap
-✅ Beautiful Material Design 3 interface
-✅ Works offline - currency uses cached data
-✅ Instant search with conversion preview
-✅ Swap units with a single tap
-✅ View all available units in each category
+? 8 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+? Live currency exchange rates via Frankfurter API
+? Real-time conversion as you type
+? Recent conversions history (last 10)
+? Copy results to clipboard with one tap
+? Beautiful Material Design 3 interface
+? Works offline - currency uses cached data
+? Instant search with conversion preview
+? Swap units with a single tap
+? View all available units in each category
 
 **SUPPORTED CONVERSIONS:**
-📏 Length: mm, cm, m, km, in, ft, yd, mi
-⚖️ Weight: mg, g, kg, t, oz, lb, st
-🌡️ Temperature: °C, °F, K
-🥛 Volume: mL, L, m³, gal, qt, pt, cup, fl oz
-📐 Area: mm², cm², m², ha, km², in², ft², ac
-🚀 Speed: m/s, km/h, mph, ft/s, kn
-⏰ Time: ms, s, min, h, d, wk, mo, yr
-💰 Currency: USD, EUR, GBP, JPY, CAD, AUD, and 30+ more
+?? Length: mm, cm, m, km, in, ft, yd, mi
+?? Weight: mg, g, kg, t, oz, lb, st
+??? Temperature: �C, �F, K
+?? Volume: mL, L, m�, gal, qt, pt, cup, fl oz
+?? Area: mm�, cm�, m�, ha, km�, in�, ft�, ac
+?? Speed: m/s, km/h, mph, ft/s, kn
+? Time: ms, s, min, h, d, wk, mo, yr
+?? Currency: USD, EUR, GBP, JPY, CAD, AUD, and 30+ more
 
 Perfect for:
 - Students doing homework
@@ -226,12 +226,12 @@ Download Unit Converter now and make conversions effortless!
 
 \\\
 lib/
-├── main.dart                          # Main app UI
-├── models/
-│   └── conversion.dart                # Conversion data models
-└── services/
-    ├── admob_service.dart             # AdMob integration
-    └── recent_conversions_service.dart # Recent conversions storage
++-- main.dart                          # Main app UI
++-- models/
+�   +-- conversion.dart                # Conversion data models
++-- services/
+    +-- admob_service.dart             # AdMob integration
+    +-- recent_conversions_service.dart # Recent conversions storage
 \\\
 
 ## Dependencies
@@ -252,3 +252,4 @@ For issues or feature requests, please create an issue in the repository.
 ## Privacy Policy
 
 This app does not collect any personal data. All conversions are stored locally on your device.
+

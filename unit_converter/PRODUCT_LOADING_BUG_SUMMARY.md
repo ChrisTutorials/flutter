@@ -32,7 +32,7 @@ Updated `lib/services/purchase_service.dart` to provide more helpful error messa
 
 Created three comprehensive documentation files:
 
-#### a. `docs/PRODUCT_LOADING_BUG.md`
+#### a. `docs/product-loading-bug.md`
 Detailed bug documentation including:
 - Root cause analysis
 - Verification steps
@@ -42,7 +42,7 @@ Detailed bug documentation including:
 - Prevention strategies
 - Additional resources
 
-#### b. `docs/GOOGLE_PLAY_PRODUCT_CHECKLIST.md`
+#### b. `docs/google-play-product-checklist.md`
 Pre-release checklist for verifying product configuration:
 - Product registration checklist
 - Product details checklist
@@ -128,8 +128,8 @@ Result: ✅ 34 tests passed
 
 1. `lib/services/purchase_service.dart` - Improved error handling
 2. `test/services/product_loading_test.dart` - New comprehensive test suite
-3. `docs/PRODUCT_LOADING_BUG.md` - New bug documentation
-4. `docs/GOOGLE_PLAY_PRODUCT_CHECKLIST.md` - New configuration checklist
+3. `docs/product-loading-bug.md` - New bug documentation
+4. `docs/google-play-product-checklist.md` - New configuration checklist
 5. `IAP_IMPLEMENTATION_SUMMARY.md` - Updated with critical requirements
 
 ## Next Steps
@@ -152,7 +152,8 @@ To prevent this issue in the future:
 
 ## Additional Resources
 
-- [Product Loading Bug Documentation](docs/PRODUCT_LOADING_BUG.md)
-- [Google Play Product Checklist](docs/GOOGLE_PLAY_PRODUCT_CHECKLIST.md)
+- [Product Loading Bug Documentation](docs/product-loading-bug.md)
+- [Google Play Product Checklist](docs/google-play-product-checklist.md)
 - [IAP Implementation Summary](IAP_IMPLEMENTATION_SUMMARY.md)
-- [Play Store Release Runbook](docs/PLAY_STORE_RELEASE_RUNBOOK.md)
+- [Play Store Release Runbook](docs/play-store-release-runbook.md)
+

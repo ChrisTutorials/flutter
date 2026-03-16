@@ -1,9 +1,9 @@
 # API Documentation
 
 ## Documentation Navigation
-- [Project Overview](README.md)
+- [Project Overview](readme.md)
 - [Architecture Documentation](ARCHITECTURE.md)
-- [Quick Start Guide](QUICKSTART.md)
+- [Quick Start Guide](quickstart.md)
 - [Security Configuration](SECURITY_CONFIG.md)
 
 ## Models
@@ -174,7 +174,7 @@ CurrencyQuote quote = await currencyService.convert(
 - `rate` (double): Exchange rate used
 - `effectiveDate` (DateTime): Date the rate was published
 
-**Note**: For detailed architecture information, see [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md).
+**Note**: For detailed architecture information, see [currency-architecture.md](currency-architecture.md).
 
 ---
 
@@ -282,3 +282,4 @@ The project includes comprehensive test coverage across:
 - Widget functionality (`widget_test.dart`)
 - Smoke tests (`smoke_test.dart`)
 - Documentation claims validation (`documentation_claims_validation_test.dart`)
+

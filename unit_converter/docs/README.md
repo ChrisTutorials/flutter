@@ -62,7 +62,7 @@ unit_converter/
 - Currency (USD, EUR, GBP, JPY, CAD, AUD, and 30+ more via Frankfurter API)
 
 ## Getting Started
-See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
+See [quickstart.md](quickstart.md) for detailed setup instructions.
 
 ## 🚀 Quick Deployment
 
@@ -80,35 +80,36 @@ cd android
 fastlane release_status
 ```
 
-For complete deployment documentation, see [DEPLOYMENT.md](DEPLOYMENT.md) or [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md).
+For complete deployment documentation, see [DEPLOYMENT.md](DEPLOYMENT.md) or [play-store-release-runbook.md](play-store-release-runbook.md).
 
 ## Documentation Index
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide with automated workflow
-- [QUICKSTART.md](QUICKSTART.md) - Quick start guide for testing and deployment
-- [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md) - Production release, metadata, and screenshot workflow
+- [quickstart.md](quickstart.md) - Quick start guide for testing and deployment
+- [play-store-release-runbook.md](play-store-release-runbook.md) - Production release, metadata, and screenshot workflow
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture overview and design patterns
 - [API.md](API.md) - Complete API documentation
 - [SECURITY_CONFIG.md](SECURITY_CONFIG.md) - Security configuration guide
 - [RELEASE_CREDENTIALS_SETUP.md](RELEASE_CREDENTIALS_SETUP.md) - Credential setup for releases
 - [DEPLOYMENT_ROADMAP.md](DEPLOYMENT_ROADMAP.md) - Deployment phases and roadmap
 - [DOCUMENTATION_CLAIMS_VALIDATION.md](DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
-- [AD_STRATEGY.md](AD_STRATEGY.md) - Comprehensive ad monetization strategy
-- [APP_SIZE_ANALYSIS.md](APP_SIZE_ANALYSIS.md) - App size analysis and optimization recommendations
+- [ad-strategy.md](ad-strategy.md) - Comprehensive ad monetization strategy
+- [app-size-analysis.md](app-size-analysis.md) - App size analysis and optimization recommendations
 
 ### Currency Converter Documentation
-- [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md) - Currency converter architecture and design decisions
-- [CURRENCY_CONVERTER_TESTS.md](CURRENCY_CONVERTER_TESTS.md) - Currency converter test suite documentation
-- [CURRENCY_OFFLINE_WARNING_SYSTEM.md](CURRENCY_OFFLINE_WARNING_SYSTEM.md) - Offline warning system implementation
-- [CURRENCY_LAST_UPDATE_AND_API_SOURCE.md](CURRENCY_LAST_UPDATE_AND_API_SOURCE.md) - Last update tracking and API source link
+- [currency-architecture.md](currency-architecture.md) - Currency converter architecture and design decisions
+- [currency-converter-tests.md](currency-converter-tests.md) - Currency converter test suite documentation
+- [currency-offline-warning-system.md](currency-offline-warning-system.md) - Offline warning system implementation
+- [currency-last-update-and-api-source.md](currency-last-update-and-api-source.md) - Last update tracking and API source link
 
 ### Other Documentation
 - [DRY_SUMMARY.md](DRY_SUMMARY.md) - DRY refactoring summary
 - [REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md) - Complete refactoring details
-- [DARK_LIGHT_THEME_IMPLEMENTATION.md](DARK_LIGHT_THEME_IMPLEMENTATION.md) - Theme implementation details
+- [dark-light-theme-implementation.md](dark-light-theme-implementation.md) - Theme implementation details
 - [RESPONSIVE_LAYOUT_IMPLEMENTATION.md](RESPONSIVE_LAYOUT_IMPLEMENTATION.md) - Responsive layout implementation
 - [SECURITY_FIXES_APPLIED.md](SECURITY_FIXES_APPLIED.md) - Security fixes documentation
 - [SMOKE_TESTS.md](SMOKE_TESTS.md) - Smoke test documentation
 - [TEST_COVERAGE.md](TEST_COVERAGE.md) - Test coverage details
 - [ADMOB_PRODUCTION_SETUP.md](ADMOB_PRODUCTION_SETUP.md) - AdMob production setup
-- [AD_IMPLEMENTATION_SUMMARY.md](AD_IMPLEMENTATION_SUMMARY.md) - Ad implementation summary
-- [AD_TEST_COVERAGE_SUMMARY.md](AD_TEST_COVERAGE_SUMMARY.md) - Ad test coverage summary
+- [ad-implementation-summary.md](ad-implementation-summary.md) - Ad implementation summary
+- [ad-test-coverage-summary.md](ad-test-coverage-summary.md) - Ad test coverage summary
+

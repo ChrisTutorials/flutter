@@ -1,4 +1,4 @@
-﻿# Deploy to Google Play Store - PowerShell Script
+# Deploy to Google Play Store - PowerShell Script
 # Usage: .\deploy-to-play-store.ps1 -Track 'internal' -ReleaseNotes 'Initial release'
 # Increments the Android build number and uses Fastlane when available.
 
@@ -195,3 +195,4 @@ if ($fastlaneAvailable -and $serviceAccountConfigured) {
     Write-Host "4. Add release notes: $ReleaseNotes" -ForegroundColor White
     Write-Host '5. Upload metadata and screenshots with fastlane once service account access is configured' -ForegroundColor White
 }
+

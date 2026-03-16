@@ -3,10 +3,18 @@ import '../models/conversion.dart';
 import '../utils/icon_utils.dart';
 
 class CategoryCard extends StatelessWidget {
-  const CategoryCard({super.key, required this.category, required this.onTap});
+  const CategoryCard({
+    super.key,
+    required this.category,
+    required this.onTap,
+    this.isLocked = false,
+    this.lockedSubtitle,
+  });
 
   final ConversionCategory category;
   final VoidCallback onTap;
+  final bool isLocked;
+  final String? lockedSubtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -30,47 +38,73 @@ class CategoryCard extends StatelessWidget {
               );
 
         return Card(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.all(contentPadding),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(containerPadding),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(18),
+          child: Opacity(
+            opacity: isLocked ? 0.65 : 1.0,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: onTap,
+              child: Padding(
+                padding: EdgeInsets.all(contentPadding),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(containerPadding),
+                      decoration: BoxDecoration(
+                        color: isLocked
+                            ? theme.colorScheme.surfaceContainerHighest
+                            : theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Icon(
+                        IconUtils.getIconForCategory(category.icon),
+                        size: iconSize,
+                        color: isLocked
+                            ? theme.colorScheme.onSurfaceVariant
+                            : theme.colorScheme.primary,
+                      ),
                     ),
-                    child: Icon(
-                      IconUtils.getIconForCategory(category.icon),
-                      size: iconSize,
-                      color: theme.colorScheme.primary,
+                    SizedBox(height: compact ? 6 : 8),
+                    Text(
+                      category.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: titleStyle?.copyWith(
+                        color: isLocked
+                            ? theme.colorScheme.onSurfaceVariant
+                            : null,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  SizedBox(height: compact ? 6 : 10),
-                  Text(
-                    category.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: titleStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: compact ? 1 : 4),
-                  Text(
-                    '${category.units.length} units',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: compact ? 11 : null,
+                    SizedBox(height: compact ? 1 : 2),
+                    Text(
+                      isLocked
+                          ? (lockedSubtitle ?? '${category.units.length} units')
+                          : '${category.units.length} units',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontSize: compact ? 11 : 11,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                    if (isLocked) ...[
+                      SizedBox(height: compact ? 3 : 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.workspace_premium,
+                            size: compact ? 16 : 18,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ),

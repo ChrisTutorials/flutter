@@ -25,6 +25,10 @@ Future<void> main() async {
       final normalizedBytes = _normalizeScreenshotBytes(screenshotName, screenshotBytes);
       final file = File(screenshotPath);
       await file.writeAsBytes(normalizedBytes, flush: true);
+
+      // Verify debug ribbon is not present
+      _verifyNoDebugRibbon(screenshotName, normalizedBytes);
+
       return true;
     },
     writeResponseOnFailure: true,
@@ -57,4 +61,59 @@ List<int> _normalizeScreenshotBytes(String screenshotName, List<int> screenshotB
   );
 
   return img.encodePng(normalizedImage);
+}
+
+void _verifyNoDebugRibbon(String screenshotName, List<int> screenshotBytes) {
+  final image = img.decodePng(Uint8List.fromList(screenshotBytes));
+  if (image == null) {
+    throw Exception('Failed to decode screenshot: $screenshotName');
+  }
+
+  // Check top-right corner where debug ribbon appears
+  // Debug ribbon is typically ~20-30px high and appears in the top-right
+  final ribbonHeight = 30;
+  final ribbonWidth = 100;
+
+  // Get the top-right corner region
+  final startX = image.width - ribbonWidth;
+  final startY = 0;
+  final region = img.copyCrop(
+    image,
+    x: startX,
+    y: startY,
+    width: ribbonWidth,
+    height: ribbonHeight,
+  );
+
+  // Debug ribbon is typically yellow/orange (high red/green values, low blue)
+  // Check if the region has debug ribbon colors
+  bool hasDebugRibbon = false;
+  int debugPixels = 0;
+
+  for (final pixel in region) {
+    final r = pixel.r;
+    final g = pixel.g;
+    final b = pixel.b;
+
+    // Debug ribbon colors are typically yellow/orange:
+    // High red and green values, low blue values
+    // Typical values: R=255, G=200-255, B=0-50
+    if (r > 200 && g > 180 && b < 100) {
+      debugPixels++;
+    }
+  }
+
+  // If more than 50% of pixels in the region match debug ribbon colors,
+  // consider it a debug ribbon
+  final totalPixels = region.length;
+  final debugPixelRatio = debugPixels / totalPixels;
+
+  if (debugPixelRatio > 0.5) {
+    throw Exception(
+      'Screenshot "$screenshotName" contains a debug ribbon in the top-right corner. '
+      'Ensure debugShowCheckedModeBanner is set to false in MaterialApp.',
+    );
+  }
+
+  print('✓ Verified no debug ribbon in screenshot: $screenshotName');
 }

@@ -52,7 +52,7 @@ Successfully implemented a "Remove Ads" one-time purchase for the Unit Converter
 
 ### Common Issues
 
-If you see the error "ProductDetails is not a subtype of GooglePlayProductDetails", it means the product is not properly configured. See [docs/PRODUCT_LOADING_BUG.md](docs/PRODUCT_LOADING_BUG.md) for detailed debugging steps.
+If you see the error "ProductDetails is not a subtype of GooglePlayProductDetails", it means the product is not properly configured. See [docs/product-loading-bug.md](docs/product-loading-bug.md) for detailed debugging steps.
 
 ## Test Coverage
 
@@ -166,3 +166,4 @@ The IAP implementation is production-ready with:
 - ✅ Release-safe purchase flow
 
 Ready for release with Google Play Console configuration completed.
+

@@ -1,0 +1,48 @@
+# Appfile for Windows Store Deployment
+# This file contains configuration for Microsoft Partner Center integration
+
+# Partner Center Configuration
+# Get these from: https://partner.microsoft.com/en-US/dashboard
+# Navigate to: Account settings > Developer settings > Authentication keys
+
+# Client ID for Partner Center API
+# ENV['PARTNER_CENTER_CLIENT_ID'] = 'your-client-id-here'
+
+# Client Secret for Partner Center API
+# ENV['PARTNER_CENTER_CLIENT_SECRET'] = 'your-client-secret-here'
+
+# Tenant ID for Partner Center API
+# ENV['PARTNER_CENTER_TENANT_ID'] = 'your-tenant-id-here'
+
+# Windows Certificate Configuration
+# Path to your Windows code signing certificate (PFX format)
+# ENV['WINDOWS_CERTIFICATE_PATH'] = 'path/to/certificate.pfx'
+
+# Password for the Windows certificate
+# ENV['WINDOWS_CERTIFICATE_PASSWORD'] = 'your-certificate-password'
+
+# App Configuration
+# Package name from Microsoft Partner Center
+# For your app: https://partner.microsoft.com/en-US/dashboard/products/9P8DMW35JXQ5/overview
+package_name("9P8DMW35JXQ5")
+
+# JSON key file for Partner Center API (alternative to environment variables)
+# json_key_file("path/to/partner-center-key.json")
+
+# Configuration for Windows Store upload
+# upload_to_windows_store(
+#   package: "9P8DMW35JXQ5",
+#   skip_metadata: false,
+#   skip_screenshots: false,
+#   publish: false
+# )
+
+# Note: For security, it's recommended to use environment variables
+# instead of hardcoding credentials in this file
+#
+# Set environment variables in PowerShell:
+# $env:PARTNER_CENTER_CLIENT_ID = "your-client-id"
+# $env:PARTNER_CENTER_CLIENT_SECRET = "your-client-secret"
+# $env:PARTNER_CENTER_TENANT_ID = "your-tenant-id"
+# $env:WINDOWS_CERTIFICATE_PATH = "path/to/certificate.pfx"
+# $env:WINDOWS_CERTIFICATE_PASSWORD = "your-password"

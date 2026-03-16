@@ -135,3 +135,4 @@ Example patterns:
 - Source logo asset: unit_converter/assets/unit-converter-logo.png
 - Source dimensions: 1024 x 1024
 - Launcher icons are generated from this asset via the flutter_launcher_icons configuration in unit_converter/pubspec.yaml
+

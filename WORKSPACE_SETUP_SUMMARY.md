@@ -65,13 +65,13 @@ Complete automation infrastructure established for Flutter workspace deployment 
 ### Fastlane Configuration
 - `unit_converter/android/fastlane/Fastfile`
 - `unit_converter/android/fastlane/Appfile`
-- `unit_converter/android/fastlane/README.md`
+- `unit_converter/android/fastlane/readme.md`
 
 ### Test Suites
 - `unit_converter/android/app/src/test/java/com/unitconverter/unitconverter/AndroidManifestTest.java`
 - `unit_converter/android/app/src/test/java/com/unitconverter/unitconverter/BuildConfigTest.java`
 - `unit_converter/test/release_checks/pubspec_test.dart`
-- `unit_converter/test/release_checks/README.md`
+- `unit_converter/test/release_checks/readme.md`
 
 ### Automation Scripts
 - `unit_converter/scripts/pre-deployment-check.ps1`
@@ -87,7 +87,7 @@ Complete automation infrastructure established for Flutter workspace deployment 
 - `.windsurf/scripts/fastlane-wrapper.ps1`
 - `.windsurf/scripts/fastlane-wrapper.sh`
 - `DOCS.md`
-- `unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md`
+- `unit_converter/docs/android-build-optimization.md`
 - `.windsurf/templates/android_gradle.properties.template`
 
 ## 🚀 Key Features
@@ -143,8 +143,9 @@ All 7 checks passing:
 - **Fastlane:** [fastlane-setup.md](.windsurf/skills/fastlane-setup.md)
 - **Screenshots:** [golden-screenshot-practice.md](.windsurf/rules/golden-screenshot-practice.md)
 - **Deployment:** [DEPLOYMENT_CHECKLIST.md](unit_converter/DEPLOYMENT_CHECKLIST.md)
-- **Build Performance:** [ANDROID_BUILD_OPTIMIZATION.md](unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md)
+- **Build Performance:** [android-build-optimization.md](unit_converter/docs/android-build-optimization.md)
 
 ---
 
 **Status:** ✅ Ready for Production Use
+

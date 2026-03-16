@@ -1,4 +1,4 @@
-﻿# Release to Google Play Store - PowerShell Wrapper
+# Release to Google Play Store - PowerShell Wrapper
 # Usage: .\scripts\release.ps1 -Track 'production' -ReleaseNotes 'New features'
 # This is a convenience wrapper for the Fastlane deploy lane
 
@@ -17,7 +17,13 @@ param(
     [switch]$SkipMetadata,
 
     [Parameter(Mandatory=$false)]
-    [switch]$SkipValidation
+    [switch]$SkipValidation,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$SkipConfirmation,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$DoNotSendForReview
 )
 
 $projectRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
@@ -63,6 +69,8 @@ Write-Host "Release Notes: $ReleaseNotes" -ForegroundColor White
 Write-Host "Skip Screenshots: $($SkipScreenshots)" -ForegroundColor White
 Write-Host "Skip Metadata: $($SkipMetadata)" -ForegroundColor White
 Write-Host "Skip Validation: $($SkipValidation)" -ForegroundColor White
+Write-Host "Skip Confirmation: $($SkipConfirmation)" -ForegroundColor White
+Write-Host "Submit For Review: $($DoNotSendForReview -eq $false)" -ForegroundColor White
 Write-Host ""
 
 # Check if Fastlane is available
@@ -89,13 +97,21 @@ if ($SkipValidation) {
     $fastlaneParams += "skip_validation:true"
 }
 
+if ($SkipConfirmation) {
+    $fastlaneParams += "skip_confirmation:true"
+}
+
+if ($DoNotSendForReview) {
+    $fastlaneParams += "submit_for_review:false"
+}
+
 Write-Host "[INFO] Running Fastlane deploy..." -ForegroundColor Cyan
 Write-Host ""
 
 # Navigate to android directory and run Fastlane
 Push-Location android
 try {
-    fastlane ($fastlaneParams -join ' ')
+    bundle exec fastlane ($fastlaneParams -join ' ')
     $exitCode = $LASTEXITCODE
 } finally {
     Pop-Location
@@ -109,3 +125,4 @@ if ($exitCode -ne 0) {
 
 Write-Host ""
 Write-Host "[SUCCESS] Deployment completed successfully!" -ForegroundColor Green
+

@@ -87,3 +87,4 @@ If you need functionality that doesn't exist in common:
 - **Maintainability**: Fix bugs once in common, benefit all apps
 - **Time savings**: Don't reinvent the wheel
 - **Quality**: Common code is tested and proven
+

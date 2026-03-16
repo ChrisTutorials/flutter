@@ -28,3 +28,4 @@ if (-not ($currentDir.Name -eq 'android' -and (Test-Path "$currentDir\fastlane")
 # Run Fastlane with the specified lane
 Write-Host "🚀 Running Fastlane lane: $Lane" -ForegroundColor Green
 fastlane $Lane $args
+

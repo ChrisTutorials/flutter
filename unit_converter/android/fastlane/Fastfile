@@ -82,6 +82,16 @@ def current_version
   end
 end
 
+def option_truthy?(value, default: false)
+  return default if value.nil?
+
+  normalized = value.is_a?(String) ? value.strip.downcase : value
+  return true if normalized == true || normalized == 'true' || normalized == '1' || normalized == 1 || normalized == 'yes'
+  return false if normalized == false || normalized == 'false' || normalized == '0' || normalized == 0 || normalized == 'no'
+
+  !!value
+end
+
 def sync_play_store_metadata
   android_root = File.expand_path('..', __dir__)
   app_root = File.expand_path('..', android_root)
@@ -467,44 +477,44 @@ platform :android do
   desc "Build release AAB"
   lane :build_release do
     UI.header("🔨 Building Release AAB")
-    
+
     # Navigate to Flutter project root
-    Dir.chdir('../../..') do
+    Dir.chdir('../..') do
       # Clean build
       UI.message("Cleaning Flutter build...")
       sh('flutter clean')
-      
+
       # Get dependencies
       UI.message("Getting Flutter dependencies...")
       sh('flutter pub get')
-      
+
       # Build AAB
       UI.message("Building release AAB...")
       sh('flutter build appbundle --release')
     end
-    
+
     UI.success("✅ Release AAB built successfully")
   end
 
   desc "Build release APK"
   lane :build_apk do
     UI.header("🔨 Building Release APK")
-    
+
     # Navigate to Flutter project root
-    Dir.chdir('../../..') do
+    Dir.chdir('../..') do
       # Clean build
       UI.message("Cleaning Flutter build...")
       sh('flutter clean')
-      
+
       # Get dependencies
       UI.message("Getting Flutter dependencies...")
       sh('flutter pub get')
-      
+
       # Build APK
       UI.message("Building release APK...")
       sh('flutter build apk --release')
     end
-    
+
     UI.success("✅ Release APK built successfully")
   end
 
@@ -580,15 +590,21 @@ platform :android do
   end
 
    desc "Validate, build, and upload to production"
-   lane :deploy_production do
+   lane :deploy_production do |options|
      UI.header("🚀 Deploying to Production")
+
+     skip_confirmation = option_truthy?(options[:skip_confirmation], default: false)
+     submit_for_review = option_truthy?(options[:submit_for_review], default: true)
      
      # Confirm production deployment
      UI.important("⚠️  You are about to deploy to PRODUCTION!")
      UI.important("This will be visible to all users!")
      
      # Check if we can interact (not in CI/non-interactive mode)
-     if UI.interactive?
+     if skip_confirmation
+       UI.message("✅ Skipping confirmation because skip_confirmation was enabled.")
+       confirm = true
+     elsif UI.interactive?
        confirm = UI.confirm("Are you sure you want to deploy to production?")
      else
        UI.message("✅ Skipping confirmation in non-interactive mode.")
@@ -612,20 +628,23 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      skip_upload_changelogs: true
+      skip_upload_changelogs: true,
+      changes_not_sent_for_review: !submit_for_review
     )
     
     UI.success("✅ Successfully deployed to production")
   end
 
   desc "All-in-one deployment: validate, bump version, prepare assets, and deploy to specified track"
-  lane :deploy do
+  lane :deploy do |options|
     # Parameters
-    track = params[:track] || 'internal'
-    skip_screenshots = params[:skip_screenshots] || false
-    skip_metadata = params[:skip_metadata] || false
-    skip_validation = params[:skip_validation] || false
-    release_notes = params[:release_notes] || 'Bug fixes and improvements'
+    track = options[:track] || 'internal'
+    skip_screenshots = option_truthy?(options[:skip_screenshots], default: false)
+    skip_metadata = option_truthy?(options[:skip_metadata], default: false)
+    skip_validation = option_truthy?(options[:skip_validation], default: false)
+    skip_confirmation = option_truthy?(options[:skip_confirmation], default: false)
+    submit_for_review = option_truthy?(options[:submit_for_review], default: true)
+    release_notes = options[:release_notes] || 'Bug fixes and improvements'
 
     # Validate track parameter
     unless ['internal', 'alpha', 'beta', 'production'].include?(track)
@@ -680,12 +699,18 @@ platform :android do
     UI.message("🚀 Step 7: Uploading to #{track} track...")
 
     # Production confirmation
-    if track == 'production' && UI.interactive?
-      UI.important("⚠️  You are about to deploy to PRODUCTION!")
-      UI.important("This will be visible to all users!")
-      confirm = UI.confirm("Are you sure you want to deploy to production?")
-      unless confirm
-        UI.user_error!("❌ Deployment cancelled by user")
+    if track == 'production'
+      if skip_confirmation
+        UI.message("✅ Skipping confirmation because skip_confirmation was enabled.")
+      elsif UI.interactive?
+        UI.important("⚠️  You are about to deploy to PRODUCTION!")
+        UI.important("This will be visible to all users!")
+        confirm = UI.confirm("Are you sure you want to deploy to production?")
+        unless confirm
+          UI.user_error!("❌ Deployment cancelled by user")
+        end
+      else
+        UI.message("✅ Skipping confirmation in non-interactive mode.")
       end
     end
 
@@ -696,7 +721,7 @@ platform :android do
       skip_upload_images: true,
       skip_upload_screenshots: true,
       skip_upload_changelogs: true,
-      release_notes: release_notes
+      changes_not_sent_for_review: track == 'production' ? !submit_for_review : false
     )
 
     UI.success("✅ Successfully deployed to #{track} track")
@@ -805,11 +830,11 @@ platform :android do
   desc "Run Flutter tests"
   lane :test do
     UI.header("🧪 Running Flutter Tests")
-    
-    Dir.chdir('../../..') do
+
+    Dir.chdir('../..') do
       sh("flutter test --timeout #{TEST_TIMEOUT}")
     end
-    
+
     UI.success("✅ All Flutter tests passed")
   end
 

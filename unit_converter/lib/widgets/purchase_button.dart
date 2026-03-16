@@ -2,31 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../services/purchase_service.dart';
 import '../services/premium_service.dart';
+import '../utils/platform_utils.dart';
 
 class PurchaseButton extends StatefulWidget {
-  const PurchaseButton({super.key});
+  const PurchaseButton({
+    super.key,
+    PurchaseService? purchaseService,
+    bool? isWindowsPlatform,
+  }) : _purchaseService = purchaseService,
+       _isWindowsPlatform = isWindowsPlatform;
+
+  final PurchaseService? _purchaseService;
+  final bool? _isWindowsPlatform;
 
   @override
   State<PurchaseButton> createState() => _PurchaseButtonState();
 }
 
 class _PurchaseButtonState extends State<PurchaseButton> {
-  final PurchaseService _purchaseService = PurchaseService();
+  late final PurchaseService _purchaseService;
   bool _isLoading = false;
   bool _isPremium = false;
-  
-  String get _purchaseButtonLabel {
+
+  bool get _isWindowsPlatform =>
+      widget._isWindowsPlatform ?? PlatformUtils.isWindows;
+
+  _PurchaseContent get _content {
     final price = _purchaseService.noAdsProduct?.price;
-    if (price == null || price.isEmpty) {
-      return 'Go Ad-Free';
+    if (_isWindowsPlatform) {
+      final buttonLabel = (price == null || price.isEmpty)
+          ? 'Unlock Premium'
+          : 'Unlock Premium - $price';
+      return _PurchaseContent(
+        title: 'Premium unlock',
+        subtitle: 'One-time purchase',
+        description:
+            'Unlock Currency, advanced converters, and Custom Units with a one-time premium purchase.',
+        activeDescription: 'All premium Windows features are unlocked.',
+        buttonLabel: buttonLabel,
+      );
     }
-  
-    return 'Go Ad-Free - $price';
+
+    final buttonLabel = (price == null || price.isEmpty)
+        ? 'Go Ad-Free'
+        : 'Go Ad-Free - $price';
+    return _PurchaseContent(
+      title: 'Ad-free upgrade',
+      subtitle: 'One-time purchase',
+      description:
+          'Remove banner and interstitial ads for a cleaner conversion experience.',
+      activeDescription: 'Enjoy your ad-free experience!',
+      buttonLabel: buttonLabel,
+    );
   }
 
   @override
   void initState() {
     super.initState();
+    _purchaseService = widget._purchaseService ?? PurchaseService();
     _checkPremiumStatus();
   }
 
@@ -111,7 +144,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                       ),
                     ),
                     Text(
-                      'Enjoy your ad-free experience!',
+                      _content.activeDescription,
                       style: TextStyle(
                         color: Colors.green[600],
                         fontSize: 14,
@@ -145,7 +178,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Ad-free upgrade',
+                        _content.title,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -153,7 +186,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                         ),
                       ),
                       Text(
-                        'One-time purchase',
+                        _content.subtitle,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 14,
@@ -166,7 +199,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Remove banner and interstitial ads for a cleaner conversion experience.',
+              _content.description,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 14,
@@ -216,7 +249,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : Text(_purchaseButtonLabel),
+                        : Text(_content.buttonLabel),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -231,4 +264,20 @@ class _PurchaseButtonState extends State<PurchaseButton> {
       ),
     );
   }
+}
+
+class _PurchaseContent {
+  const _PurchaseContent({
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.activeDescription,
+    required this.buttonLabel,
+  });
+
+  final String title;
+  final String subtitle;
+  final String description;
+  final String activeDescription;
+  final String buttonLabel;
 }

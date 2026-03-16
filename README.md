@@ -31,11 +31,32 @@ flutter run
 
 ### Build Performance
 
-All Android projects in this workspace are configured with optimized build settings that provide 30-50% faster clean builds and 90%+ faster incremental builds. See [unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md](unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md) for details.
+All Android projects in this workspace are configured with optimized build settings that provide 30-50% faster clean builds and 90%+ faster incremental builds. See [unit_converter/docs/android-build-optimization.md](unit_converter/docs/android-build-optimization.md) for details.
 
 ## Common Folder
 
-The `common/` folder contains shared code used across multiple projects. See [common/README.md](common/README.md) for more details.
+The `common/` folder contains shared code used across multiple projects. See [common/readme.md](common/readme.md) for more details.
+
+## Deployment
+
+The workspace includes a **unified deployment workflow** that supports Android, Windows, and iOS platforms:
+
+```powershell
+# Deploy to Android
+cd unit_converter
+..\scripts\deploy.ps1 -Platform android -Track production -ReleaseNotes "New features" -SkipConfirmation
+
+# Deploy to Windows
+..\scripts\deploy.ps1 -Platform windows -Track retail -ReleaseNotes "Windows release" -SkipConfirmation
+
+# Deploy to iOS (macOS only)
+../scripts/deploy.ps1 -Platform ios -Track production -ReleaseNotes "App Store release" -SkipConfirmation
+```
+
+For complete deployment documentation, see:
+- [docs/UNIFIED_DEPLOYMENT.md](docs/UNIFIED_DEPLOYMENT.md) - Unified multi-platform deployment guide
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) - Android deployment guide
+- [scripts/readme.md](scripts/readme.md) - Deployment scripts documentation
 
 ## Documentation
 
@@ -45,3 +66,4 @@ The `common/` folder contains shared code used across multiple projects. See [co
 ## License
 
 This project is not open source.
+

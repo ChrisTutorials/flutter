@@ -29,15 +29,15 @@ Project-specific documentation.
 
 #### Unit Converter
 - **[DEPLOYMENT_CHECKLIST.md](unit_converter/DEPLOYMENT_CHECKLIST.md)** - Play Store deployment checklist
-- **[README.md](unit_converter/README.md)** - App documentation
-- **[ANDROID_BUILD_OPTIMIZATION.md](unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md)** - Android build performance settings
+- **[readme.md](unit_converter/readme.md)** - App documentation
+- **[android-build-optimization.md](unit_converter/docs/android-build-optimization.md)** - Android build performance settings
 
 #### Common Package
-- **[README.md](common/README.md)** - Common package documentation
+- **[readme.md](common/readme.md)** - Common package documentation
 - **[MIGRATION_GUIDE.md](common/MIGRATION_GUIDE.md)** - Migration guide
 
 #### Marketing
-- **[README.md](marketing/README.md)** - Marketing documentation index
+- **[readme.md](marketing/readme.md)** - Marketing documentation index
 
 ## 🚀 Quick Start
 
@@ -109,3 +109,4 @@ flutter test test/golden_screenshots/store_screenshots_test.dart --update-golden
 ---
 
 **Last Updated:** March 12, 2026
+

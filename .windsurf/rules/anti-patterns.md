@@ -251,7 +251,7 @@ For validation methodology, see:
 # GOOD: Proper structure
 .windsurf/
   skills/
-    README.md
+    readme.md
     take-screenshots/
       SKILL.md
     full-screen-screenshot-validation/
@@ -382,9 +382,132 @@ $screenshotsDir = Join-Path $workspaceRoot "marketing\unit_converter\screenshots
 
 ---
 
+### 13. Running Fastlane Without `bundle exec` in `unit_converter/android`
+
+**Anti-Pattern**: Running plain `fastlane ...` in `unit_converter/android` when a Gemfile is present.
+
+**Problem**: You can get version drift between the globally installed gem and the project-managed Fastlane setup.
+
+**Example**:
+```powershell
+# BAD
+fastlane deploy track:production
+```
+
+**Correct Approach**: Run Fastlane from `unit_converter/android` with `bundle exec`.
+
+```powershell
+# GOOD
+bundle exec fastlane deploy track:production skip_confirmation:true submit_for_review:true
+```
+
+**Why This Matters**: Uses the project’s pinned Fastlane environment and matches the documented release workflow.
+
+---
+
+### 14. Using Interactive Production Deploys for Agent Workflows
+
+**Anti-Pattern**: Starting production deploys that depend on a manual `y/n` confirmation.
+
+**Problem**: Agent-driven or non-interactive runs can stall or fail waiting for input.
+
+**Example**:
+```powershell
+# BAD
+bundle exec fastlane deploy track:production
+```
+
+**Correct Approach**: Pass the explicit non-interactive flags.
+
+```powershell
+# GOOD
+bundle exec fastlane deploy track:production skip_confirmation:true submit_for_review:true
+```
+
+**Why This Matters**: Keeps release automation deterministic and ensures production changes are sent for review.
+
+---
+
+### 15. Using the Wrong Flutter Project Root from Fastlane Lanes
+
+**Anti-Pattern**: Navigating to `../../..` from `unit_converter/android/fastlane` before running Flutter commands.
+
+**Problem**: That path lands above the app root, so `flutter clean` and `flutter pub get` fail with `No pubspec.yaml file found`.
+
+**Example**:
+```ruby
+# BAD
+Dir.chdir('../../..') do
+  sh('flutter clean')
+end
+```
+
+**Correct Approach**: Use `../..` from the Fastlane directory.
+
+```ruby
+# GOOD
+Dir.chdir('../..') do
+  sh('flutter clean')
+end
+```
+
+**Why This Matters**: `unit_converter/android/fastlane` is two levels below the Flutter app root, not three.
+
+---
+
+### 16. Passing Unsupported `upload_to_play_store` Options
+
+**Anti-Pattern**: Passing `release_notes:` directly to `upload_to_play_store`.
+
+**Problem**: The action rejects unsupported options and the release can fail after screenshots and builds have already completed.
+
+**Example**:
+```ruby
+# BAD
+upload_to_play_store(
+  track: track,
+  aab: '../build/app/outputs/bundle/release/app-release.aab',
+  release_notes: release_notes
+)
+```
+
+**Correct Approach**: Only pass supported `upload_to_play_store` options.
+
+```ruby
+# GOOD
+upload_to_play_store(
+  track: track,
+  aab: '../build/app/outputs/bundle/release/app-release.aab',
+  changes_not_sent_for_review: false
+)
+```
+
+**Why This Matters**: Prevents late-stage production failures after expensive screenshot generation and AAB builds.
+
+---
+
+### 17. Forgetting That `deploy` Bumps the Build Number Before Upload
+
+**Anti-Pattern**: Re-running `fastlane deploy` after a failed attempt without checking the version in `pubspec.yaml`.
+
+**Problem**: The lane bumps the build number before screenshot generation and upload, so retries can advance the version again.
+
+**Example**:
+```powershell
+# First run fails late, then retry bumps again
+bundle exec fastlane deploy track:production skip_confirmation:true
+bundle exec fastlane deploy track:production skip_confirmation:true
+```
+
+**Correct Approach**: Expect a new build number on each retry, or use a narrower lane if you only need to rerun the final upload step.
+
+**Why This Matters**: Avoids confusion when a failed `1.0.4+11` attempt is followed by a successful `1.0.4+12` release.
+
+---
+
 ## Testing Anti-Patterns
 
-### 13. Not Using Test Isolation
+### 18. Not Using Test Isolation
 
 **Anti-Pattern**: Tests that depend on each other or shared state.
 
@@ -428,7 +551,7 @@ test('Test 2', () {
 
 ---
 
-### 14. Not Cleaning Up Test Resources
+### 19. Not Cleaning Up Test Resources
 
 **Anti-Pattern**: Tests that leave resources in an inconsistent state.
 
@@ -481,3 +604,4 @@ By avoiding these anti-patterns, you can:
 6. **Debug efficiently** with clear error messages and proper logging
 
 Remember: The best way to avoid anti-patterns is to review this document before starting new work and to get code reviews from team members.
+

@@ -57,3 +57,4 @@ play_store:
   rollout_percentage: 100
   release_status: "completed"  # completed, halted, inProgress
   # Service account credentials handled via GOOGLE_APPLICATION_CREDENTIALS env var
+

@@ -439,7 +439,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
             child: Text(
               _quote == null
                   ? 'Enter an amount to see the latest available rate.'
-                  : '${NumberFormatter.formatNumber(_quote!.amount)} ${_quote!.from} = ${NumberFormatter.formatNumber(_quote!.convertedAmount)} ${_quote!.to}',
+                  : '${NumberFormatter.formatNumber(_quote!.amount)} ${_quote!.from} (${_currencies[_quote!.from] ?? 'Unknown'}) = ${NumberFormatter.formatNumber(_quote!.convertedAmount)} ${_quote!.to} (${_currencies[_quote!.to] ?? 'Unknown'})',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -473,7 +473,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
               )
             else if (_quote != null) ...[
               Text(
-                '1 ${_quote!.from} = ${NumberFormatter.formatNumber(_quote!.rate)} ${_quote!.to}',
+                '1 ${_quote!.from} (${_currencies[_quote!.from] ?? 'Unknown'}) = ${NumberFormatter.formatNumber(_quote!.rate)} ${_quote!.to} (${_currencies[_quote!.to] ?? 'Unknown'})',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),

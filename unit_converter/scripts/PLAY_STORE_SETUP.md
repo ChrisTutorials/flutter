@@ -1,8 +1,8 @@
-﻿# Automated Google Play Console Upload Setup Guide
+# Automated Google Play Console Upload Setup Guide
 
 ## Current Status
-✅ App bundle built successfully: build\app\outputs\bundle\release\app-release.aab (46.8MB)
-✅ Deployment script created: scripts\deploy-to-play-store.ps1
+? App bundle built successfully: build\app\outputs\bundle\release\app-release.aab (46.8MB)
+? Deployment script created: scripts\deploy-to-play-store.ps1
 
 ## Quick Start - Manual Upload (Recommended for First Release)
 
@@ -48,7 +48,7 @@ Before your app can go live, complete these sections:
 
 ### Step 1: Create Service Account
 1. Go to Google Play Console
-2. Setup → API access
+2. Setup ? API access
 3. Create a service account
 4. Grant permissions (Admin or Release Manager)
 5. Download JSON key file
@@ -151,4 +151,5 @@ flutter build appbundle --release
 - Google Play Console: https://play.google.com/console
 - Flutter Deployment: https://flutter.dev/docs/deployment/android
 - Google Play Publisher API: https://developers.google.com/android-publisher
+
 

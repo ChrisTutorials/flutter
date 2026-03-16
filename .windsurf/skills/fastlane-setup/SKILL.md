@@ -14,7 +14,7 @@ Fastlane has been successfully installed and configured for automated Play Store
 ### 2. Configuration Files Created
 - ✅ `android/fastlane/Fastfile` - Comprehensive automation lanes
 - ✅ `android/fastlane/Appfile` - Play Store service account configuration
-- ✅ `android/fastlane/README.md` - Complete usage guide
+- ✅ `android/fastlane/readme.md` - Complete usage guide
 
 ### 3. Validation Lanes (7 checks)
 - ✅ AndroidManifest.xml validation
@@ -45,50 +45,72 @@ Fastlane has been successfully installed and configured for automated Play Store
 
 ## 🚀 How to Use Fastlane
 
+### ⚠️ CRITICAL: Always Use Non-Interactive Flags for Production
+
+When deploying to production, **ALWAYS** use non-interactive flags to prevent blocking:
+
+- `skip_confirmation:true` - Skip all confirmation prompts
+- `submit_for_review:true` - Automatically submit for Google Play review
+
 ### Quick Start
 
 ```bash
-# Navigate to android directory
-cd android
-
-# Run validation checks
-fastlane validate
-
-# Deploy to internal testing
-fastlane deploy_internal
-
-# Deploy to production
-fastlane deploy_production
+cd unit_converter/android
+bundle exec fastlane validate
+bundle exec fastlane update_screenshots
+bundle exec fastlane deploy track:production skip_confirmation:true submit_for_review:true
 ```
 
 ### Common Workflows
 
 #### 1. Development Workflow
 ```bash
-cd android
-fastlane validate          # Check configuration
-fastlane test              # Run tests
-fastlane build_release     # Build AAB
+cd unit_converter/android
+bundle exec fastlane validate
+bundle exec fastlane test
+bundle exec fastlane build_release
 ```
 
 #### 2. Internal Testing Workflow
 ```bash
-cd android
-fastlane deploy_internal   # Validates, builds, and uploads
+cd unit_converter/android
+bundle exec fastlane deploy_internal skip_confirmation:true
 ```
 
-#### 3. Production Deployment Workflow
+#### 3. Production Deployment Workflow (Non-Interactive)
 ```bash
-cd android
-fastlane bump_build_number  # Increment version
-fastlane deploy_production   # Validates, builds, and uploads
+cd unit_converter/android
+bundle exec fastlane deploy track:production skip_confirmation:true submit_for_review:true
 ```
 
-#### 4. Complete CI/CD Pipeline
+#### 4. Screenshot-Only Workflow
 ```bash
-cd android
-fastlane ci                 # Test + validate + build
+cd unit_converter/android
+bundle exec fastlane update_screenshots
 ```
+
+#### 5. Complete CI/CD Pipeline
+```bash
+cd unit_converter/android
+bundle exec fastlane ci
+```
+
+### Correct Commands for This Workspace
+
+Use these exact commands on Windows PowerShell:
+
+```powershell
+bundle exec fastlane update_screenshots
+
+bundle exec fastlane deploy track:production skip_confirmation:true submit_for_review:true
+
+.\scripts\release.ps1 -Track production -SkipConfirmation
+```
+
+- `bundle exec` is preferred in `unit_converter/android` because the project has a Gemfile there.
+- `fastlane deploy` is the all-in-one lane for this repo. It bumps the build number, refreshes screenshots, uploads metadata/screenshots, builds the AAB, and uploads the release.
+- `submit_for_review:true` requests Google review instead of leaving the changes as unsent changes.
+- The generated AAB is written to `unit_converter/build/app/outputs/bundle/release/app-release.aab`.
 
 ## 📦 Available Lanes
 
@@ -239,7 +261,7 @@ ln -s ../../../common/fastlane fastlane
 - **Fastlane Documentation**: https://docs.fastlane.tools
 - **Fastlane Android Actions**: https://docs.fastlane.tools/actions/
 - **Google Play Console API**: https://developers.google.com/android-publisher
-- **Project README**: `android/fastlane/README.md`
+- **Project README**: `android/fastlane/readme.md`
 
 ## 🐛 Troubleshooting
 
@@ -300,3 +322,4 @@ Fastlane is now ready to use for automated Play Store deployment across your Flu
 **Fastlane Version:** 2.232.2  
 **Ruby Version:** 3.4.8  
 **Status:** ✅ Ready for use
+

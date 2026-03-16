@@ -1,4 +1,4 @@
-﻿# Screenshot Fix Summary
+# Screenshot Fix Summary
 
 ## Problem
 The store screenshots have:
@@ -85,21 +85,21 @@ The processing step will now:
 ## Test Cases
 
 ### Generation Test (store_screenshots_generation_test.dart)
-- ✅ Generates phone screenshots at 1080x1920
-- ✅ Generates tablet 7 screenshots at 1200x1920
-- ✅ Generates tablet 10 screenshots at 1600x2560
-- ✅ Captures full device screen (not just widget tree)
-- ✅ Navigates to correct screens (home, conversion, currency, custom units)
-- ✅ Uses correct themes (light/dark)
+- ? Generates phone screenshots at 1080x1920
+- ? Generates tablet 7 screenshots at 1200x1920
+- ? Generates tablet 10 screenshots at 1600x2560
+- ? Captures full device screen (not just widget tree)
+- ? Navigates to correct screens (home, conversion, currency, custom units)
+- ? Uses correct themes (light/dark)
 
 ### Validation Test (store_screenshots_validation_test.dart)
-- ✅ Verifies all 12 screenshots exist
-- ✅ Verifies phone screenshots are 1080x1920
-- ✅ Verifies tablet 7 screenshots are 1200x1920
-- ✅ Verifies tablet 10 screenshots are 1600x2560
-- ✅ Verifies zero whitespace at bottom (last 5% of image)
-- ✅ Verifies zero whitespace at top (first 5% of image)
-- ✅ Verifies full app content (not cropped)
+- ? Verifies all 12 screenshots exist
+- ? Verifies phone screenshots are 1080x1920
+- ? Verifies tablet 7 screenshots are 1200x1920
+- ? Verifies tablet 10 screenshots are 1600x2560
+- ? Verifies zero whitespace at bottom (last 5% of image)
+- ? Verifies zero whitespace at top (first 5% of image)
+- ? Verifies full app content (not cropped)
 
 ## Expected Workflow
 
@@ -158,6 +158,7 @@ The processing step will now:
 ## Additional Resources
 
 For detailed information on the comprehensive validation methodology, see:
-- **[FULL_SCREEN_SCREENSHOT_METHODOLOGY.md](docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md)** - Complete documentation of the full-screen screenshot validation approach, including chunk detection and quadrant validation algorithms
+- **[full-screen-screenshot-methodology.md](docs/full-screen-screenshot-methodology.md)** - Complete documentation of the full-screen screenshot validation approach, including chunk detection and quadrant validation algorithms
 
 The new methodology includes advanced validation that checks for whitespace chunks throughout the entire image, ensuring screenshots are truly full-screen with no whitespace anywhere.
+
