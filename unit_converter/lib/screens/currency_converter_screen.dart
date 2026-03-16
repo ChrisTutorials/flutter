@@ -14,9 +14,16 @@ import '../widgets/currency_input_row.dart';
 
 /// Screen for currency conversion with live rates.
 class CurrencyConverterScreen extends StatefulWidget {
-  const CurrencyConverterScreen({super.key, this.preset});
+  const CurrencyConverterScreen({
+    super.key,
+    this.preset,
+    this.demoCurrencies,
+    this.demoQuote,
+  });
 
   final QuickPreset? preset;
+  final Map<String, String>? demoCurrencies;
+  final CurrencyQuote? demoQuote;
 
   @override
   State<CurrencyConverterScreen> createState() =>
@@ -51,6 +58,22 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
     _fromCurrency = widget.preset?.fromSymbol ?? _fromCurrency;
     _toCurrency = widget.preset?.toSymbol ?? _toCurrency;
     _amountController.text = (widget.preset?.sampleValue ?? 1).toString();
+
+    if (widget.demoCurrencies != null) {
+      _currencies = Map.fromEntries(
+        widget.demoCurrencies!.entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key)),
+      );
+      _quote = widget.demoQuote;
+      _isLoading = false;
+      if (widget.demoQuote != null) {
+        _resultController.text = NumberFormatter.formatNumber(
+          widget.demoQuote!.convertedAmount,
+        );
+      }
+      return;
+    }
+
     _loadCurrencies();
   }
 

@@ -118,8 +118,8 @@ Added tests to validate theme feature claims:
 - `lib/screens/conversion_screen.dart` - Added theme toggle to app bar
 - `test/theme_service_test.dart` - Added comprehensive persistence tests
 - `test/documentation_claims_validation_test.dart` - Added theme validation tests
-- `docs/DEPLOYMENT_ROADMAP.md` - Updated with feature implementation details
-- `docs/APP_STORE_PROMO.md` - Added theme feature to promotional materials
+- `../docs/DEPLOYMENT_ROADMAP.md` - Updated with feature implementation details
+- `../docs/APP_STORE_PROMO.md` - Added theme feature to promotional materials
 
 ## Testing
 

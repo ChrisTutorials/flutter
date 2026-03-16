@@ -48,7 +48,7 @@ unit_converter/
 │       ├── number_formatter.dart             # Number formatting utilities
 │       └── home_search.dart                  # Home search and instant conversion
 ├── test/                      # Test files
-└── docs/                      # Documentation
+└── ../docs/                      # Documentation
 ```
 
 ## Supported Conversion Categories
@@ -64,16 +64,36 @@ unit_converter/
 ## Getting Started
 See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
 
+## 🚀 Quick Deployment
+
+Deploy to Google Play Store with a single command:
+
+```powershell
+# Deploy to internal testing
+.\scripts\release.ps1
+
+# Deploy to production
+.\scripts\release.ps1 -Track production -ReleaseNotes "New features"
+
+# Check deployment readiness
+cd android
+fastlane release_status
+```
+
+For complete deployment documentation, see [DEPLOYMENT.md](DEPLOYMENT.md) or [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md).
+
 ## Documentation Index
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide with automated workflow
 - [QUICKSTART.md](QUICKSTART.md) - Quick start guide for testing and deployment
+- [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md) - Production release, metadata, and screenshot workflow
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture overview and design patterns
 - [API.md](API.md) - Complete API documentation
 - [SECURITY_CONFIG.md](SECURITY_CONFIG.md) - Security configuration guide
+- [RELEASE_CREDENTIALS_SETUP.md](RELEASE_CREDENTIALS_SETUP.md) - Credential setup for releases
 - [DEPLOYMENT_ROADMAP.md](DEPLOYMENT_ROADMAP.md) - Deployment phases and roadmap
 - [DOCUMENTATION_CLAIMS_VALIDATION.md](DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
 - [AD_STRATEGY.md](AD_STRATEGY.md) - Comprehensive ad monetization strategy
 - [APP_SIZE_ANALYSIS.md](APP_SIZE_ANALYSIS.md) - App size analysis and optimization recommendations
-- [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md) - Production release, metadata, and screenshot workflow
 
 ### Currency Converter Documentation
 - [CURRENCY_ARCHITECTURE.md](CURRENCY_ARCHITECTURE.md) - Currency converter architecture and design decisions

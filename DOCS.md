@@ -18,12 +18,19 @@ Specific workflows and how-to guides.
 - **[take-screenshots.md](.windsurf/skills/take-screenshots.md)** - Screenshot generation workflows
 - **[run-android-simulator](.windsurf/skills/run-android-simulator/)** - Android simulator setup
 
+### API Documentation (docs/)
+Detailed API references and technical documentation.
+
+- **[GOLDEN_SCREENSHOT_API.md](docs/GOLDEN_SCREENSHOT_API.md)** - Complete Golden Screenshot API reference
+- **[GOLDEN_SCREENSHOT_API_AUDIT.md](docs/GOLDEN_SCREENSHOT_API_AUDIT.md)** - Runtime code audit for API adherence
+
 ### Project Documentation
 Project-specific documentation.
 
 #### Unit Converter
 - **[DEPLOYMENT_CHECKLIST.md](unit_converter/DEPLOYMENT_CHECKLIST.md)** - Play Store deployment checklist
 - **[README.md](unit_converter/README.md)** - App documentation
+- **[ANDROID_BUILD_OPTIMIZATION.md](unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md)** - Android build performance settings
 
 #### Common Package
 - **[README.md](common/README.md)** - Common package documentation
@@ -45,8 +52,9 @@ Project-specific documentation.
 3. Follow [DEPLOYMENT_CHECKLIST.md](unit_converter/DEPLOYMENT_CHECKLIST.md)
 
 ### Screenshot Generation
-1. Primary: [golden-screenshot-practice.md](.windsurf/rules/golden-screenshot-practice.md)
-2. Alternative: [take-screenshots.md](.windsurf/skills/take-screenshots.md)
+1. API Reference: [GOLDEN_SCREENSHOT_API.md](docs/GOLDEN_SCREENSHOT_API.md)
+2. Best Practices: [golden-screenshot-practice.md](.windsurf/rules/golden-screenshot-practice.md)
+3. Alternative Methods: [take-screenshots.md](.windsurf/skills/take-screenshots.md)
 
 ## � Common Commands
 
@@ -78,7 +86,7 @@ flutter test test/golden_screenshots/store_screenshots_test.dart --update-golden
 
 | Standard | Purpose | Documentation |
 |----------|---------|---------------|
-| golden_screenshot | Store screenshots | [golden-screenshot-practice.md](.windsurf/rules/golden-screenshot-practice.md) |
+| golden_screenshot | Store screenshots | [GOLDEN_SCREENSHOT_API.md](docs/GOLDEN_SCREENSHOT_API.md), [golden-screenshot-practice.md](.windsurf/rules/golden-screenshot-practice.md) |
 | Fastlane | Play Store deployment | [fastlane-setup.md](.windsurf/skills/fastlane-setup.md) |
 | Pre-deployment testing | Validation | Built into Fastlane |
 | Common package | Shared utilities | [use_common_folder.md](.windsurf/rules/use_common_folder.md) |

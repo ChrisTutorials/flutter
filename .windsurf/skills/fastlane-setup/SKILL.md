@@ -1,4 +1,4 @@
-# Fastlane Setup for Flutter Workspace
+# Skill: Fastlane Setup for Flutter Workspace
 
 ## 📋 Summary
 

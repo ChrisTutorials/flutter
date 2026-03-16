@@ -154,16 +154,14 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       return;
     }
 
-    await Navigator.push(
+    await NavigationUtils.pushAndAwait<dynamic>(
       context,
-      MaterialPageRoute(
-        builder: (context) => ConversionScreen(
-          category: category,
-          initialFromSymbol: fromSymbol,
-          initialToSymbol: toSymbol,
-          initialInput: sampleValue?.toString(),
-          presetLabel: presetLabel,
-        ),
+      ConversionScreen(
+        category: category,
+        initialFromSymbol: fromSymbol,
+        initialToSymbol: toSymbol,
+        initialInput: sampleValue?.toString(),
+        presetLabel: presetLabel,
       ),
     );
 
@@ -171,11 +169,9 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   }
 
   Future<void> _openCurrency({QuickPreset? preset}) async {
-    await Navigator.push(
+    await NavigationUtils.pushAndAwait<dynamic>(
       context,
-      MaterialPageRoute(
-        builder: (context) => CurrencyConverterScreen(preset: preset),
-      ),
+      CurrencyConverterScreen(preset: preset),
     );
 
     _refreshHomeData();
@@ -322,42 +318,36 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
           IconButton(
             icon: const Icon(Icons.info_outline_rounded),
             tooltip: 'About',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AboutScreen(),
-                ),
-              );
-            },
+             onPressed: () async {
+               await NavigationUtils.pushAndAwait(
+                 context,
+                 const AboutScreen(),
+               );
+             },
           ),
           IconButton(
             icon: const Icon(Icons.extension_outlined),
             tooltip: 'Custom units',
             onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CustomUnitsScreen(),
-                ),
-              );
+               await NavigationUtils.pushAndAwait(
+                 context,
+                 const AboutScreen(),
+               );
               _refreshHomeData();
             },
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Themes and settings',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(
-                    themeController: widget.themeController,
-                    widgetAvailable: _widgetAvailable,
-                  ),
-                ),
-              );
-            },
+             onPressed: () async {
+               await NavigationUtils.pushAndAwait(
+                 context,
+                 SettingsScreen(
+                   themeController: widget.themeController,
+                   widgetAvailable: _widgetAvailable,
+                 ),
+               );
+             },
           ),
         ],
       ),

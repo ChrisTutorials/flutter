@@ -11,18 +11,35 @@ class ScreenshotScenario {
   ScreenshotScenario._({
     required this.scrollTarget,
     required this.screen,
+    required this.usesStoreData,
+    this.categoryName,
+    this.fromSymbol,
+    this.toSymbol,
+    this.value,
+    this.label,
+    this.subtitle,
   });
 
   final ScreenshotScrollTarget scrollTarget;
   final String screen;
+  final bool usesStoreData;
+  final String? categoryName;
+  final String? fromSymbol;
+  final String? toSymbol;
+  final String? value;
+  final String? label;
+  final String? subtitle;
 
-  static Future<ScreenshotScenario> prepare(ThemeController themeController) async {
-    final uri = Uri.base;
-    final theme = uri.queryParameters['theme'];
-    final palette = uri.queryParameters['palette'];
-    final dataPreset = uri.queryParameters['data'];
-    final scroll = uri.queryParameters['scroll'];
-    final screen = uri.queryParameters['screen'] ?? 'home';
+  static Future<ScreenshotScenario> prepare(
+    ThemeController themeController, {
+    Uri? uri,
+  }) async {
+    final effectiveUri = uri ?? Uri.base;
+    final theme = effectiveUri.queryParameters['theme'];
+    final palette = effectiveUri.queryParameters['palette'];
+    final dataPreset = effectiveUri.queryParameters['data'];
+    final scroll = effectiveUri.queryParameters['scroll'];
+    final screen = effectiveUri.queryParameters['screen'] ?? 'home';
 
     if (theme != null) {
       await themeController.updateThemeMode(_parseThemeMode(theme));
@@ -41,6 +58,13 @@ class ScreenshotScenario {
           ? ScreenshotScrollTarget.history
           : ScreenshotScrollTarget.none,
       screen: screen,
+      usesStoreData: dataPreset == 'store',
+      categoryName: effectiveUri.queryParameters['category'],
+      fromSymbol: effectiveUri.queryParameters['from'],
+      toSymbol: effectiveUri.queryParameters['to'],
+      value: effectiveUri.queryParameters['value'],
+      label: effectiveUri.queryParameters['label'],
+      subtitle: effectiveUri.queryParameters['subtitle'],
     );
   }
 

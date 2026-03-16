@@ -123,11 +123,12 @@ Example patterns:
 ## Recommended Workflow For Next Time
 
 1. Build web before capture so the running app matches the latest code.
-2. Capture deterministic raw screenshots into `marketing/unit_converter/screenshots/raw_store_screenshots`.
-3. Run `dart run bin/store_screenshots.dart process ../../unit_converter/screenshots/store_screenshot_spec.json` from `marketing/tools/store_screenshots`.
-4. Keep the export portrait-only unless there is a specific store requirement to do otherwise.
-5. Run `dart test` in `marketing/tools/store_screenshots` to verify the shared crop and validation logic.
-6. Treat `unit_converter_workflow_validation_test.dart` as the regression guard for the committed unit_converter screenshot outputs.
+2. Run `flutter test test/integration/store_screenshots_generation_test.dart --update-goldens` from `unit_converter` to regenerate deterministic raw screenshots in `marketing/unit_converter/screenshots/raw_store_screenshots`.
+3. Run `flutter test test/integration/store_screenshots_validation_test.dart` from `unit_converter` to verify the raw captures still match the listing spec.
+4. Run `dart run bin/store_screenshots.dart process ../../unit_converter/screenshots/store_screenshot_spec.json` from `marketing/tools/store_screenshots`.
+5. Keep the export portrait-only unless there is a specific store requirement to do otherwise.
+6. Run `dart test` in `marketing/tools/store_screenshots` to verify the shared crop and validation logic.
+7. Treat `test/integration/store_screenshots_generation_test.dart`, `test/integration/store_screenshots_validation_test.dart`, and `unit_converter_workflow_validation_test.dart` as the regression guards for the committed screenshot outputs.
 
 ## App Icon Source
 

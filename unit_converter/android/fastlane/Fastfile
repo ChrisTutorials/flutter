@@ -69,6 +69,19 @@ def hydrate_environment_value(name)
   value
 end
 
+def current_version
+  pubspec_path = File.join(Dir.pwd, '../../pubspec.yaml')
+  pubspec_content = File.read(pubspec_path)
+
+  version_match = pubspec_content.match(/^version:\s*(\d+\.\d+\.\d+\+(\d+))/)
+
+  if version_match
+    version_match[1]
+  else
+    UI.user_error!("❌ Could not parse version from pubspec.yaml")
+  end
+end
+
 def sync_play_store_metadata
   android_root = File.expand_path('..', __dir__)
   app_root = File.expand_path('..', android_root)
@@ -101,18 +114,31 @@ def sync_play_store_metadata
 
   Dir.glob(File.join(screenshots_dir, '*.png')).sort.each do |source|
     file_name = File.basename(source)
-    destination_dir = case file_name
-                      when /^phone_/
+
+    # Extract device type and sequence number
+    device_type, sequence_number = case file_name
+                                    when /^phone_(\d+)_/
+                                      ['phoneScreenshots', $1]
+                                    when /^tablet7_(\d+)_/
+                                      ['sevenInchScreenshots', $1]
+                                    when /^tablet10_(\d+)_/
+                                      ['tenInchScreenshots', $1]
+                                    else
+                                      UI.user_error!("❌ Unrecognized screenshot naming pattern: #{file_name}")
+                                    end
+
+    destination_dir = case device_type
+                      when 'phoneScreenshots'
                         phone_dir
-                      when /^tablet7_/
+                      when 'sevenInchScreenshots'
                         seven_inch_dir
-                      when /^tablet10_/
+                      when 'tenInchScreenshots'
                         ten_inch_dir
-                      else
-                        UI.user_error!("❌ Unrecognized screenshot naming pattern: #{file_name}")
                       end
 
-    FileUtils.cp(source, File.join(destination_dir, file_name))
+    # Rename to Play Store expected format
+    new_file_name = "#{device_type}-#{sequence_number}.png"
+    FileUtils.cp(source, File.join(destination_dir, new_file_name))
   end
 
   FileUtils.cp(
@@ -443,7 +469,7 @@ platform :android do
     UI.header("🔨 Building Release AAB")
     
     # Navigate to Flutter project root
-    Dir.chdir('..') do
+    Dir.chdir('../../..') do
       # Clean build
       UI.message("Cleaning Flutter build...")
       sh('flutter clean')
@@ -465,7 +491,7 @@ platform :android do
     UI.header("🔨 Building Release APK")
     
     # Navigate to Flutter project root
-    Dir.chdir('..') do
+    Dir.chdir('../../..') do
       # Clean build
       UI.message("Cleaning Flutter build...")
       sh('flutter clean')
@@ -592,6 +618,104 @@ platform :android do
     UI.success("✅ Successfully deployed to production")
   end
 
+  desc "All-in-one deployment: validate, bump version, prepare assets, and deploy to specified track"
+  lane :deploy do
+    # Parameters
+    track = params[:track] || 'internal'
+    skip_screenshots = params[:skip_screenshots] || false
+    skip_metadata = params[:skip_metadata] || false
+    skip_validation = params[:skip_validation] || false
+    release_notes = params[:release_notes] || 'Bug fixes and improvements'
+
+    # Validate track parameter
+    unless ['internal', 'alpha', 'beta', 'production'].include?(track)
+      UI.user_error!("❌ Invalid track: #{track}. Must be one of: internal, alpha, beta, production")
+    end
+
+    UI.header("🚀 All-in-One Deployment to #{track.capitalize} Track")
+    UI.message("📝 Release notes: #{release_notes}")
+    UI.message("")
+
+    # Step 1: Validate (unless skipped)
+    unless skip_validation
+      UI.message("📋 Step 1: Running validation checks...")
+      validate
+    else
+      UI.important("⚠️  Validation skipped (not recommended for production)")
+    end
+
+    # Step 2: Bump build number
+    UI.message("📦 Step 2: Bumping build number...")
+    bump_build_number
+
+    # Step 3: Prepare screenshots (unless skipped)
+    unless skip_screenshots
+      UI.message("📸 Step 3: Preparing store screenshots...")
+      generate_screenshots
+    else
+      UI.important("⚠️  Screenshot generation skipped")
+    end
+
+    # Step 4: Upload metadata (unless skipped)
+    unless skip_metadata
+      UI.message("📝 Step 4: Uploading metadata...")
+      upload_metadata
+    else
+      UI.important("⚠️  Metadata upload skipped")
+    end
+
+    # Step 5: Upload screenshots (unless skipped)
+    unless skip_screenshots
+      UI.message("📸 Step 5: Uploading screenshots...")
+      upload_screenshots
+    else
+      UI.important("⚠️  Screenshot upload skipped")
+    end
+
+    # Step 6: Build release AAB
+    UI.message("🔨 Step 6: Building release AAB...")
+    build_release
+
+    # Step 7: Upload to specified track
+    UI.message("🚀 Step 7: Uploading to #{track} track...")
+
+    # Production confirmation
+    if track == 'production' && UI.interactive?
+      UI.important("⚠️  You are about to deploy to PRODUCTION!")
+      UI.important("This will be visible to all users!")
+      confirm = UI.confirm("Are you sure you want to deploy to production?")
+      unless confirm
+        UI.user_error!("❌ Deployment cancelled by user")
+      end
+    end
+
+    upload_to_play_store(
+      track: track,
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      release_notes: release_notes
+    )
+
+    UI.success("✅ Successfully deployed to #{track} track")
+    UI.message("")
+    UI.header("📋 Deployment Summary")
+    UI.message("✅ Track: #{track}")
+    UI.message("✅ Version: #{current_version}")
+    UI.message("✅ Release notes: #{release_notes}")
+    UI.message("✅ Screenshots: #{skip_screenshots ? 'Skipped' : 'Updated'}")
+    UI.message("✅ Metadata: #{skip_metadata ? 'Skipped' : 'Updated'}")
+    UI.message("")
+    UI.important("📌 Next steps:")
+    UI.message("1. Monitor the release in Google Play Console")
+    UI.message("2. Test the release on the specified track")
+    if track == 'production'
+      UI.message("3. Monitor crash reports and user feedback")
+    end
+  end
+
   desc "Upload screenshots to Play Store"
   lane :upload_screenshots do
     UI.header("📸 Uploading Screenshots")
@@ -619,7 +743,7 @@ platform :android do
     UI.header("📸 Preparing Store Screenshots")
 
     # Navigate to Flutter project root
-    Dir.chdir('..') do
+    Dir.chdir('../..') do
       unless File.exist?('scripts/generate-store-screenshots.ps1')
         UI.user_error!('❌ Screenshot preparation script not found at scripts/generate-store-screenshots.ps1')
       end
@@ -682,7 +806,7 @@ platform :android do
   lane :test do
     UI.header("🧪 Running Flutter Tests")
     
-    Dir.chdir('..') do
+    Dir.chdir('../../..') do
       sh("flutter test --timeout #{TEST_TIMEOUT}")
     end
     
@@ -737,15 +861,189 @@ platform :android do
   lane :show_version do
     pubspec_path = File.join(Dir.pwd, '../../pubspec.yaml')
     pubspec_content = File.read(pubspec_path)
-    
+
     version_match = pubspec_content.match(/^version:\s*(\d+\.\d+\.\d+\+(\d+))/)
-    
+
     if version_match
       UI.message("📦 Current version: #{version_match[1]}")
       UI.message("🔢 Build number: #{version_match[2]}")
     else
       UI.user_error!("❌ Could not parse version from pubspec.yaml")
     end
+  end
+
+  desc "Verify screenshots before upload"
+  lane :verify_screenshots do
+    UI.header("📸 Screenshot Verification")
+
+    # Generate screenshots
+    UI.message("Generating store screenshots...")
+    generate_screenshots
+
+    # Show screenshot locations
+    android_root = File.expand_path('..', __dir__)
+    app_root = File.expand_path('..', android_root)
+    workspace_root = File.expand_path('..', app_root)
+    screenshots_dir = File.join(workspace_root, 'marketing', 'unit_converter', 'screenshots', 'store_screenshots')
+
+    UI.message("")
+    UI.message("📂 Screenshot location: #{screenshots_dir}")
+    UI.message("")
+
+    # List all screenshots
+    phone_screenshots = Dir.glob(File.join(screenshots_dir, 'phone_*.png')).sort
+    tablet7_screenshots = Dir.glob(File.join(screenshots_dir, 'tablet7_*.png')).sort
+    tablet10_screenshots = Dir.glob(File.join(screenshots_dir, 'tablet10_*.png')).sort
+
+    UI.message("📱 Phone screenshots (#{phone_screenshots.count}):")
+    phone_screenshots.each { |s| UI.message("  - #{File.basename(s)}") }
+
+    UI.message("")
+    UI.message("📱 7-inch tablet screenshots (#{tablet7_screenshots.count}):")
+    tablet7_screenshots.each { |s| UI.message("  - #{File.basename(s)}") }
+
+    UI.message("")
+    UI.message("📱 10-inch tablet screenshots (#{tablet10_screenshots.count}):")
+    tablet10_screenshots.each { |s| UI.message("  - #{File.basename(s)}") }
+
+    UI.message("")
+    UI.important("⚠️  Please review the screenshots in the following directory:")
+    UI.message("  #{screenshots_dir}")
+    UI.message("")
+    UI.important("⚠️  Verify that:")
+    UI.message("  1. All screenshots are correct and up-to-date")
+    UI.message("  2. Screenshots are properly cropped and centered")
+    UI.message("  3. Text is readable and not cut off")
+    UI.message("  4. Screenshots match your app's current design")
+    UI.message("")
+
+    if UI.interactive?
+      confirm = UI.confirm("Are the screenshots correct and ready to upload?")
+      unless confirm
+        UI.user_error!("❌ Screenshot verification cancelled. Please update the screenshots and try again.")
+      end
+    else
+      UI.message("ℹ️  Skipping confirmation in non-interactive mode")
+    end
+
+    UI.success("✅ Screenshots verified successfully")
+    UI.message("")
+    UI.message("Next steps:")
+    UI.message("  Run: fastlane update_screenshots")
+    UI.message("  Or use the full deploy: fastlane deploy")
+  end
+
+  desc "Check release readiness and configuration"
+  lane :release_status do
+    UI.header("📋 Release Status Check")
+    UI.message("")
+
+    # Check version
+    UI.message("📦 Version Information:")
+    show_version
+    UI.message("")
+
+    # Check credentials
+    UI.message("🔑 Credential Configuration:")
+    google_play_json_key_file = resolve_environment_value('GOOGLE_PLAY_JSON_KEY_FILE')
+    google_application_credentials = resolve_environment_value('GOOGLE_APPLICATION_CREDENTIALS')
+    admob_app_id = resolve_environment_value('UNIT_CONVERTER_ADMOB_APP_ID')
+    service_account_exists = File.exist?(File.join(Dir.pwd, 'google-play-service-account.json'))
+
+    if google_play_json_key_file || service_account_exists
+      UI.success("✅ Play Console service account configured")
+    else
+      UI.error("❌ Play Console service account not configured")
+      UI.message("   See ../../../docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions")
+    end
+
+    if google_application_credentials && File.exist?(google_application_credentials)
+      UI.success("✅ Google Cloud credentials configured: #{google_application_credentials}")
+    else
+      UI.important("⚠️  Google Cloud credentials not configured (optional)")
+    end
+
+    if admob_app_id && admob_app_id.match?(/^ca-app-pub-\d{16}~\d{10}$/) && !admob_app_id.include?('3940256099942544')
+      UI.success("✅ Production AdMob App ID configured: #{admob_app_id}")
+    else
+      UI.error("❌ AdMob App ID not configured or using test ID")
+      UI.message("   See ../../../docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions")
+    end
+
+    # Check signing configuration
+    UI.message("")
+    UI.message("🔐 Signing Configuration:")
+    key_properties_exists = File.exist?(File.join(Dir.pwd, '../key.properties'))
+    if key_properties_exists
+      UI.success("✅ Production signing configuration found")
+    else
+      UI.important("⚠️  Production signing configuration not found (app will be signed with debug keys)")
+    end
+
+    # Check screenshots
+    UI.message("")
+    UI.message("📸 Screenshot Status:")
+    android_root = File.expand_path('..', __dir__)
+    app_root = File.expand_path('..', android_root)
+    workspace_root = File.expand_path('..', app_root)
+    screenshots_dir = File.join(workspace_root, 'marketing', 'unit_converter', 'screenshots', 'store_screenshots')
+
+    if Dir.exist?(screenshots_dir)
+      phone_count = Dir.glob(File.join(screenshots_dir, 'phone_*.png')).count
+      tablet7_count = Dir.glob(File.join(screenshots_dir, 'tablet7_*.png')).count
+      tablet10_count = Dir.glob(File.join(screenshots_dir, 'tablet10_*.png')).count
+
+      if phone_count > 0 && tablet7_count > 0 && tablet10_count > 0
+        UI.success("✅ Screenshots ready (#{phone_count} phone, #{tablet7_count} 7-inch, #{tablet10_count} 10-inch)")
+      else
+        UI.important("⚠️  Some screenshots are missing (#{phone_count} phone, #{tablet7_count} 7-inch, #{tablet10_count} 10-inch)")
+      end
+    else
+      UI.error("❌ Screenshot directory not found")
+    end
+
+    # Manual steps checklist
+    UI.message("")
+    UI.header("📝 Manual Steps Checklist")
+    UI.message("")
+    UI.message("Before deploying to production, ensure:")
+    UI.message("")
+    UI.message("  [ ] Physical device testing completed")
+    UI.message("      - Ads display correctly")
+    UI.message("      - Purchase flow works")
+    UI.message("      - Premium upgrade works")
+    UI.message("")
+    UI.message("  [ ] Play Console forms completed:")
+    UI.message("      - Audience settings")
+    UI.message("      - Data safety declaration")
+    UI.message("      - Content rating")
+    UI.message("      - Release notes")
+    UI.message("")
+    UI.message("  [ ] Release notes prepared")
+    UI.message("      - Describe new features")
+    UI.message("      - List bug fixes")
+    UI.message("      - Highlight improvements")
+    UI.message("")
+    UI.message("  [ ] Screenshots verified")
+    UI.message("      - Run: fastlane verify_screenshots")
+    UI.message("      - Review in Play Console after upload")
+    UI.message("")
+
+    # Quick commands
+    UI.header("🚀 Quick Commands")
+    UI.message("")
+    UI.message("Deploy to internal testing:")
+    UI.message("  fastlane deploy track:internal")
+    UI.message("  .\\scripts\\release.ps1 -Track internal")
+    UI.message("")
+    UI.message("Deploy to production:")
+    UI.message("  fastlane deploy track:production release_notes:\"Your release notes here\"")
+    UI.message("  .\\scripts\\release.ps1 -Track production -ReleaseNotes \"Your release notes here\"")
+    UI.message("")
+    UI.message("Hotfix (no screenshots):")
+    UI.message("  fastlane deploy track:beta skip_screenshots:true")
+    UI.message("  .\\scripts\\release.ps1 -Track beta -SkipScreenshots")
+    UI.message("")
   end
 
   # =========================================================================

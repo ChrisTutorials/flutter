@@ -1,0 +1,6 @@
+File exists: true
+File size: 86382
+Bytes length: 86382
+Image: Image(1080, 1920, uint8, 3)
+Width: 1080
+Height: 1920

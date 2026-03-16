@@ -77,6 +77,12 @@ dev_dependencies:
   # Automated store screenshots
   golden_screenshot: ^10.0.0
 
+  # Image processing for screenshot validation
+  image: ^4.0.17
+
+  store_screenshots:
+    path: ../marketing/tools/store_screenshots
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

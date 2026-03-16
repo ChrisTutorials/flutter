@@ -7,7 +7,10 @@ param(
     [switch]$ValidateOnly = $false,
 
     [Parameter(Mandatory=$false)]
-    [switch]$UploadToPlayStore = $false
+    [switch]$UploadToPlayStore = $false,
+
+    [Parameter(Mandatory=$false)]
+    [string]$DeviceId = "emulator-5554"
 )
 
 $ErrorActionPreference = "Stop"
@@ -146,6 +149,9 @@ $processedScreenshotDir = Join-Path $marketingRoot "screenshots\store_screenshot
 $rawScreenshotDir = Join-Path $marketingRoot "screenshots\raw_store_screenshots"
 $graphicsDir = Join-Path $marketingRoot "graphics"
 $metadataRoot = Join-Path $PWD "android\fastlane\metadata\android"
+$generationTargetPath = "integration_test/store_screenshots_generation_integration_test.dart"
+$generationDriverPath = "test_driver/store_screenshots_generation_integration_test.dart"
+$validationTestPath = "test/integration/store_screenshots_validation_test.dart"
 
 foreach ($requiredPath in @($toolRoot, $specPath, $processedScreenshotDir, $rawScreenshotDir, $graphicsDir)) {
     if (-not (Test-Path $requiredPath)) {
@@ -154,21 +160,28 @@ foreach ($requiredPath in @($toolRoot, $specPath, $processedScreenshotDir, $rawS
     }
 }
 
-if ((Get-ChildItem -Path $rawScreenshotDir -Filter "*.png" | Measure-Object).Count -eq 0) {
-    Write-Error "No raw screenshots found in $rawScreenshotDir"
-    exit 1
-}
-
 $relativeSpecPath = "../../unit_converter/screenshots/store_screenshot_spec.json"
 
 if (-not $ValidateOnly) {
+    Write-Info "Generating deterministic raw screenshots..."
+    Get-ChildItem -Path $rawScreenshotDir -Filter "*.png" -ErrorAction SilentlyContinue | Remove-Item -Force
+    Invoke-Step -Command "flutter drive --driver=$generationDriverPath --target=$generationTargetPath -d $DeviceId" -WorkingDirectory $PWD
+    Write-Success "Generated raw store screenshots"
+    Write-Host ""
+
     Write-Info "Processing raw screenshots with the shared tooling..."
     Invoke-Step -Command "dart run bin/store_screenshots.dart process $relativeSpecPath" -WorkingDirectory $toolRoot
     Write-Success "Processed store screenshots"
     Write-Host ""
 }
 
+if ((Get-ChildItem -Path $rawScreenshotDir -Filter "*.png" | Measure-Object).Count -eq 0) {
+    Write-Error "No raw screenshots found in $rawScreenshotDir"
+    exit 1
+}
+
 Write-Info "Validating screenshot workflow outputs..."
+Invoke-Step -Command "flutter test $validationTestPath --timeout $TestTimeout" -WorkingDirectory $PWD
 Invoke-Step -Command "dart run bin/store_screenshots.dart validate $relativeSpecPath" -WorkingDirectory $toolRoot
 Invoke-Step -Command "dart test --timeout $TestTimeout" -WorkingDirectory $toolRoot
 Write-Success "Screenshot tooling validation passed"

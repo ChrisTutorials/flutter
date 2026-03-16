@@ -1,10 +1,17 @@
-# Taking Screenshots - Fast Workflow
+# Skill: Taking Screenshots - Fast Workflow
 
 ## ⭐ PRIMARY METHOD: golden_screenshot (Automated)
 
 **Use golden_screenshot for automated store screenshot generation.** This is the workspace standard for generating Play Store and App Store screenshots.
 
-### Why golden_screenshot?
+## Important: Avoid Common Anti-Patterns
+
+**CRITICAL**: Before generating screenshots, review the [Workspace Anti-Patterns](../../rules/anti-patterns.md) document to avoid common mistakes, especially:
+- Using `flutter test` for production screenshots (doesn't render fonts - use `integration_test` instead)
+- Not validating text legibility
+- Not checking for whitespace chunks throughout the entire image
+
+## Why golden_screenshot?
 
 - **Industry Standard**: Purpose-built for app store screenshots
 - **Automatic Device Frames**: No manual frame editing needed
@@ -21,13 +28,24 @@
 cd unit_converter
 flutter test test/golden_screenshots/store_screenshots_test.dart --update-goldens
 
-# 2. Or use the automation script
+# 2. Validate screenshots (NEW - ensures full-screen with no whitespace)
+flutter test test/integration/store_screenshots_validation_test.dart
+
+# 3. Or use the automation script
 powershell -ExecutionPolicy Bypass -File scripts/generate-store-screenshots.ps1
 
-# 3. Or use Fastlane
+# 4. Or use Fastlane
 cd android
 fastlane generate_screenshots
 ```
+
+### Screenshot Validation
+
+**NEW**: All store screenshots must pass full-screen validation to ensure they have no whitespace and fill the entire image area.
+
+For details on the validation methodology, see:
+- **[full-screen-screenshot-validation/](../full-screen-screenshot-validation/)** - Validation methodology and troubleshooting
+- **[FULL_SCREEN_SCREENSHOT_METHODOLOGY.md](../../unit_converter/docs/FULL_SCREEN_SCREENSHOT_METHODOLOGY.md)** - Complete technical documentation
 
 ### Detailed Documentation
 
@@ -261,9 +279,10 @@ await page.screenshot({
 
 ## Related Skills
 
+- **[full-screen-screenshot-validation/](../full-screen-screenshot-validation/)** - Full-screen screenshot validation methodology (NEW)
 - [golden-screenshot-practice.md](../rules/golden-screenshot-practice.md) - Workspace standard for automated store screenshots
-- [fastlane-setup.md](./fastlane-setup.md) - Automated Play Store deployment with screenshot upload
-- [run-android-simulator.md](./run-android-simulator/run-android-simulator.md) - Only needed for testing, not screenshots
+- [fastlane-setup/](../fastlane-setup/) - Automated Play Store deployment with screenshot upload
+- [run-android-simulator/](../run-android-simulator/) - Only needed for testing, not screenshots
 
 ## Additional Resources
 

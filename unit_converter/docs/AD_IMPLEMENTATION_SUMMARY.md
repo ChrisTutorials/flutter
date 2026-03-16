@@ -3,7 +3,7 @@
 ## What Was Implemented
 
 ### 1. Comprehensive Ad Strategy Documentation
-Created docs/AD_STRATEGY.md with:
+Created ../docs/AD_STRATEGY.md with:
 - Detailed ad placement guidelines
 - Frequency capping rules
 - User experience considerations
@@ -45,9 +45,9 @@ Updated lib/screens/category_selection_screen.dart:
 - App open ad shows once per day when app launches
 
 ### 4. Documentation Updates
-- Updated docs/README.md to include AD_STRATEGY.md
+- Updated ../docs/README.md to include AD_STRATEGY.md
 - Updated README.md to include AD_STRATEGY.md
-- Updated docs/SECURITY_CONFIG.md to reference AD_STRATEGY.md
+- Updated ../docs/SECURITY_CONFIG.md to reference AD_STRATEGY.md
 
 ## Configuration Constants
 

@@ -72,16 +72,19 @@ A beautiful, ad-supported unit converter app built with Flutter. Convert between
 
 For detailed documentation, see the [docs/](docs/) directory:
 
-- **[docs/README.md](docs/README.md)** - Project overview and documentation index
-- [QUICKSTART.md](docs/QUICKSTART.md) - Quick start guide for testing and deployment
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Architecture overview and design patterns
-- [API.md](docs/API.md) - Complete API documentation
-- [SECURITY_CONFIG.md](docs/SECURITY_CONFIG.md) - Security configuration guide
-- [DEPLOYMENT_ROADMAP.md](docs/DEPLOYMENT_ROADMAP.md) - Deployment phases and roadmap
-- [DOCUMENTATION_CLAIMS_VALIDATION.md](docs/DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
-- [TEST_COVERAGE.md](docs/TEST_COVERAGE.md) - Test coverage report
-- [AD_STRATEGY.md](docs/AD_STRATEGY.md) - Comprehensive ad monetization strategy
-- [CURRENCY_ARCHITECTURE.md](docs/CURRENCY_ARCHITECTURE.md) - Currency converter architecture and design
+   - [Project Overview](../docs/README.md) - Project overview and documentation index
+   - [Complete deployment guide with automated workflow](../docs/DEPLOYMENT.md) - Complete deployment guide with automated workflow
+   - [Production release workflow](../docs/PLAY_STORE_RELEASE_RUNBOOK.md) - Production release workflow
+   - [Quick start guide for testing and deployment](../docs/QUICKSTART.md) - Quick start guide for testing and deployment
+   - [Architecture overview and design patterns](../docs/ARCHITECTURE.md) - Architecture overview and design patterns
+   - [Complete API documentation](../docs/API.md) - Complete API documentation
+   - [Security configuration guide](../docs/SECURITY_CONFIG.md) - Security configuration guide
+   - [Credential setup for releases](../docs/RELEASE_CREDENTIALS_SETUP.md) - Credential setup for releases
+   - [Deployment phases and roadmap](../docs/DEPLOYMENT_ROADMAP.md) - Deployment phases and roadmap
+   - [Test coverage validation](../docs/DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
+   - [Test coverage report](../docs/TEST_COVERAGE.md) - Test coverage report
+   - [Comprehensive ad monetization strategy](../docs/AD_STRATEGY.md) - Comprehensive ad monetization strategy
+   - [Currency converter architecture and design](../docs/CURRENCY_ARCHITECTURE.md) - Currency converter architecture and design
 
 ## Building for Android
 
@@ -123,47 +126,47 @@ static const String _interstitialAdUnitId = 'ca-app-pub-your-interstitial-ad-uni
 IMPORTANT: Replace the above placeholder IDs with your actual ad unit IDs from the AdMob Console.
 ## Publishing to Google Play Store
 
-### 1. Prepare Your App
-- Update app name and description in \ndroid/app/src/main/AndroidManifest.xml\
-- Update version in \pubspec.yaml\
-- Create app icons (replace placeholder icons in \ndroid/app/src/main/res/mipmap-*\)
+### 🚀 Recommended: Use Automated Deployment
 
-### 2. Sign Your App
-1. Generate a keystore:
-   \\\ash
-   keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-   \\\
+The fastest and easiest way to deploy is to use the automated Fastlane workflow:
 
-2. Create \key.properties\ file in \ndroid/\ directory:
-   \\\
-   storePassword=<your-store-password>
-   keyPassword=<your-key-password>
-   keyAlias=upload
-   storeFile=<path-to-keystore-file>
-   \\\
+```powershell
+# Deploy to internal testing (default)
+.\scripts\release.ps1
 
-3. Add \key.properties\ to \.gitignore\
+# Deploy to production
+.\scripts\release.ps1 -Track production -ReleaseNotes "New features and bug fixes"
 
-4. Update \ndroid/app/build.gradle\ to use the keystore
+# Check deployment readiness
+cd android
+fastlane release_status
+```
 
-### 3. Build Release APK
-\\\ash
-flutter build apk --release
-\\\
+This single command handles:
+- ✅ Validation checks
+- ✅ Version bumping
+- ✅ Screenshot generation and upload
+- ✅ Metadata upload
+- ✅ Building release AAB
+- ✅ Uploading to Play Store
 
-### 4. Create Play Store Listing
-- App title: Unit Converter
-- Short description: Convert between 7 unit categories instantly
-- Full description: [Use the full description below]
-- Screenshots: Take screenshots from the app
-- Icon: Create a 512x512 app icon
+For complete deployment documentation, see:
+- [DEPLOYMENT.md](docs/DEPLOYMENT.md) - Complete deployment guide
+- [PLAY_STORE_RELEASE_RUNBOOK.md](docs/PLAY_STORE_RELEASE_RUNBOOK.md) - Production release workflow
 
-### 5. Upload to Play Console
-1. Go to [Google Play Console](https://play.google.com/console)
-2. Create a new app
-3. Fill in all required information
-4. Upload the APK
-5. Submit for review
+### First-Time Setup
+
+Before your first deployment, complete these steps:
+
+1. **AdMob Configuration**: See [RELEASE_CREDENTIALS_SETUP.md](docs/RELEASE_CREDENTIALS_SETUP.md)
+2. **Play Console Service Account**: Set up API access for automated uploads
+3. **App Signing**: Configure production keystore (see [SECURITY_CONFIG.md](docs/SECURITY_CONFIG.md))
+4. **Install Fastlane**: `gem install fastlane`
+5. **Verify Configuration**: Run `cd android && fastlane release_status`
+
+### Manual Deployment (Alternative)
+
+If you prefer to deploy manually, see [QUICKSTART.md](docs/QUICKSTART.md) for step-by-step instructions.
 
 ## App Description for Play Store
 

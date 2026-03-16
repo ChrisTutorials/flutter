@@ -135,6 +135,14 @@ Validate, build, and upload to beta testing track
 
 Validate, build, and upload to production
 
+### android deploy
+
+```sh
+[bundle exec] fastlane android deploy
+```
+
+All-in-one deployment: validate, bump version, prepare assets, and deploy to specified track
+
 ### android upload_screenshots
 
 ```sh
@@ -206,6 +214,22 @@ Increment build number
 ```
 
 Show current version
+
+### android verify_screenshots
+
+```sh
+[bundle exec] fastlane android verify_screenshots
+```
+
+Verify screenshots before upload
+
+### android release_status
+
+```sh
+[bundle exec] fastlane android release_status
+```
+
+Check release readiness and configuration
 
 ----
 

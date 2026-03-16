@@ -40,6 +40,20 @@ Successfully implemented a "Remove Ads" one-time purchase for the Unit Converter
 - **Age Rating**: All ages
 - **Availability**: All countries/regions
 
+### Critical Configuration Requirements
+
+⚠️ **IMPORTANT**: The product must be properly configured in Google Play Console or it will fail to load with a type casting error.
+
+1. **Product Type**: Must be "In-app product" (NOT subscription)
+2. **Status**: Must be "Active" (NOT Draft)
+3. **Product ID**: Must be exactly `no_ads_premium` (case-sensitive)
+4. **Listings**: At least one language listing must be configured
+5. **Price**: Must be set (cannot be empty)
+
+### Common Issues
+
+If you see the error "ProductDetails is not a subtype of GooglePlayProductDetails", it means the product is not properly configured. See [docs/PRODUCT_LOADING_BUG.md](docs/PRODUCT_LOADING_BUG.md) for detailed debugging steps.
+
 ## Test Coverage
 
 ### Integration Tests (`test/iap_integration_test.dart`)

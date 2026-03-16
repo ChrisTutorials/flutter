@@ -386,7 +386,7 @@ packages:
     source: hosted
     version: "4.1.2"
   image:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: image
       sha256: f9881ff4998044947ec38d098bc7c8316ae1186fa786eddffdb867b9bc94dfce
@@ -843,6 +843,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.1"
+  store_screenshots:
+    dependency: "direct dev"
+    description:
+      path: "../marketing/tools/store_screenshots"
+      relative: true
+    source: path
+    version: "0.0.0"
   stream_channel:
     dependency: transitive
     description:

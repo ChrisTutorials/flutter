@@ -129,7 +129,7 @@ $adMobAppIdConfigured = $adMobAppId -and $adMobAppId -notmatch 'ca-app-pub-39402
 # Check if Google Cloud credentials are configured (optional for current deployment)
 if (-not $googleCloudCredentialsConfigured) {
     Write-Host '[WARN] GOOGLE_APPLICATION_CREDENTIALS not configured. Google Cloud services will not be available.' -ForegroundColor Yellow
-    Write-Host '[INFO] See docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions.' -ForegroundColor Cyan
+    Write-Host '[INFO] See ../../../docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions.' -ForegroundColor Cyan
 } else {
     Write-Host "[PASS] Google Cloud credentials configured: $googleApplicationCredentials" -ForegroundColor Green
 }
@@ -137,7 +137,7 @@ if (-not $googleCloudCredentialsConfigured) {
 # Check if AdMob App ID is configured for release
 if (-not $adMobAppIdConfigured) {
     Write-Host '[WARN] UNIT_CONVERTER_ADMOB_APP_ID not configured or using test ID. Release builds will use test AdMob configuration.' -ForegroundColor Yellow
-    Write-Host '[INFO] See docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions.' -ForegroundColor Cyan
+    Write-Host '[INFO] See ../../../docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions.' -ForegroundColor Cyan
 } else {
     Write-Host "[PASS] AdMob App ID configured for release: $adMobAppId" -ForegroundColor Green
 }

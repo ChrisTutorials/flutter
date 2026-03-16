@@ -106,6 +106,40 @@ flutter build apk --release
 
 ## Step 5: Publish to Play Store
 
+### 🚀 Recommended: Use Automated Deployment (Fastlane)
+
+The fastest and easiest way to deploy is to use the automated Fastlane workflow. This handles everything in a single command:
+
+```powershell
+# Deploy to internal testing (default)
+.\scripts\release.ps1
+
+# Deploy to production
+.\scripts\release.ps1 -Track production -ReleaseNotes "New features and bug fixes"
+
+# Deploy to beta
+.\scripts\release.ps1 -Track beta -ReleaseNotes "Added dark mode support"
+
+# Hotfix: deploy without updating screenshots
+.\scripts\release.ps1 -Track beta -SkipScreenshots
+```
+
+**Before your first deployment, run:**
+```powershell
+cd android
+fastlane release_status
+```
+
+This will check your configuration and show what's ready and what's missing.
+
+**For detailed deployment instructions, see:**
+- [PLAY_STORE_RELEASE_RUNBOOK.md](PLAY_STORE_RELEASE_RUNBOOK.md) - Complete deployment guide
+- [RELEASE_CREDENTIALS_SETUP.md](RELEASE_CREDENTIALS_SETUP.md) - Credential setup instructions
+
+### Manual Deployment (Alternative)
+
+If you prefer to deploy manually, follow these steps:
+
 ### 5.1 Create Google Play Developer Account
 1. Go to https://play.google.com/console
 2. Pay \ registration fee (one-time)
@@ -187,9 +221,19 @@ flutter build apk --release
 - Real ads may take a few hours to start showing
 
 ### Build errors
-- Run \lutter clean\
-- Run \lutter pub get\
-- Check if Flutter SDK is up to date: \lutter upgrade\
+- Run \flutter clean\
+- Run \flutter pub get\
+- Check if Flutter SDK is up to date: \flutter upgrade\
+- For build performance issues, see [ANDROID_BUILD_OPTIMIZATION.md](ANDROID_BUILD_OPTIMIZATION.md)
+
+## Build Performance
+
+This project is configured with optimized Android build settings that provide:
+
+- **30-50% faster clean builds** (40s → 20-27s)
+- **90%+ faster incremental builds** (40s → 3-4s)
+
+For detailed information about build optimizations, see [ANDROID_BUILD_OPTIMIZATION.md](ANDROID_BUILD_OPTIMIZATION.md).
 
 ## Expected Timeline
 

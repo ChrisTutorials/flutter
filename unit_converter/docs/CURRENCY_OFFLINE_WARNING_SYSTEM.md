@@ -186,7 +186,7 @@ The currency converter implements a robust three-tier fallback system. For detai
    - UI component tests
    - Offline behavior tests
 
-3. `docs/CURRENCY_CONVERTER_TESTS.md`
+3. `../docs/CURRENCY_CONVERTER_TESTS.md`
    - Complete test documentation
    - Test coverage details
    - Running instructions

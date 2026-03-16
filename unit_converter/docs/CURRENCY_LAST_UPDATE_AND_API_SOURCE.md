@@ -172,7 +172,7 @@ String _formatDateTime(DateTime dateTime) {
 
 ### Created Files
 
-1. **docs/CURRENCY_LAST_UPDATE_AND_API_SOURCE.md** (this file)
+1. **../docs/CURRENCY_LAST_UPDATE_AND_API_SOURCE.md** (this file)
    - Complete implementation documentation
    - Test coverage details
    - User experience guide

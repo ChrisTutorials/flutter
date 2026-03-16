@@ -29,6 +29,10 @@ Navigate to a project directory and run:
 flutter run
 ```
 
+### Build Performance
+
+All Android projects in this workspace are configured with optimized build settings that provide 30-50% faster clean builds and 90%+ faster incremental builds. See [unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md](unit_converter/docs/ANDROID_BUILD_OPTIMIZATION.md) for details.
+
 ## Common Folder
 
 The `common/` folder contains shared code used across multiple projects. See [common/README.md](common/README.md) for more details.

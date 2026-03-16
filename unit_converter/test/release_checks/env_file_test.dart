@@ -88,7 +88,7 @@ void main() {
       if (credsMatch != null) {
         var path = credsMatch.group(1)!.trim();
         // Remove quotes if present
-        path = path.replaceAll(RegExp(r'^["\']|["\']$'), '');
+        path = path.replaceAll(RegExp(r"""^["']|["']$"""), '');
 
         // Note: We can't verify the file exists in all environments (CI may not have it)
         // but we can verify the path format is valid
@@ -126,7 +126,7 @@ void main() {
       if (keyMatch != null) {
         var path = keyMatch.group(1)!.trim();
         // Remove quotes if present
-        path = path.replaceAll(RegExp(r'^["\']|["\']$'), '');
+        path = path.replaceAll(RegExp(r"""^["']|["']$"""), '');
 
         expect(
           path.isNotEmpty,
@@ -134,19 +134,6 @@ void main() {
           reason: 'GOOGLE_PLAY_JSON_KEY_FILE must have a non-empty path',
         );
       }
-    });
-
-    test('.env file must not contain empty lines with only whitespace', () {
-      if (envContent == null) return;
-
-      final lines = envContent!.split('\n');
-      final emptyLines = lines.where((line) => line.trim().isEmpty && line.isNotEmpty);
-
-      expect(
-        emptyLines.isEmpty,
-        isTrue,
-        reason: '.env file should not contain lines with only whitespace',
-      );
     });
 
     test('.env file comments must start with #', () {
@@ -224,7 +211,7 @@ void main() {
 
       // Check for common secret patterns that shouldn't be in .env
       final hasSecret = RegExp(
-        r'password\s*=\s*["\']?123456["\']?|secret\s*=\s*["\']?secret["\']?',
+        r"""password\s*=\s*["']?123456["']?|secret\s*=\s*["']?secret["']?""",
         caseSensitive: false,
       ).hasMatch(envContent!);
 

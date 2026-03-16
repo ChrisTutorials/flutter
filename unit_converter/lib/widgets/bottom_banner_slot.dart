@@ -16,12 +16,15 @@ class BottomBannerSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get system bottom padding (e.g., Android navigation bar)
+    final systemBottomPadding = MediaQuery.of(context).padding.bottom;
+
     if (bannerChild != null && bannerSize != null) {
       final width = bannerSize!.width.toDouble();
       final height = bannerSize!.height.toDouble();
 
       return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: EdgeInsets.only(bottom: 8 + systemBottomPadding),
         child: SizedBox(
           key: const Key('banner_ad_container'),
           width: double.infinity,
@@ -42,7 +45,7 @@ class BottomBannerSlot extends StatelessWidget {
         key: const Key('banner_ad_container'),
         width: double.infinity,
         height: 50,
-        margin: const EdgeInsets.only(bottom: 8),
+        margin: EdgeInsets.only(bottom: 8 + systemBottomPadding),
         decoration: BoxDecoration(
           color: Colors.grey[300],
           border: Border.all(color: Colors.grey, width: 1),

@@ -4,10 +4,10 @@
   "outputDir": "./store_screenshots",
   "sizeLimitBytes": 8388608,
   "defaults": {
-    "backgroundTolerance": 18,
-    "contentPadding": 24,
-    "maxBottomWhitespaceFraction": 0.04,
-    "maxTopWhitespaceFraction": 0.12
+    "backgroundTolerance": 0,
+    "contentPadding": 0,
+    "maxBottomWhitespaceFraction": 0.0,
+    "maxTopWhitespaceFraction": 0.0
   },
   "images": [
     {
@@ -16,9 +16,10 @@
       "output": "phone_01_home_history_light_portrait_1080x1920.png",
       "targetWidth": 1080,
       "targetHeight": 1920,
-      "backgroundTolerance": 6,
-      "minCropScale": 0.88,
-      "focusY": 0.56
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "phone_conversion",
@@ -26,8 +27,10 @@
       "output": "phone_02_conversion_light_portrait_1080x1920.png",
       "targetWidth": 1080,
       "targetHeight": 1920,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "phone_currency",
@@ -35,8 +38,10 @@
       "output": "phone_03_currency_dark_portrait_1080x1920.png",
       "targetWidth": 1080,
       "targetHeight": 1920,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "phone_custom_units",
@@ -44,8 +49,10 @@
       "output": "phone_04_custom_units_dark_portrait_1080x1920.png",
       "targetWidth": 1080,
       "targetHeight": 1920,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet7_home",
@@ -53,9 +60,10 @@
       "output": "tablet7_01_home_history_light_portrait_1200x1920.png",
       "targetWidth": 1200,
       "targetHeight": 1920,
-      "backgroundTolerance": 6,
-      "minCropScale": 0.86,
-      "focusY": 0.58
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet7_conversion",
@@ -63,8 +71,10 @@
       "output": "tablet7_02_conversion_light_portrait_1200x1920.png",
       "targetWidth": 1200,
       "targetHeight": 1920,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet7_currency",
@@ -72,8 +82,10 @@
       "output": "tablet7_03_currency_dark_portrait_1200x1920.png",
       "targetWidth": 1200,
       "targetHeight": 1920,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet7_custom_units",
@@ -81,8 +93,10 @@
       "output": "tablet7_04_custom_units_dark_portrait_1200x1920.png",
       "targetWidth": 1200,
       "targetHeight": 1920,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet10_home",
@@ -90,9 +104,10 @@
       "output": "tablet10_01_home_history_light_portrait_1600x2560.png",
       "targetWidth": 1600,
       "targetHeight": 2560,
-      "backgroundTolerance": 6,
-      "minCropScale": 0.82,
-      "focusY": 0.60
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet10_conversion",
@@ -100,8 +115,10 @@
       "output": "tablet10_02_conversion_light_portrait_1600x2560.png",
       "targetWidth": 1600,
       "targetHeight": 2560,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet10_currency",
@@ -109,8 +126,10 @@
       "output": "tablet10_03_currency_dark_portrait_1600x2560.png",
       "targetWidth": 1600,
       "targetHeight": 2560,
-      "minCropScale": 0.72,
-      "focusY": 0.34
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     },
     {
       "id": "tablet10_custom_units",
@@ -118,8 +137,10 @@
       "output": "tablet10_04_custom_units_dark_portrait_1600x2560.png",
       "targetWidth": 1600,
       "targetHeight": 2560,
-      "minCropScale": 0.58,
-      "focusY": 0.42
+      "backgroundTolerance": 0,
+      "minCropScale": 1.0,
+      "focusX": 0.5,
+      "focusY": 0.5
     }
   ]
 }

@@ -8,6 +8,7 @@ import 'screens/currency_converter_screen.dart';
 import 'screens/custom_units_screen.dart';
 import 'screens/settings_screen.dart';
 import 'services/admob_service.dart';
+import 'services/currency_service.dart';
 import 'services/purchase_service.dart';
 import 'services/theme_service.dart';
 import 'services/widget_service.dart';
@@ -43,8 +44,7 @@ class UnitConverterApp extends StatelessWidget {
   final bool widgetAvailable;
   final ScreenshotScenario screenshotScenario;
 
-  Widget _buildInitialScreen() {
-    final uri = Uri.base;
+  Widget buildInitialScreen() {
     switch (screenshotScenario.screen) {
       case 'settings':
         return SettingsScreen(
@@ -54,15 +54,23 @@ class UnitConverterApp extends StatelessWidget {
       case 'custom-units':
         return const CustomUnitsScreen();
       case 'currency':
-        return CurrencyConverterScreen(preset: _buildCurrencyPreset(uri));
+        return CurrencyConverterScreen(
+          preset: _buildCurrencyPreset(),
+          demoCurrencies: screenshotScenario.usesStoreData
+              ? _buildStoreCurrencies()
+              : null,
+          demoQuote: screenshotScenario.usesStoreData
+              ? _buildStoreCurrencyQuote()
+              : null,
+        );
       case 'conversion':
-        final category = _resolveCategory(uri.queryParameters['category']);
+        final category = _resolveCategory(screenshotScenario.categoryName);
         return ConversionScreen(
           category: category,
-          initialFromSymbol: uri.queryParameters['from'],
-          initialToSymbol: uri.queryParameters['to'],
-          initialInput: uri.queryParameters['value'],
-          presetLabel: uri.queryParameters['label'],
+          initialFromSymbol: screenshotScenario.fromSymbol,
+          initialToSymbol: screenshotScenario.toSymbol,
+          initialInput: screenshotScenario.value,
+          presetLabel: screenshotScenario.label,
         );
       case 'home':
       default:
@@ -73,20 +81,59 @@ class UnitConverterApp extends StatelessWidget {
     }
   }
 
-  QuickPreset? _buildCurrencyPreset(Uri uri) {
-    final fromSymbol = uri.queryParameters['from'];
-    final toSymbol = uri.queryParameters['to'];
-    final sampleValue = double.tryParse(uri.queryParameters['value'] ?? '');
+  QuickPreset? _buildCurrencyPreset() {
+    final fromSymbol = screenshotScenario.fromSymbol;
+    final toSymbol = screenshotScenario.toSymbol;
+    final sampleValue = double.tryParse(screenshotScenario.value ?? '');
     if (fromSymbol == null || toSymbol == null) {
       return null;
     }
 
     return QuickPreset.currency(
-      label: uri.queryParameters['label'] ?? '$fromSymbol to $toSymbol',
-      subtitle: uri.queryParameters['subtitle'] ?? 'Live rates',
+      label: screenshotScenario.label ?? '$fromSymbol to $toSymbol',
+      subtitle: screenshotScenario.subtitle ?? 'Live rates',
       fromSymbol: fromSymbol,
       toSymbol: toSymbol,
       sampleValue: sampleValue ?? 1,
+    );
+  }
+
+  Map<String, String> _buildStoreCurrencies() {
+    return const {
+      'USD': 'US Dollar',
+      'EUR': 'Euro',
+      'GBP': 'British Pound',
+      'JPY': 'Japanese Yen',
+      'CAD': 'Canadian Dollar',
+      'AUD': 'Australian Dollar',
+    };
+  }
+
+  CurrencyQuote? _buildStoreCurrencyQuote() {
+    final fromSymbol = screenshotScenario.fromSymbol;
+    final toSymbol = screenshotScenario.toSymbol;
+    final amount = double.tryParse(screenshotScenario.value ?? '');
+    if (fromSymbol == null || toSymbol == null || amount == null) {
+      return null;
+    }
+
+    final rate = switch ('$fromSymbol:$toSymbol') {
+      'USD:EUR' => 0.918,
+      'EUR:USD' => 1.0893246187,
+      _ when fromSymbol == toSymbol => 1.0,
+      _ => null,
+    };
+    if (rate == null) {
+      return null;
+    }
+
+    return CurrencyQuote(
+      from: fromSymbol,
+      to: toSymbol,
+      amount: amount,
+      convertedAmount: amount * rate,
+      rate: rate,
+      effectiveDate: DateTime(2026, 3, 11),
     );
   }
 
@@ -118,7 +165,7 @@ class UnitConverterApp extends StatelessWidget {
             palette: themeController.palette,
             brightness: Brightness.dark,
           ),
-          home: _buildInitialScreen(),
+          home: buildInitialScreen(),
         );
       },
     );

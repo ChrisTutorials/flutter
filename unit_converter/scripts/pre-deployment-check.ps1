@@ -335,7 +335,7 @@ if ($googleApplicationCredentials -and (Test-Path $googleApplicationCredentials)
     Print-Success "Google Cloud credentials configured: $googleApplicationCredentials"
 } else {
     Print-Warning "GOOGLE_APPLICATION_CREDENTIALS not configured - Google Cloud services will not be available"
-    Write-Host "       See docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions" -ForegroundColor Gray
+    Write-Host "       See ../../../docs/GOOGLE_CLOUD_CREDENTIALS.md for setup instructions" -ForegroundColor Gray
 }
 
 # Check if AdMob App ID is configured for release
@@ -349,7 +349,7 @@ if ($adMobAppId) {
     }
 } else {
     Print-Warning "UNIT_CONVERTER_ADMOB_APP_ID not configured in process, user, or machine scope - release builds will use test AdMob configuration"
-    Write-Host "       See docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions" -ForegroundColor Gray
+    Write-Host "       See ../../../docs/RELEASE_CREDENTIALS_SETUP.md for setup instructions" -ForegroundColor Gray
 }
 
 # Summary
