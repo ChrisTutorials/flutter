@@ -66,6 +66,10 @@ cd android
 - publish_to set to none
 - SDK version constraints specified
 - Flutter SDK constraint at least 3.0.0
+- Windows MSIX publisher display name matches Partner Center
+- Windows MSIX identity name remains stable for store submissions
+- Windows MSIX publisher subject matches Partner Center
+- Windows app uses custom Unit Converter logo, not default Flutter logo
 - Version incrementability
 - Dependency version constraints
 
@@ -134,6 +138,15 @@ bash scripts/pre-deployment-check.sh
 **Cause:** Missing critical permissions or configurations
 
 **Test:** All AndroidManifest and BuildConfig tests
+
+### 6. Windows App Using Default Flutter Logo
+**Error:** Windows Store submission rejected or poor user experience due to default Flutter branding
+
+**Cause:** Windows app icon not customized, still using default Flutter logo
+
+**Test:** `PubspecTest.testWindowsAppMustUseCustomUnitConverterLogo()`
+
+**Prevention:** Verifies the Windows app icon file exists and is not the default Flutter icon by checking MD5 hash
 
 ## Integration with Deployment Workflow
 

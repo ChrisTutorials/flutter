@@ -4,6 +4,8 @@
 
 Deploy Flutter Windows apps to Microsoft Store using **non-interactive modes** to prevent blocking on user input. This is essential for automated workflows, CI/CD pipelines, and hands-off deployment processes.
 
+Use `docs/deployment/windows-export-signing.md` as the canonical source for Windows export, signing, and upload details.
+
 ## ⚠️ Critical: Always Use Non-Interactive Flags
 
 When deploying to Windows Store, **ALWAYS** use non-interactive flags to prevent the deployment from hanging on confirmation prompts:
@@ -11,9 +13,17 @@ When deploying to Windows Store, **ALWAYS** use non-interactive flags to prevent
 - `skip_confirmation:true` - Skip all confirmation prompts
 - `track:retail` - Specify the deployment track explicitly
 
+## 🚀 Routing
+
+For current Windows export and signing steps, always follow:
+
+`docs/deployment/windows-export-signing.md`
+
+Use this skill for workflow guidance and non-interactive conventions.
+
 ## 🚀 Windows Store Deployment Commands
 
-### Method 1: Direct Fastlane (Recommended)
+### Method 1: Direct Fastlane
 
 ```bash
 cd unit_converter/windows
@@ -68,11 +78,8 @@ bundle exec fastlane deploy_production skip_confirmation:true
 ## 📝 Example: Full Production Deployment
 
 ```bash
-# Navigate to Windows directory
-cd c:\dev\flutter\unit_converter\windows
-
-# Deploy with non-interactive flags
-bundle exec fastlane deploy_production skip_confirmation:true
+# Follow docs/deployment/windows-export-signing.md for export/signing,
+# then use the non-interactive store workflow commands here as needed.
 ```
 
 ## 🧪 Test Cases
@@ -150,8 +157,7 @@ $env:PARTNER_CENTER_TENANT_ID = "your-tenant-id"
 $env:WINDOWS_CERTIFICATE_PATH = "path/to/certificate.pfx"
 $env:WINDOWS_CERTIFICATE_PASSWORD = "your-password"
 
-# Then deploy (non-interactive)
-bundle exec fastlane deploy_production skip_confirmation:true
+# Then follow docs/deployment/windows-export-signing.md
 ```
 
 ## 🔒 Security Considerations
@@ -188,7 +194,7 @@ $env:WINDOWS_CERTIFICATE_PASSWORD = "your-password"
 **Solution:** Verify Client ID, Client Secret, and Tenant ID in Partner Center
 
 ### Issue: Certificate not found
-**Solution:** Check certificate path and password in environment variables
+**Solution:** Check certificate path and password in environment variables, then follow `docs/deployment/windows-export-signing.md`
 
 ### Issue: Visual Studio not found
 **Solution:** Install Visual Studio 2022 with "Desktop development with C++" workload
@@ -295,6 +301,8 @@ bundle exec fastlane bump_build_number
 
 ### Deploy to Production
 ```bash
+# See docs/deployment/windows-export-signing.md
+# for the canonical export and signing flow
 bundle exec fastlane deploy_production skip_confirmation:true
 ```
 

@@ -61,9 +61,8 @@ cd c:\dev\flutter\unit_converter
 ### Deploy to Windows (Microsoft Store)
 
 ```powershell
-# Deploy to production
-cd c:\dev\flutter\unit_converter
-..\scripts\deploy.ps1 -Platform windows -Track retail -ReleaseNotes "Windows release" -SkipConfirmation
+# See docs/deployment/windows-export-signing.md
+# for the canonical Windows export, signing, and upload flow
 ```
 
 ### Deploy to iOS (App Store)
@@ -88,11 +87,8 @@ Create a `.env` file in your project root (not committed to git):
 GOOGLE_PLAY_JSON_KEY_FILE=path/to/google-play-service-account.json
 
 # Windows
-PARTNER_CENTER_CLIENT_ID=your-client-id
-PARTNER_CENTER_CLIENT_SECRET=your-client-secret
-PARTNER_CENTER_TENANT_ID=your-tenant-id
-WINDOWS_CERTIFICATE_PATH=path/to/certificate.pfx
-WINDOWS_CERTIFICATE_PASSWORD=your-password
+# See docs/deployment/windows-export-signing.md
+# for the canonical Windows signing inputs and MSIX export flow
 
 # iOS
 APP_STORE_CONNECT_API_KEY_ID=your-api-key-id
@@ -112,13 +108,9 @@ bundle add fastlane
 bundle exec fastlane init
 ```
 
-#### Windows Fastlane Setup
-```bash
-cd unit_converter/windows
-bundle init
-bundle add fastlane
-bundle exec fastlane init
-```
+#### Windows Packaging and Signing
+
+Use [windows-export-signing.md](windows-export-signing.md) as the canonical Windows guide.
 
 #### iOS Fastlane Setup
 ```bash
@@ -257,8 +249,8 @@ The deployment script runs automatic validation checks:
 cd unit_converter/android
 fastlane validate
 
-cd ../windows
-fastlane validate
+# Windows
+# See docs/deployment/windows-export-signing.md
 
 cd ../ios
 fastlane validate
@@ -298,7 +290,7 @@ cd unit_converter
 flutter clean
 flutter pub get
 flutter build apk --release  # Test Android build
-flutter build windows --release  # Test Windows build
+# See docs/deployment/windows-export-signing.md for Windows export/signing
 flutter build ios --release  # Test iOS build (macOS only)
 ```
 
@@ -424,9 +416,10 @@ pipeline {
 ## 📚 Additional Resources
 
 ### Documentation
-- [Android Deployment Guide](../docs/DEPLOYMENT.md) - Detailed Android deployment instructions
-- [Windows Deployment Skill](../.windsurf/skills/windows-store-deployment/SKILL.md) - Windows deployment best practices
-- [Production Deployment Skill](../.windsurf/skills/production-deployment/SKILL.md) - Production deployment best practices
+- [Android Deployment Guide](../DEPLOYMENT.md) - Detailed Android deployment instructions
+- [Windows Export and Signing Guide](windows-export-signing.md) - Canonical Windows export, signing, and upload flow
+- [Windows Deployment Skill](../../.windsurf/skills/windows-store-deployment/SKILL.md) - Windows deployment best practices
+- [Production Deployment Skill](../../.windsurf/skills/production-deployment/SKILL.md) - Production deployment for Android (Google Play Store)
 - [Fastlane Documentation](https://docs.fastlane.tools/) - Official Fastlane documentation
 
 ### Platform-Specific Guides

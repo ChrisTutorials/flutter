@@ -1,7 +1,6 @@
 # Fastfile for Windows Store Deployment
 # This file contains automation lanes for deploying the Unit Converter app to Microsoft Store
 
-default_platform(:windows)
 
 # Windows Store configuration
 platform :windows do
@@ -418,3 +417,4 @@ platform :windows do
   end
 
 end
+

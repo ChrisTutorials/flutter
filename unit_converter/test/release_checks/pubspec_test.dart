@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:crypto/crypto.dart';
 
 /// Test suite to verify critical pubspec.yaml requirements for Play Store compliance.
 /// These tests prevent common version and dependency configuration failures.
@@ -136,6 +137,102 @@ void main() {
           reason: 'Flutter SDK should be at least 3.0.0',
         );
       }
+    });
+
+    test('Windows MSIX publisher display name matches Partner Center', () {
+      final publisherDisplayNameMatch = RegExp(
+        r'publisher_display_name:\s*(.+)',
+        multiLine: true,
+      ).firstMatch(pubspecContent);
+      expect(
+        publisherDisplayNameMatch,
+        isNotNull,
+        reason: 'Windows MSIX publisher_display_name must be set',
+      );
+
+      expect(
+        publisherDisplayNameMatch!.group(1)!.trim(),
+        equals('MoonBark Studio'),
+        reason: 'Windows MSIX publisher_display_name must exactly match the Partner Center publisher display name',
+      );
+    });
+
+    test('Windows MSIX identity name remains stable for store submissions', () {
+      final identityNameMatch = RegExp(
+        r'identity_name:\s*(.+)',
+        multiLine: true,
+      ).firstMatch(pubspecContent);
+      expect(
+        identityNameMatch,
+        isNotNull,
+        reason: 'Windows MSIX identity_name must be set',
+      );
+
+      expect(
+        identityNameMatch!.group(1)!.trim(),
+        equals('MoonBarkStudio.UnitConverterAll-in-One'),
+        reason: 'Windows MSIX identity_name must remain stable to avoid Partner Center package mismatches',
+      );
+    });
+
+    test('Windows MSIX publisher subject matches Partner Center', () {
+      final publisherMatch = RegExp(
+        r'publisher:\s*(.+)',
+        multiLine: true,
+      ).firstMatch(pubspecContent);
+      expect(
+        publisherMatch,
+        isNotNull,
+        reason: 'Windows MSIX publisher must be set',
+      );
+
+      expect(
+        publisherMatch!.group(1)!.trim(),
+        equals('CN=3EFF2941-6801-4CEC-B527-2958F9AE4902'),
+        reason: 'Windows MSIX publisher must exactly match the Partner Center publisher subject',
+      );
+    });
+
+    test('Windows app must use custom Unit Converter logo, not default Flutter logo', () {
+      final iconFile = File('windows/runner/resources/app_icon.ico');
+      expect(
+        iconFile.existsSync(),
+        isTrue,
+        reason: 'Windows app icon file must exist at windows/runner/resources/app_icon.ico',
+      );
+
+      // Read the icon file and compute its MD5 hash
+      final iconBytes = iconFile.readAsBytesSync();
+      final iconHash = md5.convert(iconBytes).toString().toUpperCase();
+
+      // The default Flutter icon MD5 hash (from Flutter template)
+      const defaultFlutterIconHash = '6EA04D80CA2A3FA92C7717C3C44CCC19';
+
+      expect(
+        iconHash,
+        isNot(equals(defaultFlutterIconHash)),
+        reason: 'Windows app must use custom Unit Converter logo, not the default Flutter logo. '
+                'Current icon hash: $iconHash, Default Flutter icon hash: $defaultFlutterIconHash',
+      );
+
+      // Also verify the icon file is not empty
+      expect(
+        iconBytes.isNotEmpty,
+        isTrue,
+        reason: 'Windows app icon file must not be empty',
+      );
+
+      // Verify the icon file has a reasonable size (at least 1KB, not more than 1MB)
+      expect(
+        iconBytes.length,
+        greaterThanOrEqualTo(1024),
+        reason: 'Windows app icon file must be at least 1KB',
+      );
+      expect(
+        iconBytes.length,
+        lessThanOrEqualTo(1024 * 1024),
+        reason: 'Windows app icon file must not exceed 1MB',
+      );
     });
   });
 

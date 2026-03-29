@@ -71,6 +71,9 @@ dev_dependencies:
   mockito: ^5.4.4
   build_runner: ^2.4.13
 
+  # Cryptographic hashing for tests
+  crypto: ^3.0.3
+
   # Integration testing
   integration_test:
     sdk: flutter
@@ -153,9 +156,9 @@ flutter_launcher_icons:
 # MSIX configuration for Windows Store
 msix_config:
   display_name: Unit Converter All-in-One
-  publisher_display_name: MoonBark-Studio
-  identity_name: com.MoonBark-Studio.UnitConverter
+  publisher_display_name: MoonBark Studio
+  identity_name: MoonBarkStudio.UnitConverterAll-in-One
   msix_version: 1.0.0.0
   description: A comprehensive unit converter app with 20+ categories and 1000+ units
-  publisher: CN=com.MoonBark-Studio
+  publisher: CN=3EFF2941-6801-4CEC-B527-2958F9AE4902
   capabilities: 'internetClient'

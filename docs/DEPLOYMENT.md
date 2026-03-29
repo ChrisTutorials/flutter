@@ -11,16 +11,17 @@ The recommended way to deploy is to use the **unified deployment script** that s
 cd unit_converter
 ..\scripts\deploy.ps1 -Platform android -Track internal -ReleaseNotes "Initial release"
 
-# Deploy to Windows (Manual upload required)
-# Build MSIX package: flutter pub run msix:create
-# Then manually upload to Microsoft Partner Center
-# ..\scripts\deploy.ps1 -Platform windows -Track retail -ReleaseNotes "Windows release"
+# Deploy to Windows
+# See docs/deployment/windows-export-signing.md
+# for the canonical Windows export, signing, and upload flow
 
 # Deploy to iOS (macOS only)
 ../scripts/deploy.ps1 -Platform ios -Track beta -ReleaseNotes "TestFlight release"
 ```
 
 For complete multi-platform deployment documentation, see [UNIFIED_DEPLOYMENT.md](UNIFIED_DEPLOYMENT.md).
+
+For Windows exports and signing, use [deployment/windows-export-signing.md](deployment/windows-export-signing.md).
 
 ### Android-Only Deployment (Legacy)
 
@@ -414,4 +415,5 @@ For urgent bug fixes:
 `
 
 Then follow the normal deployment flow for production.
+
 

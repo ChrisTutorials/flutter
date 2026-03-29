@@ -311,6 +311,8 @@ jobs:
 - `WINDOWS_CERTIFICATE_PATH`: Path to code signing certificate
 - `WINDOWS_CERTIFICATE_PASSWORD`: Certificate password
 
+Use `docs/deployment/windows-export-signing.md` as the canonical reference for Windows signing inputs and MSIX export expectations.
+
 #### iOS
 - `APP_STORE_CONNECT_API_KEY_ID`: App Store Connect API key ID
 - `APP_STORE_CONNECT_API_ISSUER_ID`: App Store Connect issuer ID
