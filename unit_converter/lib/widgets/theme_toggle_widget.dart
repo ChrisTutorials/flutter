@@ -7,7 +7,7 @@ class ThemeToggleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = ThemeController();
+    final themeController = ThemeController.instance;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return PopupMenuButton<AppThemeMode>(
@@ -90,33 +90,6 @@ class ThemeToggleWidget extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
       ],
-    );
-  }
-}
-
-/// Simple theme toggle button that switches between light and dark
-class SimpleThemeToggle extends StatelessWidget {
-  const SimpleThemeToggle({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeController = ThemeController();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return IconButton(
-      icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: Icon(
-          isDark ? Icons.light_mode : Icons.dark_mode,
-          key: ValueKey(isDark),
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      ),
-      tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
-      onPressed: () async {
-        final newMode = isDark ? AppThemeMode.light : AppThemeMode.dark;
-        await themeController.updateThemeMode(newMode);
-      },
     );
   }
 }

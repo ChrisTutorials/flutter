@@ -11,6 +11,7 @@ import '../services/widget_service.dart';
 import '../utils/button_styles.dart';
 import '../utils/platform_utils.dart';
 import '../utils/number_formatter.dart';
+import '../utils/responsive_layout.dart';
 import '../utils/snackbar_utils.dart';
 import '../widgets/unit_input_card.dart';
 import '../widgets/theme_toggle_widget.dart';
@@ -106,9 +107,46 @@ class _ConversionScreenState extends State<ConversionScreen> {
     });
   }
 
-  void _convert([String? _]) {
-    final inputValue = double.tryParse(_inputController.text);
-    if (inputValue == null || _fromUnit == null || _toUnit == null) {
+  void _convert() {
+    final inputText = _inputController.text.trim();
+    
+    // Validate input is not empty
+    if (inputText.isEmpty) {
+      setState(() {
+        _outputController.clear();
+      });
+      return;
+    }
+    
+    // Parse with validation
+    final inputValue = double.tryParse(inputText);
+    if (inputValue == null) {
+      setState(() {
+        _outputController.clear();
+      });
+      SnackbarUtils.show(context, 'Please enter a valid number');
+      return;
+    }
+    
+    // Check for extreme values to prevent overflow
+    if (!inputValue.isFinite) {
+      setState(() {
+        _outputController.clear();
+      });
+      SnackbarUtils.show(context, 'Number too large or too small');
+      return;
+    }
+    
+    // Limit input length to prevent UI issues
+    if (inputText.length > 50) {
+      setState(() {
+        _outputController.clear();
+      });
+      SnackbarUtils.show(context, 'Number too long');
+      return;
+    }
+    
+    if (_fromUnit == null || _toUnit == null) {
       setState(() {
         _outputController.clear();
       });
@@ -121,6 +159,15 @@ class _ConversionScreenState extends State<ConversionScreen> {
       _toUnit!,
       widget.category.name,
     );
+
+    // Validate output is finite
+    if (!outputValue.isFinite) {
+      setState(() {
+        _outputController.clear();
+      });
+      SnackbarUtils.show(context, 'Conversion result too large');
+      return;
+    }
 
     final formattedOutput = NumberFormatter.formatPrecise(outputValue);
     setState(() {
@@ -225,11 +272,11 @@ class _ConversionScreenState extends State<ConversionScreen> {
       ),
       body: SafeArea(
         child: LayoutBuilder(
-          builder: (context, constraints) {
+                builder: (context, constraints) {
             final width = constraints.maxWidth;
             final contentWidth = width > 1280 ? 1200.0 : width;
-            final compact = width < 480;
-            final wide = contentWidth >= 1000;
+             final compact = width < 600;
+             final wide = contentWidth >= ResponsiveLayout.wideBreakpoint;
 
             return ListView(
               padding: EdgeInsets.fromLTRB(
@@ -291,20 +338,12 @@ class _ConversionScreenState extends State<ConversionScreen> {
   }
 
   Widget _buildConversionCard(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        color: theme.colorScheme.surface,
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 24,
-            offset: Offset(0, 10),
-            color: Color(0x14000000),
-          ),
-        ],
-      ),
-      child: Column(
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -334,7 +373,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
               _convert();
               _refreshFavoriteState();
             },
-            onChanged: _convert,
+            onChanged: (_) => _convert(),
             isReadOnly: false,
           ),
           const SizedBox(height: 14),
@@ -364,17 +403,18 @@ class _ConversionScreenState extends State<ConversionScreen> {
           ),
           const SizedBox(height: 18),
           _buildSummaryCard(theme),
-        ],
-      ),
-    );
-  }
+         ],
+       ),
+     ),
+   );
+ }
 
   Widget _buildSummaryCard(ThemeData theme) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(12),
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
       ),
       child: Text(
@@ -388,6 +428,8 @@ class _ConversionScreenState extends State<ConversionScreen> {
 
   Widget _buildAvailableUnitsCard(ThemeData theme) {
     return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -431,6 +473,8 @@ class _ConversionScreenState extends State<ConversionScreen> {
     );
 
     return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -481,6 +525,8 @@ class _ConversionScreenState extends State<ConversionScreen> {
     }
 
     return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

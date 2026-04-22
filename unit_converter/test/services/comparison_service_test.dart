@@ -248,5 +248,161 @@ void main() {
       
       expect(result, isNull);
     });
+
+    test('should return description for data - megabytes', () {
+      final fromUnit = Unit(name: 'Megabyte', symbol: 'MB', conversionFactor: 1000000.0);
+      final toUnit = Unit(name: 'Byte', symbol: 'B', conversionFactor: 1.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Data',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, '1 megabyte is roughly a high-quality photo from a phone camera.');
+    });
+
+    test('should return description for data - gigabytes', () {
+      final fromUnit = Unit(name: 'Gigabyte', symbol: 'GB', conversionFactor: 1000000000.0);
+      final toUnit = Unit(name: 'Megabyte', symbol: 'MB', conversionFactor: 1000000.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Data',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, '1 gigabyte can cover hours of music or a standard-definition movie.');
+    });
+
+    test('should return description for pressure - psi', () {
+      final fromUnit = Unit(name: 'PSI', symbol: 'psi', conversionFactor: 6894.757293168);
+      final toUnit = Unit(name: 'Pascal', symbol: 'Pa', conversionFactor: 1.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Pressure',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, '32 psi is a common target for car tire pressure.');
+    });
+
+    test('should return description for pressure - bar', () {
+      final fromUnit = Unit(name: 'Bar', symbol: 'bar', conversionFactor: 100000.0);
+      final toUnit = Unit(name: 'Pascal', symbol: 'Pa', conversionFactor: 1.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Pressure',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, '1 bar is close to the air pressure you feel at sea level.');
+    });
+
+    test('should return description for cooking - tablespoon', () {
+      final fromUnit = Unit(name: 'Tablespoon', symbol: 'tbsp', conversionFactor: 0.01478676478125);
+      final toUnit = Unit(name: 'Teaspoon', symbol: 'tsp', conversionFactor: 0.00492892159375);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Cooking',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, '1 tablespoon is about the bowl of a large soup spoon.');
+    });
+
+    test('should return description for cooking - cup', () {
+      final fromUnit = Unit(name: 'Cup', symbol: 'cup', conversionFactor: 0.2365882365);
+      final toUnit = Unit(name: 'Milliliter', symbol: 'mL', conversionFactor: 0.001);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Cooking',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, '1 cup is about the volume of a small breakfast mug.');
+    });
+
+    test('should return null for Speed category (no comparisons defined)', () {
+      final fromUnit = Unit(name: 'Mile per Hour', symbol: 'mph', conversionFactor: 0.44704);
+      final toUnit = Unit(name: 'Kilometer per Hour', symbol: 'km/h', conversionFactor: 0.2777777778);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Speed',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, isNull);
+    });
+
+    test('should return null for Data category with Bit unit', () {
+      final fromUnit = Unit(name: 'Bit', symbol: 'b', conversionFactor: 0.125);
+      final toUnit = Unit(name: 'Byte', symbol: 'B', conversionFactor: 1.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Data',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, isNull);
+    });
+
+    test('should return null for Pressure category with Pascal unit', () {
+      final fromUnit = Unit(name: 'Pascal', symbol: 'Pa', conversionFactor: 1.0);
+      final toUnit = Unit(name: 'Atmosphere', symbol: 'atm', conversionFactor: 101325.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Pressure',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, isNull);
+    });
+
+    test('should return null for Kelvin temperature (no comparisons defined)', () {
+      final fromUnit = Unit(name: 'Kelvin', symbol: 'K', conversionFactor: 1.0);
+      final toUnit = Unit(name: 'Celsius', symbol: '°C', conversionFactor: 1.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Temperature',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, isNull);
+    });
+
+    test('should return null for Volume category with unsupported units', () {
+      final fromUnit = Unit(name: 'Milliliter', symbol: 'mL', conversionFactor: 0.001);
+      final toUnit = Unit(name: 'Liter', symbol: 'L', conversionFactor: 1.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Volume',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, isNull);
+    });
+
+    test('should return null for Area category with unsupported units', () {
+      final fromUnit = Unit(name: 'Square Meter', symbol: 'm²', conversionFactor: 1.0);
+      final toUnit = Unit(name: 'Hectare', symbol: 'ha', conversionFactor: 10000.0);
+      
+      final result = ComparisonService.describe(
+        categoryName: 'Area',
+        fromUnit: fromUnit,
+        toUnit: toUnit,
+      );
+      
+      expect(result, isNull);
+    });
   });
 }

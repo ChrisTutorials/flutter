@@ -1,18 +1,21 @@
 # Unit Converter
 
-A beautiful, ad-supported unit converter app built with Flutter. Convert between 8 different unit categories including live currency conversion with offline support and recent conversion history.
+A beautiful, ad-supported unit converter app built with Flutter. Convert between 8 different unit categories including live currency conversion with offline support, custom units, and recent conversion history.
 
 ## Features
 
-- ?? **8 Conversion Categories**: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
-- ? **Live Currency Rates**: Real-time exchange rates via Frankfurter API
-- ? **Recent Conversions**: Automatically saves your last 10 conversions
-- ?? **Copy Results**: One-tap copy to clipboard
-- ?? **Beautiful UI**: Material Design 3 with deep purple theme
-- ?? **Ad-Supported**: Banner ads and interstitial ads for monetization
-- ?? **Offline Mode**: Works without internet connection (currency uses cached data)
-- ? **Real-time Conversion**: Instant results as you type
-- ?? **Instant Search**: Type conversions like "60 g to lb" directly in search bar
+- **8 Conversion Categories**: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+- **Live Currency Rates**: Real-time exchange rates via Frankfurter API
+- **Custom Units**: Create your own units for personalized conversions
+- **Recent Conversions**: Automatically saves your last 10 conversions
+- **Copy Results**: One-tap copy to clipboard
+- **Beautiful UI**: Material Design 3 with theme switching and color palettes (Sage, Terracotta, Ocean)
+- **Ad-Supported**: Banner ads and interstitial ads for monetization
+- **Offline Mode**: Works without internet connection (currency uses cached data)
+- **Real-time Conversion**: Instant results as you type
+- **Instant Search**: Type conversions like "60 g to lb" directly in search bar
+- **Dark/Light Themes**: Full theme support with system preference detection
+- **Favorites**: Save frequently used conversions for quick access
 
 ## Supported Conversions
 
@@ -80,7 +83,7 @@ For detailed documentation, see the [docs/](docs/) directory:
    - [Complete API documentation](../docs/API.md) - Complete API documentation
    - [Security configuration guide](../docs/SECURITY_CONFIG.md) - Security configuration guide
    - [Credential setup for releases](../docs/RELEASE_CREDENTIALS_SETUP.md) - Credential setup for releases
-   - [Deployment phases and roadmap](../docs/DEPLOYMENT_ROADMAP.md) - Deployment phases and roadmap
+   - [Deployment phases and roadmap](../docs/RELEASE_ROADMAP.md) - Deployment phases and roadmap
    - [Test coverage validation](../docs/DOCUMENTATION_CLAIMS_VALIDATION.md) - Test coverage validation
    - [Test coverage report](../docs/TEST_COVERAGE.md) - Test coverage report
    - [Comprehensive ad monetization strategy](../docs/ad-strategy.md) - Comprehensive ad monetization strategy
@@ -89,16 +92,16 @@ For detailed documentation, see the [docs/](docs/) directory:
 ## Building for Android
 
 ### Debug Build
-\\\ash
+```bash
 flutter build apk --debug
-\\\
+```
 
 ### Release Build
-\\\ash
+```bash
 flutter build apk --release
-\\\
+```
 
-The APK will be located at: \uild/app/outputs/flutter-apk/app-release.apk\
+The APK will be located at: `build/app/outputs/flutter-apk/app-release.apk`
 
 ## AdMob Setup
 
@@ -106,12 +109,12 @@ The app uses Google AdMob for monetization. To use your own ads:
 
 1. Create an AdMob account at [https://admob.google.com](https://admob.google.com)
 2. Create a new app and ad units
-3. Replace the test ad unit IDs in \lib/services/admob_service.dart\:
+3. Replace the test ad unit IDs in `lib/services/admob_service.dart`:
 
-\\\dart
+```dart
 static const String _bannerAdUnitId = 'ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY';
 static const String _interstitialAdUnitId = 'ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ';
-\\\
+```
 
 ### Test Ad Units
 The app currently uses test ad units:
@@ -126,7 +129,7 @@ static const String _interstitialAdUnitId = 'ca-app-pub-your-interstitial-ad-uni
 IMPORTANT: Replace the above placeholder IDs with your actual ad unit IDs from the AdMob Console.
 ## Publishing to Google Play Store
 
-### ?? Recommended: Use Automated Deployment
+### Recommended: Use Automated Deployment
 
 The fastest and easiest way to deploy is to use the automated Fastlane workflow:
 
@@ -143,12 +146,12 @@ fastlane release_status
 ```
 
 This single command handles:
-- ? Validation checks
-- ? Version bumping
-- ? Screenshot generation and upload
-- ? Metadata upload
-- ? Building release AAB
-- ? Uploading to Play Store
+- Validation checks
+- Version bumping
+- Screenshot generation and upload
+- Metadata upload
+- Building release AAB
+- Uploading to Play Store
 
 For complete deployment documentation, see:
 - [DEPLOYMENT.md](docs/DEPLOYMENT.md) - Complete deployment guide
@@ -177,26 +180,29 @@ Convert between 8 categories including live currency rates instantly
 Unit Converter is the ultimate tool for quick and accurate unit conversions. Whether you're a student, professional, or just need to convert measurements, this app has you covered.
 
 **FEATURES:**
-? 8 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
-? Live currency exchange rates via Frankfurter API
-? Real-time conversion as you type
-? Recent conversions history (last 10)
-? Copy results to clipboard with one tap
-? Beautiful Material Design 3 interface
-? Works offline - currency uses cached data
-? Instant search with conversion preview
-? Swap units with a single tap
-? View all available units in each category
+- 8 conversion categories: Length, Weight, Temperature, Volume, Area, Speed, Time, Currency
+- Live currency exchange rates via Frankfurter API
+- Custom units - create your own measurements
+- Real-time conversion as you type
+- Recent conversions history (last 10)
+- Copy results to clipboard with one tap
+- Beautiful Material Design 3 interface with theme switching
+- Works offline - currency uses cached data
+- Instant search with conversion preview
+- Swap units with a single tap
+- View all available units in each category
+- Save favorites for quick access
+- Dark and light theme support
 
 **SUPPORTED CONVERSIONS:**
-?? Length: mm, cm, m, km, in, ft, yd, mi
-?? Weight: mg, g, kg, t, oz, lb, st
-??? Temperature: °C, °F, K
-?? Volume: mL, L, m³, gal, qt, pt, cup, fl oz
-?? Area: mm², cm², m², ha, km², in², ft², ac
-?? Speed: m/s, km/h, mph, ft/s, kn
-? Time: ms, s, min, h, d, wk, mo, yr
-?? Currency: USD, EUR, GBP, JPY, CAD, AUD, and 30+ more
+- Length: mm, cm, m, km, in, ft, yd, mi
+- Weight: mg, g, kg, t, oz, lb, st
+- Temperature: Â°C, Â°F, K
+- Volume: mL, L, mÂ³, gal, qt, pt, cup, fl oz
+- Area: mmÂ², cmÂ², mÂ², ha, kmÂ², inÂ², ftÂ², ac
+- Speed: m/s, km/h, mph, ft/s, kn
+- Time: ms, s, min, h, d, wk, mo, yr
+- Currency: USD, EUR, GBP, JPY, CAD, AUD, and 30+ more
 
 Perfect for:
 - Students doing homework
@@ -213,7 +219,7 @@ Download Unit Converter now and make conversions effortless!
 ### Ad Strategy
 - **Banner Ads**: Displayed on the main screen
 - **Interstitial Ads**: Shown every 5 conversions
-- **Expected Revenue**: \-50/month with 1,000+ active users
+- **Expected Revenue**: ~$50/month with 1,000+ active users
 
 ### Revenue Optimization Tips
 1. Optimize ad placement for better CTR
@@ -224,15 +230,15 @@ Download Unit Converter now and make conversions effortless!
 
 ## Project Structure
 
-\\\
+```
 lib/
 +-- main.dart                          # Main app UI
 +-- models/
-¦   +-- conversion.dart                # Conversion data models
+|   +-- conversion.dart                # Conversion data models
 +-- services/
-    +-- admob_service.dart             # AdMob integration
-    +-- recent_conversions_service.dart # Recent conversions storage
-\\\
+|   +-- admob_service.dart              # AdMob integration
+|   +-- recent_conversions_service.dart # Recent conversions storage
+```
 
 ## Dependencies
 
@@ -252,4 +258,3 @@ For issues or feature requests, please create an issue in the repository.
 ## Privacy Policy
 
 This app does not collect any personal data. All conversions are stored locally on your device.
-

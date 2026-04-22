@@ -14,7 +14,7 @@ class CustomUnitsScreen extends StatefulWidget {
 }
 
 class _CustomUnitsScreenState extends State<CustomUnitsScreen> {
-  final CustomUnitsService _customUnitsService = CustomUnitsService();
+  final CustomUnitsService _customUnitsService = CustomUnitsService.instance;
   List<CustomUnit> _customUnits = [];
 
   @override
@@ -42,6 +42,14 @@ class _CustomUnitsScreenState extends State<CustomUnitsScreen> {
     NavigationUtils.pushWithCallback(
       context,
       const AddCustomUnitScreen(),
+      _loadCustomUnits,
+    );
+  }
+
+  void _navigateToEditCustomUnit(CustomUnit unit) {
+    NavigationUtils.pushWithCallback(
+      context,
+      AddCustomUnitScreen(existingUnit: unit),
       _loadCustomUnits,
     );
   }
@@ -177,9 +185,18 @@ class _CustomUnitsScreenState extends State<CustomUnitsScreen> {
         subtitle: Text(
           '${unit.categoryName} • Factor: ${unit.conversionFactor}',
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete_outline),
-          onPressed: () => _showDeleteDialog(unit),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => _navigateToEditCustomUnit(unit),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _showDeleteDialog(unit),
+            ),
+          ],
         ),
       ),
     );

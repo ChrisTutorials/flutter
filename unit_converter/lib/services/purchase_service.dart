@@ -7,6 +7,8 @@ import 'admob_service.dart';
 
 class PurchaseService {
   static final PurchaseService _instance = PurchaseService._internal();
+  static bool _isInitialized = false;
+  
   factory PurchaseService() => _instance;
   PurchaseService._internal({InAppPurchase? inAppPurchase, bool? platformSupported})
     : _inAppPurchaseOverride = inAppPurchase,
@@ -26,7 +28,7 @@ class PurchaseService {
   static const String _noAdsProductId = 'no_ads_premium';
   static const Set<String> _productIds = {_noAdsProductId};
   
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
+  StreamSubscription<List<PurchaseDetails>>? _subscription;
   final InAppPurchase? _inAppPurchaseOverride;
   final bool? _platformSupportedOverride;
   
@@ -46,10 +48,19 @@ class PurchaseService {
   bool get _supportsStore =>
       _platformSupportedOverride ?? (kIsWeb ? false : (Platform.isAndroid || Platform.isIOS));
 
+  /// Check if already initialized to prevent duplicate subscriptions
+  bool get isInitialized => _isInitialized;
+
   Future<void> initialize() async {
+    // Prevent re-initialization which would cause duplicate subscriptions
+    if (_isInitialized) {
+      return;
+    }
+
     if (!_supportsStore) {
       _isAvailable = false;
       _errorMessage = null;
+      _isInitialized = true;
       return;
     }
 
@@ -57,10 +68,13 @@ class PurchaseService {
     _isAvailable = await _inAppPurchase.isAvailable();
 
     if (_isAvailable) {
+      // Cancel any existing subscription before creating new one
+      await _cancelExistingSubscription();
+
       // Listen to purchase updates
       _subscription = _inAppPurchase.purchaseStream.listen(
         _listenToPurchaseUpdated,
-        onDone: () => _subscription.cancel(),
+        onDone: () => _subscription?.cancel(),
         onError: (error) {
           _errorMessage = 'Purchase stream error: $error';
         },
@@ -69,6 +83,17 @@ class PurchaseService {
 
       // Load products
       await _loadProducts();
+    }
+    
+    _isInitialized = true;
+  }
+
+  /// Cancel existing subscription if any
+  Future<void> _cancelExistingSubscription() async {
+    if (_hasActiveSubscription && _subscription != null) {
+      await _subscription!.cancel();
+      _subscription = null;
+      _hasActiveSubscription = false;
     }
   }
 
@@ -172,8 +197,15 @@ class PurchaseService {
         
         // Verify this is our product
         if (purchaseDetails.productID == _noAdsProductId) {
-          // Grant premium access
+          // Grant premium access with integrity check
           await PremiumService.setPremium(true);
+          
+          // Verify the setPremium worked
+          final verified = await PremiumService.verifyIntegrity();
+          if (!verified) {
+            _errorMessage = 'Security verification failed';
+            return;
+          }
           
           // Update ad service
           await AdMobService.setPremiumStatus(true);
@@ -191,10 +223,14 @@ class PurchaseService {
     }
   }
 
+  /// Reset initialization state (for testing only)
+  @visibleForTesting
+  static void resetForTesting() {
+    _isInitialized = false;
+  }
+
   void dispose() {
-    if (_hasActiveSubscription) {
-      _subscription.cancel();
-      _hasActiveSubscription = false;
-    }
+    _cancelExistingSubscription();
+    _isInitialized = false;
   }
 }

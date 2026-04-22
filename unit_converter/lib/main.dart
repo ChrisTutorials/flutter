@@ -16,7 +16,7 @@ import 'utils/screenshot_scenario.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final themeController = ThemeController();
+  final themeController = ThemeController.instance;
   await themeController.load();
   final screenshotScenario = await ScreenshotScenario.prepare(themeController);
   await AdMobService.initialize();

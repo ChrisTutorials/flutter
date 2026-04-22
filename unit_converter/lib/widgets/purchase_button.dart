@@ -118,16 +118,18 @@ class _PurchaseButtonState extends State<PurchaseButton> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (_isPremium) {
       return Card(
-        color: Colors.green[50],
+        color: theme.colorScheme.secondaryContainer,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
               Icon(
                 Icons.check_circle,
-                color: Colors.green[700],
+                color: theme.colorScheme.onSecondaryContainer,
                 size: 24,
               ),
               const SizedBox(width: 12),
@@ -139,14 +141,14 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                       'Premium Active',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+                        color: theme.colorScheme.onSecondaryContainer,
                         fontSize: 16,
                       ),
                     ),
                     Text(
                       _content.activeDescription,
                       style: TextStyle(
-                        color: Colors.green[600],
+                        color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
                         fontSize: 14,
                       ),
                     ),
@@ -169,7 +171,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
               children: [
                 Icon(
                   Icons.workspace_premium_outlined,
-                  color: Theme.of(context).primaryColor,
+                  color: theme.colorScheme.primary,
                   size: 24,
                 ),
                 const SizedBox(width: 12),
@@ -182,13 +184,13 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Theme.of(context).primaryColor,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
                       Text(
                         _content.subtitle,
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 14,
                         ),
                       ),
@@ -201,7 +203,7 @@ class _PurchaseButtonState extends State<PurchaseButton> {
             Text(
               _content.description,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 14,
               ),
             ),
@@ -211,18 +213,18 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                 padding: const EdgeInsets.all(8),
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: Colors.red[50],
+                  color: theme.colorScheme.errorContainer,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error, color: Colors.red[700], size: 16),
+                    Icon(Icons.error, color: theme.colorScheme.onErrorContainer, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _purchaseService.errorMessage!,
                         style: TextStyle(
-                          color: Colors.red[700],
+                          color: theme.colorScheme.onErrorContainer,
                           fontSize: 12,
                         ),
                       ),
@@ -233,11 +235,9 @@ class _PurchaseButtonState extends State<PurchaseButton> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
+                  child: FilledButton(
                     onPressed: _isLoading ? null : _handlePurchase,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
+                    style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     child: _isLoading
@@ -246,7 +246,6 @@ class _PurchaseButtonState extends State<PurchaseButton> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : Text(_content.buttonLabel),

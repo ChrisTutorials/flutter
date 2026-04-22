@@ -1,17 +1,28 @@
-Unit Converter is a fast, polished measurement tool for everyday calculations, travel, study, and field work.
+Unit Converter Pro is the only unit converter that lets you create YOUR own custom units.
 
-Convert across core measurement categories, check live currency rates, save favorite conversions, and build your own custom units for workflows that standard apps do not cover.
+While other converters give you the same generic units, Unit Converter Pro lets you add specialized measurements for your work, hobbies, or industry. Build a Furlong if you're into horse racing. Add your company's specific packaging sizes. Create shortcuts for that weird metric your professor uses.
 
-Key features:
-- Fast unit conversion across length, weight, temperature, volume, area, cooking, speed, data, pressure, and time
-- Live currency conversion with a dedicated currency screen
-- Custom units for your own formulas and reference measurements
-- Favorites and recent history for repeat conversions
-- Real-world comparison hints for selected conversions
-- Home screen widget support
-- Light and dark themes with multiple palettes
-- Offline-friendly experience for standard conversions
+KEY FEATURES:
 
-Built for students, engineers, makers, travelers, cooks, and anyone who needs accurate conversions without friction.
+★ Custom Units — Add your own conversions that other apps don't have
+★ 150+ Currencies — More than any other free converter, with live rates
+★ 10 Categories — Length, Weight, Temperature, Volume, Area, Speed, Time, Cooking, Data, Pressure
+★ Quick Presets — One-tap common conversions (°F↔°C, kg↔lb, in↔cm, gal↔L)
+★ Real-World Comparisons — "1 acre is about a football field" helps put values in context
+★ Offline Support — Standard conversions work without internet
+★ Beautiful Themes — 3 color palettes with light/dark modes
+★ Recent History — Quick access to your last 10 conversions
+★ Favorites — Save your most-used conversions
 
-The app includes ads, with a one-time upgrade available to remove them.
+CUSTOM UNITS — THE KEY DIFFERENCE:
+
+Standard unit converters have the same units as every other app. Unit Converter Pro lets you add:
+• Niche measurements specific to your industry
+• Custom shortcuts for complex conversions
+• Your own reference points and formulas
+
+Currency support includes USD, EUR, GBP, JPY, CAD, AUD, and 140+ more with live exchange rates via the Frankfurter API.
+
+Built for students, engineers, makers, travelers, cooks, and anyone who needs accurate conversions — without the frustration of missing units.
+
+Upgrade to remove ads with a one-time purchase.

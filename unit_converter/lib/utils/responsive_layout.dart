@@ -7,6 +7,7 @@ class ResponsiveLayout {
   // Breakpoints
   static const double mobileBreakpoint = 600;
   static const double tabletBreakpoint = 900;
+  static const double wideBreakpoint = 1000;
   static const double desktopBreakpoint = 1200;
 
   /// Get the current screen size category

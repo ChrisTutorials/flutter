@@ -31,7 +31,7 @@ class CurrencyConverterScreen extends StatefulWidget {
 }
 
 class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
-  final CurrencyService _currencyService = CurrencyService();
+  late final CurrencyService _currencyService;
   final RecentConversionsService _recentConversionsService =
       RecentConversionsService();
   final TextEditingController _amountController = TextEditingController();
@@ -55,6 +55,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   @override
   void initState() {
     super.initState();
+    _currencyService = CurrencyService();
     _fromCurrency = widget.preset?.fromSymbol ?? _fromCurrency;
     _toCurrency = widget.preset?.toSymbol ?? _toCurrency;
     _amountController.text = (widget.preset?.sampleValue ?? 1).toString();
@@ -113,6 +114,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _currencyService.dispose();
     _amountController.dispose();
     _resultController.dispose();
     super.dispose();
@@ -212,7 +214,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
             : LayoutBuilder(
                 builder: (context, constraints) {
                   final width = constraints.maxWidth;
-                  final contentWidth = width > 1280 ? 1180.0 : width;
+                  final contentWidth = width > 1280 ? 1200.0 : width;
                   final compact = width < 480;
                   final wide = contentWidth >= 1000;
 
@@ -270,19 +272,20 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   }
 
   Widget _buildOfflineBanner() {
+    final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 0),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.orange.shade50,
-        border: Border.all(color: Colors.orange.shade200),
+        color: theme.colorScheme.errorContainer,
+        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.warning_amber_rounded,
-            color: Colors.orange.shade700,
+            color: theme.colorScheme.onErrorContainer,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -294,14 +297,17 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                   'Offline Mode',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: Colors.orange.shade900,
+                    color: theme.colorScheme.onErrorContainer,
                     fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _offlineWarning!,
-                  style: TextStyle(color: Colors.orange.shade800, fontSize: 12),
+                  style: TextStyle(
+                    color: theme.colorScheme.onErrorContainer.withValues(alpha: 0.8),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -317,11 +323,11 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         color: theme.colorScheme.surface,
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             blurRadius: 24,
-            offset: Offset(0, 10),
-            color: Color(0x14000000),
+            offset: const Offset(0, 10),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.08),
           ),
         ],
       ),
@@ -429,22 +435,53 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
             readOnly: true,
           ),
           const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-            ),
-            child: Text(
-              _quote == null
-                  ? 'Enter an amount to see the latest available rate.'
-                  : '${NumberFormatter.formatNumber(_quote!.amount)} ${_quote!.from} (${_currencies[_quote!.from] ?? 'Unknown'}) = ${NumberFormatter.formatNumber(_quote!.convertedAmount)} ${_quote!.to} (${_currencies[_quote!.to] ?? 'Unknown'})',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+          // Loading indicator for rate refresh
+          if (_isLoading)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Fetching latest rate...',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+              ),
+              child: Text(
+                _quote == null
+                    ? 'Enter an amount to see the latest available rate.'
+                    : '${NumberFormatter.formatNumber(_quote!.amount)} ${_quote!.from} (${_currencies[_quote!.from] ?? 'Unknown'}) = ${NumberFormatter.formatNumber(_quote!.convertedAmount)} ${_quote!.to} (${_currencies[_quote!.to] ?? 'Unknown'})',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

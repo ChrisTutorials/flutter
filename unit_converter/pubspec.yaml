@@ -18,6 +18,9 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.5+14
 
+# MSIX version must match the app version above
+# Format: major.minor.patch.build (4 parts required for MSIX)
+
 environment:
   sdk: ^3.11.1
 
@@ -158,7 +161,7 @@ msix_config:
   display_name: Unit Converter All-in-One
   publisher_display_name: MoonBark Studio
   identity_name: MoonBarkStudio.UnitConverterAll-in-One
-  msix_version: 1.0.0.0
+  msix_version: 1.0.5.14
   description: A comprehensive unit converter app with 20+ categories and 1000+ units
   publisher: CN=3EFF2941-6801-4CEC-B527-2958F9AE4902
   capabilities: 'internetClient'

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/favorite_conversion.dart';
+import '../utils/responsive_layout.dart';
 
 class FavoriteConversionCard extends StatelessWidget {
   const FavoriteConversionCard({
@@ -19,9 +20,15 @@ class FavoriteConversionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final cardWidth = screenWidth < ResponsiveLayout.mobileBreakpoint
+        ? 180.0
+        : screenWidth < ResponsiveLayout.tabletBreakpoint
+            ? 200.0
+            : 220.0;
 
     return SizedBox(
-      width: 220,
+      width: cardWidth,
       child: Card(
         child: InkWell(
           borderRadius: BorderRadius.circular(24),

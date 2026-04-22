@@ -92,7 +92,7 @@ class ScreenshotScenario {
 
   static Future<void> _seedStoreData() async {
     final recentConversionsService = RecentConversionsService();
-    final customUnitsService = CustomUnitsService();
+    final customUnitsService = CustomUnitsService.instance;
 
     await recentConversionsService.clearRecentConversions();
     for (final conversion in _recentConversions) {

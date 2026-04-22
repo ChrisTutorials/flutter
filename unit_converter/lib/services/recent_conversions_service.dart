@@ -4,10 +4,27 @@ import '../models/conversion.dart';
 
 class RecentConversionsService {
   static const String _key = 'recent_conversions';
+  static const String _historyEnabledKey = 'history_enabled';
   static const int _maxRecent = 10;
 
-  /// Save a recent conversion
+  /// Check if history is enabled
+  static Future<bool> isHistoryEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_historyEnabledKey) ?? true;
+  }
+
+  /// Enable or disable history
+  static Future<void> setHistoryEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_historyEnabledKey, enabled);
+  }
+
+  /// Save a recent conversion (only if history is enabled)
   Future<void> saveConversion(RecentConversion conversion) async {
+    if (!await RecentConversionsService.isHistoryEnabled()) {
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final recentList = await getRecentConversions();
 
@@ -35,6 +52,10 @@ class RecentConversionsService {
 
   /// Get all recent conversions
   Future<List<RecentConversion>> getRecentConversions() async {
+    if (!await RecentConversionsService.isHistoryEnabled()) {
+      return [];
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_key);
 

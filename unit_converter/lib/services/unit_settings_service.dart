@@ -4,15 +4,21 @@ import '../models/conversion.dart';
 /// Service for managing unit visibility settings
 class UnitSettingsService {
   static const String _hiddenUnitsKey = 'hidden_units';
+  static const String _hiddenCurrenciesKey = 'hidden_currencies';
   
   // Default units to hide (lowest value units)
   static const Set<String> _defaultHiddenUnits = {
     'Micrometer',      // Length - 0.000001
-    'Milligram',       // Weight - 0.000001  
+    'Milligram',       // Weight - 0.000001
     'Square Millimeter', // Area - 0.000001
     'Pinch',           // Cooking - 0.0003080576
     'Dash',            // Cooking - 0.0006161152
     'Bit',             // Data - 0.125
+  };
+
+  // Default currencies to hide
+  static const Set<String> _defaultHiddenCurrencies = {
+    'VND', // Vietnamese Dong
   };
 
   /// Get the set of hidden unit names
@@ -81,5 +87,58 @@ class UnitSettingsService {
   /// Get units that are typically considered "low value" and good candidates for hiding
   static Set<String> getLowValueUnits() {
     return Set<String>.from(_defaultHiddenUnits);
+  }
+
+  /// Get the set of hidden currency codes
+  static Future<Set<String>> getHiddenCurrencies() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hiddenCurrencyList = prefs.getStringList(_hiddenCurrenciesKey);
+
+    if (hiddenCurrencyList == null || hiddenCurrencyList.isEmpty) {
+      return Set<String>.from(_defaultHiddenCurrencies);
+    }
+
+    return Set<String>.from(hiddenCurrencyList);
+  }
+
+  /// Set the hidden currencies
+  static Future<void> setHiddenCurrencies(Set<String> hiddenCurrencies) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_hiddenCurrenciesKey, hiddenCurrencies.toList());
+  }
+
+  /// Check if a specific currency is hidden
+  static Future<bool> isCurrencyHidden(String currencyCode) async {
+    final hiddenCurrencies = await getHiddenCurrencies();
+    return hiddenCurrencies.contains(currencyCode);
+  }
+
+  /// Toggle visibility of a currency
+  static Future<void> toggleCurrencyVisibility(String currencyCode) async {
+    final hiddenCurrencies = await getHiddenCurrencies();
+
+    if (hiddenCurrencies.contains(currencyCode)) {
+      hiddenCurrencies.remove(currencyCode);
+    } else {
+      hiddenCurrencies.add(currencyCode);
+    }
+
+    await setHiddenCurrencies(hiddenCurrencies);
+  }
+
+  /// Reset currency defaults to default hidden currencies
+  static Future<void> resetCurrencyDefaults() async {
+    await setHiddenCurrencies(Set<String>.from(_defaultHiddenCurrencies));
+  }
+
+  /// Filter currencies based on visibility settings
+  static Future<Map<String, String>> filterCurrencies(
+    Map<String, String> currencies,
+  ) async {
+    final hiddenCurrencies = await getHiddenCurrencies();
+
+    return Map.fromEntries(
+      currencies.entries.where((e) => !hiddenCurrencies.contains(e.key)),
+    );
   }
 }

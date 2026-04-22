@@ -10,8 +10,12 @@ class ThemeController extends ChangeNotifier {
   static const String _paletteKey = 'theme_palette';
   static const String _themeModeKey = 'theme_mode';
 
+  static final ThemeController instance = ThemeController._();
+
   AppPalette _palette = AppPalette.sage;
   AppThemeMode _themeMode = AppThemeMode.system;
+
+  ThemeController._();
 
   AppPalette get palette => _palette;
   AppThemeMode get themeModeSetting => _themeMode;

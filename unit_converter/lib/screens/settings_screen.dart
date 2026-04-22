@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/currency_service.dart';
+import '../services/recent_conversions_service.dart';
 import '../services/theme_service.dart';
 import '../services/unit_settings_service.dart';
 import '../services/widget_service.dart';
@@ -24,12 +26,16 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   Set<String> _hiddenUnits = {};
+  Set<String> _hiddenCurrencies = {};
   bool _isLoadingUnits = true;
+  bool _historyEnabled = true;
 
   @override
   void initState() {
     super.initState();
     _loadHiddenUnits();
+    _loadHiddenCurrencies();
+    _loadHistoryEnabled();
   }
 
   Future<void> _loadHiddenUnits() async {
@@ -40,7 +46,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() {
       _hiddenUnits = hiddenUnits;
+    });
+  }
+
+  Future<void> _loadHiddenCurrencies() async {
+    final hiddenCurrencies = await UnitSettingsService.getHiddenCurrencies();
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _hiddenCurrencies = hiddenCurrencies;
       _isLoadingUnits = false;
+    });
+  }
+
+  Future<void> _loadHistoryEnabled() async {
+    final enabled = await RecentConversionsService.isHistoryEnabled();
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _historyEnabled = enabled;
     });
   }
 
@@ -49,9 +77,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _loadHiddenUnits();
   }
 
+  Future<void> _toggleCurrencyVisibility(String currencyCode) async {
+    await UnitSettingsService.toggleCurrencyVisibility(currencyCode);
+    await _loadHiddenCurrencies();
+  }
+
+  Future<void> _toggleHistory(bool enabled) async {
+    if (enabled) {
+      final shouldClear = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Enable history?'),
+          content: const Text('Would you like to clear existing history?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Keep history'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Clear history'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldClear == null) {
+        return;
+      }
+
+      if (shouldClear == true) {
+        await RecentConversionsService().clearRecentConversions();
+      }
+    } else {
+      await RecentConversionsService().clearRecentConversions();
+    }
+
+    await RecentConversionsService.setHistoryEnabled(enabled);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _historyEnabled = enabled;
+    });
+  }
+
   Future<void> _resetUnitDefaults() async {
     await UnitSettingsService.resetToDefaults();
     await _loadHiddenUnits();
+  }
+
+  Future<void> _resetCurrencyDefaults() async {
+    await UnitSettingsService.resetCurrencyDefaults();
+    await _loadHiddenCurrencies();
   }
 
   @override
@@ -101,11 +179,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           SizedBox(
                             width: cardWidth,
+                            child: _buildHistoryCard(theme),
+                          ),
+                          SizedBox(
+                            width: cardWidth,
                             child: _buildCloudCard(theme),
                           ),
                           SizedBox(
                             width: cardWidth,
                             child: _buildUnitsCard(theme),
+                          ),
+                          SizedBox(
+                            width: cardWidth,
+                            child: _buildCurrenciesCard(theme),
                           ),
                         ],
                       ),
@@ -243,6 +329,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Widget _buildHistoryCard(ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Conversion history',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Enable history'),
+              subtitle: Text(
+                _historyEnabled
+                    ? 'Recent conversions are saved'
+                    : 'History is disabled - no conversions saved',
+              ),
+              value: _historyEnabled,
+              onChanged: _toggleHistory,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCloudCard(ThemeData theme) {
     return Card(
       child: Padding(
@@ -285,7 +402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              'Hide low-value units that you rarely use to simplify conversion lists.',
+              'Show or hide units from conversion lists. Hidden units are hidden everywhere in the app.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 height: 1.45,
@@ -297,6 +414,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             else
               Column(
                 children: [
+                  Text(
+                    'Hidden by default',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   ...UnitSettingsService.getLowValueUnits().map((unitName) {
                     final isHidden = _hiddenUnits.contains(unitName);
                     return SwitchListTile.adaptive(
@@ -307,9 +431,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (_) => _toggleUnitVisibility(unitName),
                     );
                   }).toList(),
+                  const Divider(height: 24),
+                  Text(
+                    'All units',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  FutureBuilder<Set<String>>(
+                    future: UnitSettingsService.getAllToggleableUnits(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox.shrink();
+                      }
+                      final allUnits = snapshot.data!.toList()..sort();
+                      return Column(
+                        children: allUnits.map((unitName) {
+                            final isHidden = _hiddenUnits.contains(unitName);
+                            return SwitchListTile.adaptive(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(unitName),
+                              subtitle: isHidden ? const Text('Hidden') : const Text('Visible'),
+                              value: !isHidden,
+                              onChanged: (_) => _toggleUnitVisibility(unitName),
+                            );
+                          }).toList(),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: _resetUnitDefaults,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reset to defaults'),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrenciesCard(ThemeData theme) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Currency visibility',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Show or hide currencies from the currency converter dropdown. Hidden currencies will not appear in any currency selection lists.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_isLoadingUnits)
+              const Center(child: CircularProgressIndicator())
+            else
+              Column(
+                children: [
+                  FutureBuilder<Map<String, String>>(
+                    future: CurrencyService().getCurrencies(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox.shrink();
+                      }
+                      final currencies = snapshot.data!.entries.toList()
+                        ..sort((a, b) => a.key.compareTo(b.key));
+                      return Column(
+                        children: currencies.map((entry) {
+                          final code = entry.key;
+                          final name = entry.value;
+                          final isHidden = _hiddenCurrencies.contains(code);
+                          return SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('$code - $name'),
+                            subtitle: isHidden ? const Text('Hidden') : const Text('Visible'),
+                            value: !isHidden,
+                            onChanged: (_) => _toggleCurrencyVisibility(code),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _resetCurrencyDefaults,
                     icon: const Icon(Icons.refresh),
                     label: const Text('Reset to defaults'),
                   ),

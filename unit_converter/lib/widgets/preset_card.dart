@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/quick_preset.dart';
+import '../utils/responsive_layout.dart';
 
 /// A preset card widget for quick conversions.
 class PresetCard extends StatelessWidget {
@@ -17,9 +18,15 @@ class PresetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final cardWidth = screenWidth < ResponsiveLayout.mobileBreakpoint
+        ? 160.0
+        : screenWidth < ResponsiveLayout.tabletBreakpoint
+            ? 174.0
+            : 188.0;
 
     return SizedBox(
-      width: 188,
+      width: cardWidth,
       child: Card(
         child: InkWell(
           borderRadius: BorderRadius.circular(24),

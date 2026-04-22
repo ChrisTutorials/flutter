@@ -211,6 +211,84 @@ void main() {
       );
       expect(result, closeTo(100.0, 0.0001));
     });
+
+    test('should convert Celsius to Kelvin', () {
+      final result = ConversionData.convert(
+        0.0,
+        _unitBySymbol(ConversionData.temperatureCategory, '°C'),
+        _unitBySymbol(ConversionData.temperatureCategory, 'K'),
+        'Temperature',
+      );
+      expect(result, closeTo(273.15, 0.0001));
+    });
+
+    test('should convert Kelvin to Celsius', () {
+      final result = ConversionData.convert(
+        273.15,
+        _unitBySymbol(ConversionData.temperatureCategory, 'K'),
+        _unitBySymbol(ConversionData.temperatureCategory, '°C'),
+        'Temperature',
+      );
+      expect(result, closeTo(0.0, 0.0001));
+    });
+
+    test('should convert Fahrenheit to Kelvin', () {
+      final result = ConversionData.convert(
+        32.0,
+        _unitBySymbol(ConversionData.temperatureCategory, '°F'),
+        _unitBySymbol(ConversionData.temperatureCategory, 'K'),
+        'Temperature',
+      );
+      expect(result, closeTo(273.15, 0.0001));
+    });
+
+    test('should convert Kelvin to Fahrenheit', () {
+      final result = ConversionData.convert(
+        273.15,
+        _unitBySymbol(ConversionData.temperatureCategory, 'K'),
+        _unitBySymbol(ConversionData.temperatureCategory, '°F'),
+        'Temperature',
+      );
+      expect(result, closeTo(32.0, 0.0001));
+    });
+
+    test('should handle negative Celsius to Fahrenheit', () {
+      final result = ConversionData.convert(
+        -40.0,
+        _unitBySymbol(ConversionData.temperatureCategory, '°C'),
+        _unitBySymbol(ConversionData.temperatureCategory, '°F'),
+        'Temperature',
+      );
+      expect(result, closeTo(-40.0, 0.0001));
+    });
+
+    test('should handle same unit temperature conversion', () {
+      final result = ConversionData.convert(
+        100.0,
+        _unitBySymbol(ConversionData.temperatureCategory, '°C'),
+        _unitBySymbol(ConversionData.temperatureCategory, '°C'),
+        'Temperature',
+      );
+      expect(result, closeTo(100.0, 0.0001));
+    });
+
+    test('should convert absolute zero across temperature scales', () {
+      final celsiusToKelvin = ConversionData.convert(
+        -273.15,
+        _unitBySymbol(ConversionData.temperatureCategory, '°C'),
+        _unitBySymbol(ConversionData.temperatureCategory, 'K'),
+        'Temperature',
+      );
+      expect(celsiusToKelvin, closeTo(0.0, 0.0001));
+
+      final fahrenheitToKelvin = ConversionData.convert(
+        -459.67,
+        _unitBySymbol(ConversionData.temperatureCategory, '°F'),
+        _unitBySymbol(ConversionData.temperatureCategory, 'K'),
+        'Temperature',
+      );
+      expect(fahrenheitToKelvin, closeTo(0.0, 0.01));
+    });
   });
 
   group('Volume Conversions', () {

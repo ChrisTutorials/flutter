@@ -153,7 +153,7 @@ class ConversionData {
 
   /// Get categories with custom units included and filtered by visibility settings
   static Future<List<ConversionCategory>> getCategoriesWithCustomUnits() async {
-    final customUnitsService = CustomUnitsService();
+    final customUnitsService = CustomUnitsService.instance;
     final customUnits = await customUnitsService.getCustomUnits();
 
     // Group custom units by category

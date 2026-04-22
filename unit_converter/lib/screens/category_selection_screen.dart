@@ -66,6 +66,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   bool _didAttemptInitialScroll = false;
   Map<String, String> _currencyNames = {};
   bool _isPremiumUnlocked = false;
+  bool _historyEnabled = true;
 
   @override
   void initState() {
@@ -88,10 +89,12 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   }
 
   Future<void> _refreshHomeData() async {
+    final historyEnabled = await RecentConversionsService.isHistoryEnabled();
+    
     final results = await Future.wait<dynamic>([
       ConversionData.getCategoriesWithCustomUnits(),
       _favoritesService.getFavorites(),
-      _recentConversionsService.getRecentConversions(),
+      historyEnabled ? _recentConversionsService.getRecentConversions() : Future.value(<RecentConversion>[]),
       WidgetService.isAvailable(),
       _currencyService.getCurrencies(),
     ]);
@@ -106,6 +109,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       _recentConversions = results[2] as List<RecentConversion>;
       _widgetAvailable = results[3] as bool;
       _currencyNames = results[4] as Map<String, String>;
+      _historyEnabled = historyEnabled;
     });
 
     final isPremiumUnlocked =
@@ -702,11 +706,35 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                     textAlign: TextAlign.center,
                   ),
                   if (isLocked) ...[
-                    SizedBox(height: compact ? 4 : 8),
-                    Icon(
-                      Icons.workspace_premium,
-                      size: compact ? 16 : 18,
-                      color: theme.colorScheme.secondary,
+                    SizedBox(height: compact ? 6 : 8),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: compact ? 6 : 8,
+                        vertical: compact ? 2 : 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.workspace_premium,
+                            size: compact ? 10 : 12,
+                            color: theme.colorScheme.onSecondaryContainer,
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            'PRO',
+                            style: TextStyle(
+                              fontSize: compact ? 8 : 10,
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.onSecondaryContainer,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ],

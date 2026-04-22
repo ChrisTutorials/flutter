@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/conversion.dart';
 import '../utils/icon_utils.dart';
 import '../utils/number_formatter.dart';
+import '../utils/responsive_layout.dart';
 
 class RecentConversionCard extends StatelessWidget {
   const RecentConversionCard({
@@ -19,11 +20,17 @@ class RecentConversionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final cardWidth = screenWidth < ResponsiveLayout.mobileBreakpoint
+        ? 240.0
+        : screenWidth < ResponsiveLayout.tabletBreakpoint
+            ? 260.0
+            : 280.0;
 
     return Card(
       margin: const EdgeInsets.only(right: 12),
       child: Container(
-        width: 280,
+        width: cardWidth,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

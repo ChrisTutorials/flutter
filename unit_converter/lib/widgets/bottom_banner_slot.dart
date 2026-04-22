@@ -24,7 +24,7 @@ class BottomBannerSlot extends StatelessWidget {
       final height = bannerSize!.height.toDouble();
 
       return Padding(
-        padding: EdgeInsets.only(bottom: 8 + systemBottomPadding),
+        padding: EdgeInsets.only(bottom: systemBottomPadding),
         child: SizedBox(
           key: const Key('banner_ad_container'),
           width: double.infinity,
@@ -45,7 +45,7 @@ class BottomBannerSlot extends StatelessWidget {
         key: const Key('banner_ad_container'),
         width: double.infinity,
         height: 50,
-        margin: EdgeInsets.only(bottom: 8 + systemBottomPadding),
+         margin: EdgeInsets.only(bottom: systemBottomPadding),
         decoration: BoxDecoration(
           color: Colors.grey[300],
           border: Border.all(color: Colors.grey, width: 1),

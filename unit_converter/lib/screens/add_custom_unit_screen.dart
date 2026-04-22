@@ -7,7 +7,14 @@ import '../utils/navigation_utils.dart';
 import '../utils/snackbar_utils.dart';
 
 class AddCustomUnitScreen extends StatefulWidget {
-  const AddCustomUnitScreen({super.key});
+  const AddCustomUnitScreen({
+    super.key,
+    this.existingUnit,
+  });
+
+  final CustomUnit? existingUnit;
+
+  bool get isEditMode => existingUnit != null;
 
   @override
   State<AddCustomUnitScreen> createState() => _AddCustomUnitScreenState();
@@ -18,9 +25,10 @@ class _AddCustomUnitScreenState extends State<AddCustomUnitScreen> {
   final _nameController = TextEditingController();
   final _symbolController = TextEditingController();
   final _conversionFactorController = TextEditingController();
-  final CustomUnitsService _customUnitsService = CustomUnitsService();
+  final CustomUnitsService _customUnitsService = CustomUnitsService.instance;
 
   String? _selectedCategory;
+  bool _isSymbolReadOnly = false;
   final List<String> _categories = [
     'Length',
     'Weight',
@@ -30,6 +38,19 @@ class _AddCustomUnitScreenState extends State<AddCustomUnitScreen> {
     'Speed',
     'Time',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEditMode) {
+      final unit = widget.existingUnit!;
+      _nameController.text = unit.name;
+      _symbolController.text = unit.symbol;
+      _conversionFactorController.text = unit.conversionFactor.toString();
+      _selectedCategory = unit.categoryName;
+      _isSymbolReadOnly = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -44,34 +65,39 @@ class _AddCustomUnitScreenState extends State<AddCustomUnitScreen> {
       return;
     }
 
-    // Check if symbol already exists in category
-    final exists = await _customUnitsService.customUnitExists(
-      _symbolController.text.trim(),
-      _selectedCategory!,
-    );
-
-    if (exists) {
-      if (!mounted) return;
-      SnackbarUtils.showError(
-        context,
-        'A unit with this symbol already exists in this category',
+    // In add mode, check if symbol already exists in category
+    if (!widget.isEditMode) {
+      final exists = await _customUnitsService.customUnitExists(
+        _symbolController.text.trim(),
+        _selectedCategory!,
       );
-      return;
+
+      if (exists) {
+        if (!mounted) return;
+        SnackbarUtils.showError(
+          context,
+          'A unit with this symbol already exists in this category',
+        );
+        return;
+      }
     }
 
     final customUnit = CustomUnit(
-      id: _customUnitsService.generateId(),
+      id: widget.isEditMode ? widget.existingUnit!.id : _customUnitsService.generateId(),
       name: _nameController.text.trim(),
       symbol: _symbolController.text.trim(),
       conversionFactor: double.parse(_conversionFactorController.text),
       categoryName: _selectedCategory!,
-      createdAt: DateTime.now(),
+      createdAt: widget.isEditMode ? widget.existingUnit!.createdAt : DateTime.now(),
     );
 
     await _customUnitsService.saveCustomUnit(customUnit);
 
     if (!mounted) return;
-    SnackbarUtils.showSuccess(context, 'Custom unit added successfully');
+    SnackbarUtils.showSuccess(
+      context,
+      widget.isEditMode ? 'Custom unit updated' : 'Custom unit added',
+    );
     NavigationUtils.pop(context);
   }
 
@@ -80,7 +106,7 @@ class _AddCustomUnitScreenState extends State<AddCustomUnitScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Custom Unit')),
+      appBar: AppBar(title: Text(widget.isEditMode ? 'Edit Custom Unit' : 'Add Custom Unit')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -127,10 +153,12 @@ class _AddCustomUnitScreenState extends State<AddCustomUnitScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _symbolController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Symbol',
                 hintText: 'e.g., fur',
+                helperText: _isSymbolReadOnly ? 'Symbol cannot be changed' : null,
               ),
+              readOnly: _isSymbolReadOnly,
               textCapitalization: TextCapitalization.characters,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -246,8 +274,8 @@ class _AddCustomUnitScreenState extends State<AddCustomUnitScreen> {
   Widget _buildSaveButton() {
     return FilledButton.icon(
       onPressed: _saveCustomUnit,
-      icon: const Icon(Icons.add),
-      label: const Text('Add Custom Unit'),
+      icon: Icon(widget.isEditMode ? Icons.save : Icons.add),
+      label: Text(widget.isEditMode ? 'Save Changes' : 'Add Custom Unit'),
       style: ButtonStyles.fullWidthButton,
     );
   }
